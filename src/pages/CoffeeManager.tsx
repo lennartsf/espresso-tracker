@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  useCoffees, useCreateCoffee, useDeleteCoffee,
+  useCoffees, useCreateCoffee, useUpdateCoffee, useDeleteCoffee,
   useRoastDates, useCreateRoastDate, useDeleteRoastDate,
 } from '../hooks/useCoffees'
 import { RatingInput } from '../components/RatingInput'
@@ -82,6 +82,18 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
 }
 
 function CoffeeDetail({ coffee, onBack, onDelete }: { coffee: Coffee; onBack: () => void; onDelete: () => void }) {
+  const [editing, setEditing] = useState(false)
+
+  if (editing) {
+    return <EditCoffeeForm coffee={coffee} onBack={() => setEditing(false)} />
+  }
+
+  return <CoffeeDetailView coffee={coffee} onBack={onBack} onDelete={onDelete} onEdit={() => setEditing(true)} />
+}
+
+function CoffeeDetailView({
+  coffee, onBack, onDelete, onEdit,
+}: { coffee: Coffee; onBack: () => void; onDelete: () => void; onEdit: () => void }) {
   const deleteCoffee = useDeleteCoffee()
   const { data: roastDates = [] } = useRoastDates(coffee.id)
   const createRoastDate = useCreateRoastDate()
@@ -117,9 +129,14 @@ function CoffeeDetail({ coffee, onBack, onDelete }: { coffee: Coffee; onBack: ()
           <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
           <h1 className="text-xl font-bold text-slate-800">{coffee.name}</h1>
         </div>
-        <button onClick={handleDeleteCoffee} className="text-slate-300 hover:text-red-400 text-sm px-2">
-          Löschen
-        </button>
+        <div className="flex gap-3">
+          <button onClick={onEdit} className="text-orange-500 text-sm font-semibold">
+            Bearbeiten
+          </button>
+          <button onClick={handleDeleteCoffee} className="text-slate-300 hover:text-red-400 text-sm">
+            Löschen
+          </button>
+        </div>
       </div>
 
       {coffee.roaster && (
@@ -247,6 +264,157 @@ function CoffeeDetail({ coffee, onBack, onDelete }: { coffee: Coffee; onBack: ()
           </button>
         )}
       </div>
+    </div>
+  )
+}
+
+function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void }) {
+  const updateCoffee = useUpdateCoffee()
+
+  const [name, setName] = useState(coffee.name)
+  const [roaster, setRoaster] = useState(coffee.roaster ?? '')
+  const [hasArabica, setHasArabica] = useState(coffee.arabica_pct !== null)
+  const [hasRobusta, setHasRobusta] = useState(coffee.robusta_pct !== null)
+  const [arabicaPct, setArabicaPct] = useState(String(coffee.arabica_pct ?? 100))
+  const [robustaPct, setRobustaPct] = useState(String(coffee.robusta_pct ?? 0))
+  const [roastLevel, setRoastLevel] = useState<number | null>(coffee.roast_level)
+  const [originCountry, setOriginCountry] = useState(coffee.origin_country ?? '')
+  const [originRegion, setOriginRegion] = useState(coffee.origin_region ?? '')
+  const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+
+    let arabica: number | null = null
+    let robusta: number | null = null
+    if (hasArabica && hasRobusta) {
+      arabica = parseInt(arabicaPct, 10)
+      robusta = parseInt(robustaPct, 10)
+    } else if (hasArabica) {
+      arabica = 100
+    } else if (hasRobusta) {
+      robusta = 100
+    }
+
+    await updateCoffee.mutateAsync({
+      id: coffee.id,
+      name: name.trim(),
+      roaster: roaster.trim() || null,
+      arabica_pct: arabica,
+      robusta_pct: robusta,
+      roast_level: roastLevel,
+      origin_country: originCountry.trim() || null,
+      origin_region: originRegion.trim() || null,
+      altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
+    })
+    onBack()
+  }
+
+  const isBlend = hasArabica && hasRobusta
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
+        <h1 className="text-xl font-bold text-slate-800">Kaffee bearbeiten</h1>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid gap-5">
+        <div className="grid gap-3">
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Name *"
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+          />
+          <input
+            value={roaster}
+            onChange={e => setRoaster(e.target.value)}
+            placeholder="Rösterei"
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+          />
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bohnenart</p>
+          <div className="flex gap-4 mb-2">
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={hasArabica} onChange={e => setHasArabica(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              Arabica
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={hasRobusta} onChange={e => setHasRobusta(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              Robusta
+            </label>
+          </div>
+          {isBlend && (
+            <div className="flex gap-3 mt-2">
+              <div className="flex-1">
+                <label className="text-xs text-slate-400 mb-1 block">Arabica %</label>
+                <input
+                  type="number" min="0" max="100" value={arabicaPct}
+                  onChange={e => { setArabicaPct(e.target.value); setRobustaPct(String(100 - parseInt(e.target.value || '0', 10))) }}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-xs text-slate-400 mb-1 block">Robusta %</label>
+                <input
+                  type="number" min="0" max="100" value={robustaPct}
+                  onChange={e => { setRobustaPct(e.target.value); setArabicaPct(String(100 - parseInt(e.target.value || '0', 10))) }}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Röstgrad</p>
+          <RatingInput value={roastLevel} onChange={setRoastLevel} />
+          <div className="flex justify-between text-xs text-slate-300 mt-1 px-0.5">
+            <span>hell</span><span>dunkel</span>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Rohkaffee</p>
+          <div className="grid gap-3">
+            <input
+              value={originCountry}
+              onChange={e => setOriginCountry(e.target.value)}
+              placeholder="Herkunft (Land)"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+            <input
+              value={originRegion}
+              onChange={e => setOriginRegion(e.target.value)}
+              placeholder="Herkunft (Region)"
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number" value={altitudeM} onChange={e => setAltitudeM(e.target.value)}
+                placeholder="Anbauhöhe"
+                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+              <span className="text-sm text-slate-400">m ü.M.</span>
+            </div>
+          </div>
+        </div>
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={updateCoffee.isPending}
+          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+        >
+          {updateCoffee.isPending ? 'Speichern...' : 'Änderungen speichern'}
+        </button>
+      </form>
     </div>
   )
 }

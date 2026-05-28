@@ -2,17 +2,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import type { Shot, NewShot } from '../types'
 
-export type ShotWithCoffee = Shot & { coffees: { name: string } | null }
+export type ShotWithCoffee = Shot & {
+  coffees: { name: string } | null
+  roast_dates: { roast_date: string } | null
+}
 
-export function useShots(coffeeId?: string) {
+export function useShots(coffeeId?: string, roastDateId?: string) {
   return useQuery({
-    queryKey: ['shots', coffeeId ?? 'all'],
+    queryKey: ['shots', coffeeId ?? 'all', roastDateId ?? 'all'],
     queryFn: async () => {
       let query = supabase
         .from('shots')
-        .select('*, coffees(name)')
+        .select('*, coffees(name), roast_dates(roast_date)')
         .order('pulled_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
+      if (roastDateId) query = query.eq('roast_date_id', roastDateId)
       const { data, error } = await query
       if (error) throw error
       return data as ShotWithCoffee[]

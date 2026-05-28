@@ -32,6 +32,23 @@ export function useCreateCoffee() {
   })
 }
 
+export function useUpdateCoffee() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<NewCoffee> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('coffees')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single()
+      if (error) throw error
+      return data as Coffee
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['coffees'] }),
+  })
+}
+
 export function useDeleteCoffee() {
   const qc = useQueryClient()
   return useMutation({
