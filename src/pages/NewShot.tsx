@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCoffees, useCreateCoffee } from '../hooks/useCoffees'
+import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
@@ -14,6 +14,7 @@ export function NewShot() {
   const [coffeeId, setCoffeeId] = useState('')
   const [showNewCoffee, setShowNewCoffee] = useState(false)
   const [newCoffeeName, setNewCoffeeName] = useState('')
+  const [roastDateId, setRoastDateId] = useState('')
   const [grindSetting, setGrindSetting] = useState('')
   const [doseG, setDoseG] = useState('')
   const [yieldG, setYieldG] = useState('')
@@ -22,6 +23,14 @@ export function NewShot() {
   const [rating, setRating] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [error, setError] = useState('')
+
+  const { data: roastDates = [] } = useRoastDates(coffeeId)
+  const recentDates = roastDates.slice(0, 2)
+
+  function handleCoffeeChange(id: string) {
+    setCoffeeId(id)
+    setRoastDateId('')
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -48,12 +57,19 @@ export function NewShot() {
         origin: null,
         roast_date: null,
         notes: null,
+        arabica_pct: null,
+        robusta_pct: null,
+        roast_level: null,
+        origin_country: null,
+        origin_region: null,
+        altitude_m: null,
       })
       resolvedCoffeeId = coffee.id
     }
 
     await createShot.mutateAsync({
       coffee_id: resolvedCoffeeId,
+      roast_date_id: roastDateId || null,
       grind_setting: parseFloat(grindSetting),
       dose_g: doseG ? parseFloat(doseG) : null,
       yield_g: yieldG ? parseFloat(yieldG) : null,
@@ -65,6 +81,10 @@ export function NewShot() {
     })
 
     navigate('/')
+  }
+
+  function formatDate(d: string) {
+    return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   return (
@@ -82,7 +102,7 @@ export function NewShot() {
             <div className="flex gap-2">
               <select
                 value={coffeeId}
-                onChange={e => setCoffeeId(e.target.value)}
+                onChange={e => handleCoffeeChange(e.target.value)}
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
               >
                 <option value="">Kaffee wählen...</option>
@@ -90,7 +110,7 @@ export function NewShot() {
               </select>
               <button
                 type="button"
-                onClick={() => { setShowNewCoffee(true); setCoffeeId('') }}
+                onClick={() => { setShowNewCoffee(true); handleCoffeeChange('') }}
                 className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50"
               >
                 + Neu
@@ -115,6 +135,41 @@ export function NewShot() {
             </div>
           )}
         </div>
+
+        {/* Roast date — only if coffee selected and has dates */}
+        {coffeeId && recentDates.length > 0 && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Röstdatum</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setRoastDateId('')}
+                className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
+                  roastDateId === ''
+                    ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold'
+                    : 'border-slate-200 text-slate-500 bg-white'
+                }`}
+              >
+                Keine Angabe
+              </button>
+              {recentDates.map((rd, i) => (
+                <button
+                  key={rd.id}
+                  type="button"
+                  onClick={() => setRoastDateId(rd.id)}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors text-center ${
+                    roastDateId === rd.id
+                      ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold'
+                      : 'border-slate-200 text-slate-600 bg-white'
+                  }`}
+                >
+                  {formatDate(rd.roast_date)}
+                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Aktuell</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Grind + Temp */}
         <div className="grid grid-cols-2 gap-3">

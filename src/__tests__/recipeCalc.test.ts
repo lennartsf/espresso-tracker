@@ -4,6 +4,7 @@ import type { Shot } from '../types'
 const makeShot = (overrides: Partial<Shot>): Shot => ({
   id: '1',
   coffee_id: 'c1',
+  roast_date_id: null,
   grind_setting: 12,
   dose_g: 18,
   yield_g: 36,
