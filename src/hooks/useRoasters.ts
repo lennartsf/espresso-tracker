@@ -63,16 +63,28 @@ export function useDeleteRoaster() {
   })
 }
 
-export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number; displayName: string } | null> {
+export interface GeoResult {
+  lat: number
+  lng: number
+  displayName: string
+  shortName: string
+}
+
+export async function searchAddresses(query: string): Promise<GeoResult[]> {
+  if (query.trim().length < 3) return []
   const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
     { headers: { 'Accept-Language': 'de', 'User-Agent': 'EspressoTracker/1.0' } }
   )
   const data = await res.json()
-  if (!data.length) return null
-  return {
-    lat: parseFloat(data[0].lat),
-    lng: parseFloat(data[0].lon),
-    displayName: data[0].display_name,
-  }
+  return data.map((d: Record<string, unknown>) => {
+    const addr = d.address as Record<string, string> | undefined
+    return {
+      lat: parseFloat(d.lat as string),
+      lng: parseFloat(d.lon as string),
+      displayName: d.display_name as string,
+      shortName: [addr?.road, addr?.city || addr?.town || addr?.village, addr?.country]
+        .filter(Boolean).join(', ') || (d.display_name as string),
+    }
+  })
 }

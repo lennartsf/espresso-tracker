@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, geocodeAddress } from '../hooks/useRoasters'
+import { useState, useEffect, useRef } from 'react'
+import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, searchAddresses, type GeoResult } from '../hooks/useRoasters'
 import { RoasterMap } from '../components/RoasterMap'
 import type { Roaster } from '../types'
 
@@ -19,6 +19,7 @@ export function Roasters() {
       />
     )
   }
+
   return <RoasterList onSelect={r => { setSelected(r); setView('detail') }} onNew={() => setView('new')} />
 }
 
@@ -74,6 +75,7 @@ function RoasterDetail({ roaster, onBack, onDelete }: { roaster: Roaster; onBack
 
   if (editing) return <RoasterForm roaster={roaster} onBack={() => setEditing(false)} />
 
+
   async function handleDelete() {
     if (!confirm(`"${roaster.name}" wirklich löschen?`)) return
     await deleteRoaster.mutateAsync(roaster.id)
@@ -127,32 +129,43 @@ function RoasterDetail({ roaster, onBack, onDelete }: { roaster: Roaster; onBack
   )
 }
 
-function RoasterForm({ roaster, onBack }: { roaster?: Roaster; onBack: () => void }) {
+export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Roaster; onBack: (created?: Roaster) => void; compact?: boolean }) {
   const createRoaster = useCreateRoaster()
   const updateRoaster = useUpdateRoaster()
   const isEdit = !!roaster
 
   const [name, setName] = useState(roaster?.name ?? '')
+  const [query, setQuery] = useState(roaster?.address ?? '')
   const [address, setAddress] = useState(roaster?.address ?? '')
   const [website, setWebsite] = useState(roaster?.website ?? '')
   const [lat, setLat] = useState<number | null>(roaster?.lat ?? null)
   const [lng, setLng] = useState<number | null>(roaster?.lng ?? null)
-  const [geocoding, setGeocoding] = useState(false)
-  const [geocodeError, setGeocodeError] = useState('')
+  const [suggestions, setSuggestions] = useState<GeoResult[]>([])
+  const [searching, setSearching] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const [error, setError] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  async function handleGeocode() {
-    if (!address.trim()) return
-    setGeocoding(true)
-    setGeocodeError('')
-    const result = await geocodeAddress(address.trim())
-    setGeocoding(false)
-    if (!result) {
-      setGeocodeError('Adresse nicht gefunden. Versuche eine genauere Angabe.')
-      return
-    }
-    setLat(result.lat)
-    setLng(result.lng)
+  useEffect(() => {
+    if (lat !== null) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (query.trim().length < 3) { setSuggestions([]); return }
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true)
+      const results = await searchAddresses(query)
+      setSuggestions(results)
+      setShowSuggestions(results.length > 0)
+      setSearching(false)
+    }, 500)
+  }, [query, lat])
+
+  function selectSuggestion(r: GeoResult) {
+    setAddress(r.displayName.split(',').slice(0, 3).join(',').trim())
+    setQuery(r.displayName.split(',').slice(0, 3).join(',').trim())
+    setLat(r.lat)
+    setLng(r.lng)
+    setSuggestions([])
+    setShowSuggestions(false)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -165,22 +178,25 @@ function RoasterForm({ roaster, onBack }: { roaster?: Roaster; onBack: () => voi
       lng,
       website: website.trim() || null,
     }
+    let result: Roaster
     if (isEdit) {
-      await updateRoaster.mutateAsync({ id: roaster.id, ...payload })
+      result = await updateRoaster.mutateAsync({ id: roaster.id, ...payload })
     } else {
-      await createRoaster.mutateAsync(payload)
+      result = await createRoaster.mutateAsync(payload)
     }
-    onBack()
+    onBack(result)
   }
 
   const isPending = createRoaster.isPending || updateRoaster.isPending
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">{isEdit ? 'Rösterei bearbeiten' : 'Neue Rösterei'}</h1>
-      </div>
+      {!compact && (
+        <div className="flex items-center gap-3 mb-6">
+          <button type="button" onClick={() => onBack()} className="text-slate-400 text-lg">←</button>
+          <h1 className="text-xl font-bold text-slate-800">{isEdit ? 'Rösterei bearbeiten' : 'Neue Rösterei'}</h1>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div>
@@ -196,29 +212,38 @@ function RoasterForm({ roaster, onBack }: { roaster?: Roaster; onBack: () => voi
 
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Adresse</label>
-          <div className="flex gap-2">
-            <input
-              value={address}
-              onChange={e => { setAddress(e.target.value); setLat(null); setLng(null); setGeocodeError('') }}
-              placeholder="Straße, Stadt, Land"
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
-            <button
-              type="button"
-              onClick={handleGeocode}
-              disabled={!address.trim() || geocoding}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50 disabled:opacity-40 whitespace-nowrap"
-            >
-              {geocoding ? '...' : '📍 Suchen'}
-            </button>
+          <div className="relative">
+            <div className="flex gap-2">
+              <input
+                value={query}
+                onChange={e => { setQuery(e.target.value); setLat(null); setLng(null) }}
+                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                placeholder="Straße, Stadt eingeben…"
+                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+              {searching && <span className="self-center text-xs text-slate-400 pr-1">…</span>}
+            </div>
+            {showSuggestions && (
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onMouseDown={() => selectSuggestion(s)}
+                    className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-orange-50 border-b border-slate-100 last:border-0"
+                  >
+                    <span className="text-orange-500 mr-1.5">📍</span>
+                    {s.displayName.split(',').slice(0, 4).join(', ')}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          {geocodeError && <p className="text-red-500 text-xs mt-1">{geocodeError}</p>}
-          {lat !== null && lng !== null && (
-            <p className="text-green-600 text-xs mt-1">✓ Standort gefunden</p>
-          )}
+          {lat !== null && <p className="text-green-600 text-xs mt-1">✓ Standort gefunden</p>}
         </div>
 
-        {lat !== null && lng !== null && (
+        {lat !== null && lng !== null && !compact && (
           <div className="rounded-xl overflow-hidden border border-slate-200">
             <RoasterMap
               roasters={[{ id: 'preview', name, address, lat, lng, website: null, created_at: '' }]}
@@ -229,16 +254,18 @@ function RoasterForm({ roaster, onBack }: { roaster?: Roaster; onBack: () => voi
           </div>
         )}
 
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Website</label>
-          <input
-            value={website}
-            onChange={e => setWebsite(e.target.value)}
-            placeholder="https://..."
-            type="url"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
-        </div>
+        {!compact && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Website</label>
+            <input
+              value={website}
+              onChange={e => setWebsite(e.target.value)}
+              placeholder="https://..."
+              type="url"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
+        )}
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
 

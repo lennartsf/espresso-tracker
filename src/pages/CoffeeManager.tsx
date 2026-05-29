@@ -4,8 +4,9 @@ import {
   useRoastDates, useCreateRoastDate, useDeleteRoastDate,
 } from '../hooks/useCoffees'
 import { useRoasters } from '../hooks/useRoasters'
+import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
-import type { Coffee } from '../types'
+import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
 
@@ -434,6 +435,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
 
   const [name, setName] = useState('')
   const [roasterId, setRoasterId] = useState('')
+  const [showNewRoaster, setShowNewRoaster] = useState(false)
   const [hasArabica, setHasArabica] = useState(false)
   const [hasRobusta, setHasRobusta] = useState(false)
   const [arabicaPct, setArabicaPct] = useState('100')
@@ -495,16 +497,34 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
             placeholder="Name *"
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
-          <select
-            value={roasterId}
-            onChange={e => setRoasterId(e.target.value)}
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-          >
-            <option value="">Keine Rösterei</option>
-            {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
-          {roasters.length === 0 && (
-            <p className="text-xs text-slate-400 mt-1">Noch keine Röstereien — im 📍 Röstereien-Tab anlegen.</p>
+          <div className="flex gap-2">
+            <select
+              value={roasterId}
+              onChange={e => setRoasterId(e.target.value)}
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Keine Rösterei</option>
+              {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+            </select>
+            <button
+              type="button"
+              onClick={() => setShowNewRoaster(v => !v)}
+              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50 whitespace-nowrap"
+            >
+              {showNewRoaster ? 'Abbrechen' : '+ Neu'}
+            </button>
+          </div>
+          {showNewRoaster && (
+            <div className="mt-2 border border-orange-200 rounded-lg p-3 bg-orange-50">
+              <p className="text-xs font-semibold text-orange-600 uppercase mb-2">Neue Rösterei</p>
+              <RoasterForm
+                compact
+                onBack={(created?: Roaster) => {
+                  if (created) setRoasterId(created.id)
+                  setShowNewRoaster(false)
+                }}
+              />
+            </div>
           )}
         </div>
 

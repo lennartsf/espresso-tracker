@@ -4,12 +4,16 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Roaster } from '../types'
 
-// Fix Leaflet default marker icons broken by Vite's asset handling
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+// Custom orange pin icon (SVG-based, no external image dependency)
+const orangePin = L.divIcon({
+  className: '',
+  html: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
+    <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="#f97316"/>
+    <circle cx="14" cy="14" r="6" fill="white"/>
+  </svg>`,
+  iconSize: [28, 36],
+  iconAnchor: [14, 36],
+  popupAnchor: [0, -36],
 })
 
 function RecenterMap({ lat, lng }: { lat: number; lng: number }) {
@@ -41,12 +45,12 @@ export function RoasterMap({ roasters, center, zoom = 12, height = '220px' }: Pr
       scrollWheelZoom={false}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
       {center && <RecenterMap lat={center.lat} lng={center.lng} />}
       {mapped.map(r => (
-        <Marker key={r.id} position={[r.lat!, r.lng!]}>
+        <Marker key={r.id} position={[r.lat!, r.lng!]} icon={orangePin}>
           <Popup>
             <div className="text-sm">
               <strong>{r.name}</strong>
