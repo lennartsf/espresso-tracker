@@ -66,7 +66,8 @@ test('zeigt Neu-Formular nach Klick auf + Neu', async () => {
 
 test('zeigt Favorit-Stern in der Liste', () => {
   renderEquipment()
-  expect(screen.getByRole('button', { name: 'Favorit' })).toBeInTheDocument()
+  const favoriteButtons = screen.getAllByRole('button', { name: 'Favorit' })
+  expect(favoriteButtons.length).toBeGreaterThan(0)
 })
 
 test('zeigt Detail-Ansicht nach Klick auf Item-Name', async () => {

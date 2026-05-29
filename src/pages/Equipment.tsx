@@ -50,12 +50,14 @@ export function Equipment() {
 function GrinderManager() {
   const [view, setView] = useState<View>('list')
   const [selected, setSelected] = useState<Grinder | null>(null)
+  const { data: grindersLive = [] } = useGrinders()
+  const selectedGrinder = grindersLive.find(g => g.id === selected?.id) ?? selected
 
   if (view === 'new') return <GrinderForm onBack={() => setView('list')} />
-  if (view === 'detail' && selected) {
+  if (view === 'detail' && selectedGrinder) {
     return (
       <GrinderDetail
-        grinder={selected}
+        grinder={selectedGrinder}
         onBack={() => { setView('list'); setSelected(null) }}
         onDelete={() => { setView('list'); setSelected(null) }}
       />
@@ -111,8 +113,12 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
 
   async function handleDelete() {
     if (!confirm(`"${grinder.name}" wirklich löschen?`)) return
-    await deleteGrinder.mutateAsync(grinder.id)
-    onDelete()
+    try {
+      await deleteGrinder.mutateAsync(grinder.id)
+      onDelete()
+    } catch {
+      // deletion failed silently — mutation's own error state handles retry
+    }
   }
 
   return (
@@ -160,14 +166,19 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
     const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, is_favorite: grinder?.is_favorite ?? false }
-    if (grinder) {
-      await updateGrinder.mutateAsync({ id: grinder.id, ...payload })
-    } else {
-      await createGrinder.mutateAsync(payload)
+    try {
+      if (grinder) {
+        await updateGrinder.mutateAsync({ id: grinder.id, ...payload })
+      } else {
+        await createGrinder.mutateAsync(payload)
+      }
+      onBack()
+    } catch {
+      setError('Fehler beim Speichern.')
     }
-    onBack()
   }
 
   const isPending = createGrinder.isPending || updateGrinder.isPending
@@ -200,12 +211,14 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
 function MachineManager() {
   const [view, setView] = useState<View>('list')
   const [selected, setSelected] = useState<Machine | null>(null)
+  const { data: machinesLive = [] } = useMachines()
+  const selectedMachine = machinesLive.find(m => m.id === selected?.id) ?? selected
 
   if (view === 'new') return <MachineForm onBack={() => setView('list')} />
-  if (view === 'detail' && selected) {
+  if (view === 'detail' && selectedMachine) {
     return (
       <MachineDetail
-        machine={selected}
+        machine={selectedMachine}
         onBack={() => { setView('list'); setSelected(null) }}
         onDelete={() => { setView('list'); setSelected(null) }}
       />
@@ -261,8 +274,12 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
 
   async function handleDelete() {
     if (!confirm(`"${machine.name}" wirklich löschen?`)) return
-    await deleteMachine.mutateAsync(machine.id)
-    onDelete()
+    try {
+      await deleteMachine.mutateAsync(machine.id)
+      onDelete()
+    } catch {
+      // deletion failed silently — mutation's own error state handles retry
+    }
   }
 
   return (
@@ -310,14 +327,19 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
     const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, is_favorite: machine?.is_favorite ?? false }
-    if (machine) {
-      await updateMachine.mutateAsync({ id: machine.id, ...payload })
-    } else {
-      await createMachine.mutateAsync(payload)
+    try {
+      if (machine) {
+        await updateMachine.mutateAsync({ id: machine.id, ...payload })
+      } else {
+        await createMachine.mutateAsync(payload)
+      }
+      onBack()
+    } catch {
+      setError('Fehler beim Speichern.')
     }
-    onBack()
   }
 
   const isPending = createMachine.isPending || updateMachine.isPending
@@ -350,12 +372,14 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
 function BasketManager() {
   const [view, setView] = useState<View>('list')
   const [selected, setSelected] = useState<Basket | null>(null)
+  const { data: basketsLive = [] } = useBaskets()
+  const selectedBasket = basketsLive.find(b => b.id === selected?.id) ?? selected
 
   if (view === 'new') return <BasketForm onBack={() => setView('list')} />
-  if (view === 'detail' && selected) {
+  if (view === 'detail' && selectedBasket) {
     return (
       <BasketDetail
-        basket={selected}
+        basket={selectedBasket}
         onBack={() => { setView('list'); setSelected(null) }}
         onDelete={() => { setView('list'); setSelected(null) }}
       />
@@ -389,9 +413,11 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
             </button>
             <button onClick={() => onSelect(b)} className="flex-1 text-left min-w-0">
               <p className="font-medium text-slate-800 text-sm truncate">{b.name}</p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {[b.brand, b.size_g ? `${b.size_g}g` : null].filter(Boolean).join(' · ')}
-              </p>
+              {(b.brand || b.size_g) && (
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {[b.brand, b.size_g ? `${b.size_g}g` : null].filter(Boolean).join(' · ')}
+                </p>
+              )}
             </button>
             <span className="text-slate-300 text-lg">›</span>
           </div>
@@ -413,8 +439,12 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
 
   async function handleDelete() {
     if (!confirm(`"${basket.name}" wirklich löschen?`)) return
-    await deleteBasket.mutateAsync(basket.id)
-    onDelete()
+    try {
+      await deleteBasket.mutateAsync(basket.id)
+      onDelete()
+    } catch {
+      // deletion failed silently — mutation's own error state handles retry
+    }
   }
 
   return (
@@ -469,20 +499,25 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
     const payload = {
       name: name.trim(),
       brand: brand.trim() || null,
-      size_g: sizeG ? parseFloat(sizeG) : null,
+      size_g: sizeG ? (isNaN(parseFloat(sizeG)) ? null : parseFloat(sizeG)) : null,
       notes: notes.trim() || null,
       is_favorite: basket?.is_favorite ?? false,
     }
-    if (basket) {
-      await updateBasket.mutateAsync({ id: basket.id, ...payload })
-    } else {
-      await createBasket.mutateAsync(payload)
+    try {
+      if (basket) {
+        await updateBasket.mutateAsync({ id: basket.id, ...payload })
+      } else {
+        await createBasket.mutateAsync(payload)
+      }
+      onBack()
+    } catch {
+      setError('Fehler beim Speichern.')
     }
-    onBack()
   }
 
   const isPending = createBasket.isPending || updateBasket.isPending
