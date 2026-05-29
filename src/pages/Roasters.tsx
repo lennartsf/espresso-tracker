@@ -69,9 +69,12 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
   )
 }
 
-function RoasterDetail({ roaster, onBack, onDelete }: { roaster: Roaster; onBack: () => void; onDelete: () => void }) {
+function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaster; onBack: () => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false)
   const deleteRoaster = useDeleteRoaster()
+  const { data: roasters = [] } = useRoasters()
+  // Always use fresh data from cache so edits are reflected immediately
+  const roaster = roasters.find(r => r.id === initial.id) ?? initial
 
   if (editing) return <RoasterForm roaster={roaster} onBack={() => setEditing(false)} />
 
