@@ -160,6 +160,19 @@ export function ShotDetail() {
 
       {/* Timestamp */}
       <p className="text-xs text-slate-400 text-center mt-4">{formatDate(shot.pulled_at)}</p>
+      {(shot.used_rdt || shot.used_wdt || shot.used_leveler) && (
+        <div className="flex gap-2 justify-center mt-2">
+          {shot.used_rdt && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">RDT</span>
+          )}
+          {shot.used_wdt && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">WDT</span>
+          )}
+          {shot.used_leveler && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Leveler</span>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -186,6 +199,9 @@ function ShotEditForm({
   const [bodyScore, setBodyScore] = useState<number | null>(shot.body_score)
   const [acidityScore, setAcidityScore] = useState<number | null>(shot.acidity_score)
   const [tastingNotes, setTastingNotes] = useState(shot.tasting_notes ?? '')
+  const [usedRdt, setUsedRdt] = useState(shot.used_rdt ?? false)
+  const [usedWdt, setUsedWdt] = useState(shot.used_wdt ?? false)
+  const [usedLeveler, setUsedLeveler] = useState(shot.used_leveler ?? false)
   const [pressureBar, setPressureBar] = useState(
     shot.pressure_bar !== null ? String(shot.pressure_bar) : '9'
   )
@@ -226,6 +242,9 @@ function ShotEditForm({
         body_score: bodyScore,
         acidity_score: acidityScore,
         tasting_notes: tastingNotes.trim() || null,
+        used_rdt: usedRdt,
+        used_wdt: usedWdt,
+        used_leveler: usedLeveler,
       })
       onSaved()
     } catch (err: unknown) {
@@ -367,6 +386,25 @@ function ShotEditForm({
             onChange={e => setBrewTimeS(e.target.value)}
             className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
+        </div>
+
+        {/* Prep Tools */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Vorbereitung</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              RDT
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedWdt} onChange={e => setUsedWdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              WDT
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedLeveler} onChange={e => setUsedLeveler(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              Leveler
+            </label>
+          </div>
         </div>
 
         {/* Ratings */}
