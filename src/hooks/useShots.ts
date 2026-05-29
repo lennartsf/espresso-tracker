@@ -39,3 +39,51 @@ export function useCreateShot() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['shots'] }),
   })
 }
+
+export function useShot(id: string) {
+  return useQuery({
+    queryKey: ['shot', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('shots')
+        .select('*, coffees(name), roast_dates(roast_date)')
+        .eq('id', id)
+        .single()
+      if (error) throw error
+      return data as ShotWithCoffee
+    },
+    enabled: !!id,
+  })
+}
+
+export function useUpdateShot() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (shot: Partial<Shot> & { id: string }) => {
+      const { id, ...fields } = shot
+      const { data, error } = await supabase
+        .from('shots')
+        .update(fields)
+        .eq('id', id)
+        .select()
+        .single()
+      if (error) throw error
+      return data as Shot
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['shots'] })
+      qc.invalidateQueries({ queryKey: ['shot', data.id] })
+    },
+  })
+}
+
+export function useDeleteShot() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('shots').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['shots'] }),
+  })
+}
