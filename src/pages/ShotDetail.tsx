@@ -4,6 +4,7 @@ import { useShot, useUpdateShot, useDeleteShot } from '../hooks/useShots'
 import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
+import { ratingColor } from '../utils/ratingColor'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 function formatDate(iso: string) {
@@ -13,11 +14,6 @@ function formatDate(iso: string) {
   })
 }
 
-function ratingBadge(v: number) {
-  if (v >= 8) return 'bg-green-100 text-green-700'
-  if (v >= 5) return 'bg-yellow-100 text-yellow-700'
-  return 'bg-slate-100 text-slate-500'
-}
 
 function toDatetimeLocal(iso: string): string {
   return new Date(iso).toISOString().slice(0, 16)
@@ -81,7 +77,7 @@ export function ShotDetail() {
       {/* Rating prominent */}
       <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 mb-3 flex justify-between items-center">
         <span className="text-xs font-semibold text-slate-400 uppercase">Gesamtbewertung</span>
-        <span className={`text-2xl font-bold px-3 py-0.5 rounded-lg ${ratingBadge(shot.rating)}`}>
+        <span className={`text-2xl font-bold px-3 py-0.5 rounded-lg ${ratingColor(shot.rating)}`}>
           {shot.rating}
         </span>
       </div>
@@ -92,13 +88,13 @@ export function ShotDetail() {
           {shot.body_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
               <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Körper</p>
-              <p className="font-bold text-slate-700">{shot.body_score}</p>
+              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.body_score)}`}>{shot.body_score}</p>
             </div>
           )}
           {shot.acidity_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
               <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Säure</p>
-              <p className="font-bold text-slate-700">{shot.acidity_score}</p>
+              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.acidity_score)}`}>{shot.acidity_score}</p>
             </div>
           )}
         </div>

@@ -1,14 +1,9 @@
 import { Link } from 'react-router-dom'
+import { ratingColor } from '../utils/ratingColor'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 interface Props {
   shot: ShotWithCoffee
-}
-
-function ratingStyle(r: number) {
-  if (r >= 8) return 'bg-green-100 text-green-700'
-  if (r >= 5) return 'bg-yellow-100 text-yellow-700'
-  return 'bg-slate-100 text-slate-500'
 }
 
 export function ShotCard({ shot }: Props) {
@@ -29,7 +24,7 @@ export function ShotCard({ shot }: Props) {
           {roastDate ? ` · Röstung ${roastDate}` : ''}
         </p>
       </div>
-      <span className={`text-sm font-bold px-2 py-0.5 rounded ${ratingStyle(shot.rating)}`}>
+      <span className={`text-sm font-bold px-2 py-0.5 rounded ${ratingColor(shot.rating)}`}>
         {shot.rating}
       </span>
     </Link>
