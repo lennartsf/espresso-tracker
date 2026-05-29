@@ -32,10 +32,10 @@ export function ShotHistory() {
 
       {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
 
-      <div className="grid gap-2">
+      <div className="grid md:grid-cols-2 gap-2">
         {shots.map(shot => <ShotCard key={shot.id} shot={shot} />)}
         {!isLoading && shots.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Keine Shots gefunden.</p>
+          <p className="text-center text-slate-400 text-sm py-10 md:col-span-2">Keine Shots gefunden.</p>
         )}
       </div>
     </div>

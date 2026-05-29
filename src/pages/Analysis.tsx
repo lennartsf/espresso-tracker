@@ -86,8 +86,8 @@ export function Analysis() {
           {coffeeId ? 'Noch keine Shots für diese Auswahl.' : 'Noch keine Shots vorhanden.'}
         </p>
       ) : (
-        <>
-          <div className="bg-white border border-slate-200 rounded-lg p-4 mb-4">
+        <div className="md:grid md:grid-cols-5 md:gap-6 md:items-start">
+          <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg p-4 mb-4 md:mb-0">
 
             {/* Metric toggle */}
             <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1">
@@ -170,14 +170,16 @@ export function Analysis() {
             )}
           </div>
 
-          {recipe ? (
-            <RecipeCard stats={recipe} />
-          ) : (
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">
-              Noch keine Shots mit Geschmack ≥ 8. Weiter experimentieren!
-            </div>
-          )}
-        </>
+          <div className="md:col-span-2">
+            {recipe ? (
+              <RecipeCard stats={recipe} />
+            ) : (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">
+                Noch keine Shots mit Geschmack ≥ 8. Weiter experimentieren!
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   )
