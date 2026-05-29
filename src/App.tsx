@@ -8,6 +8,7 @@ import { CoffeeManager } from './pages/CoffeeManager'
 import { Analysis } from './pages/Analysis'
 import { Roasters } from './pages/Roasters'
 import { ShotDetail } from './pages/ShotDetail'
+import { Equipment } from './pages/Equipment'
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="analyse" element={<Analysis />} />
             <Route path="kaffee" element={<CoffeeManager />} />
             <Route path="roasters" element={<Roasters />} />
+            <Route path="ausruestung" element={<Equipment />} />
           </Route>
         </Routes>
       </BrowserRouter>

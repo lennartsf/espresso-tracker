@@ -6,6 +6,7 @@ const navItems = [
   { to: '/analyse', label: 'Analyse', icon: '📊' },
   { to: '/kaffee', label: 'Kaffee', icon: '☕' },
   { to: '/roasters', label: 'Röstereien', icon: '📍' },
+  { to: '/ausruestung', label: 'Ausrüstung', icon: '⚙️' },
 ]
 
 export function Layout() {
