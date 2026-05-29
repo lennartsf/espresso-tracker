@@ -5,6 +5,7 @@ const navItems = [
   { to: '/shots', label: 'Shots', icon: '📋' },
   { to: '/analyse', label: 'Analyse', icon: '📊' },
   { to: '/kaffee', label: 'Kaffee', icon: '☕' },
+  { to: '/roasters', label: 'Röstereien', icon: '📍' },
 ]
 
 export function Layout() {

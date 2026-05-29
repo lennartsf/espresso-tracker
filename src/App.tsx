@@ -6,6 +6,7 @@ import { NewShot } from './pages/NewShot'
 import { ShotHistory } from './pages/ShotHistory'
 import { CoffeeManager } from './pages/CoffeeManager'
 import { Analysis } from './pages/Analysis'
+import { Roasters } from './pages/Roasters'
 
 const queryClient = new QueryClient()
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="shots/new" element={<NewShot />} />
             <Route path="analyse" element={<Analysis />} />
             <Route path="kaffee" element={<CoffeeManager />} />
+            <Route path="roasters" element={<Roasters />} />
           </Route>
         </Routes>
       </BrowserRouter>

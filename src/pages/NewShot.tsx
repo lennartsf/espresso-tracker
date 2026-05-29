@@ -54,6 +54,7 @@ export function NewShot() {
       const coffee = await createCoffee.mutateAsync({
         name: newCoffeeName.trim(),
         roaster: null,
+        roaster_id: null,
         origin: null,
         roast_date: null,
         notes: null,

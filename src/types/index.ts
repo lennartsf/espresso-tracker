@@ -1,7 +1,18 @@
+export interface Roaster {
+  id: string
+  name: string
+  address: string | null
+  lat: number | null
+  lng: number | null
+  website: string | null
+  created_at: string
+}
+
 export interface Coffee {
   id: string
   name: string
   roaster: string | null
+  roaster_id: string | null
   origin: string | null
   roast_date: string | null
   notes: string | null
@@ -36,6 +47,7 @@ export interface Shot {
   created_at: string
 }
 
+export type NewRoaster = Omit<Roaster, 'id' | 'created_at'>
 export type NewCoffee = Omit<Coffee, 'id' | 'created_at'>
 export type NewRoastDate = Omit<RoastDate, 'id' | 'created_at'>
 export type NewShot = Omit<Shot, 'id' | 'created_at'>

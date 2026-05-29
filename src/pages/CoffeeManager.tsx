@@ -3,6 +3,7 @@ import {
   useCoffees, useCreateCoffee, useUpdateCoffee, useDeleteCoffee,
   useRoastDates, useCreateRoastDate, useDeleteRoastDate,
 } from '../hooks/useCoffees'
+import { useRoasters } from '../hooks/useRoasters'
 import { RatingInput } from '../components/RatingInput'
 import type { Coffee } from '../types'
 
@@ -270,9 +271,10 @@ function CoffeeDetailView({
 
 function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void }) {
   const updateCoffee = useUpdateCoffee()
+  const { data: roasters = [] } = useRoasters()
 
   const [name, setName] = useState(coffee.name)
-  const [roaster, setRoaster] = useState(coffee.roaster ?? '')
+  const [roasterId, setRoasterId] = useState(coffee.roaster_id ?? '')
   const [hasArabica, setHasArabica] = useState(coffee.arabica_pct !== null)
   const [hasRobusta, setHasRobusta] = useState(coffee.robusta_pct !== null)
   const [arabicaPct, setArabicaPct] = useState(String(coffee.arabica_pct ?? 100))
@@ -298,10 +300,12 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       robusta = 100
     }
 
+    const selectedRoaster = roasters.find(r => r.id === roasterId)
     await updateCoffee.mutateAsync({
       id: coffee.id,
       name: name.trim(),
-      roaster: roaster.trim() || null,
+      roaster_id: roasterId || null,
+      roaster: selectedRoaster?.name ?? null,
       arabica_pct: arabica,
       robusta_pct: robusta,
       roast_level: roastLevel,
@@ -329,12 +333,17 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
             placeholder="Name *"
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
-          <input
-            value={roaster}
-            onChange={e => setRoaster(e.target.value)}
-            placeholder="Rösterei"
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
+          <select
+            value={roasterId}
+            onChange={e => setRoasterId(e.target.value)}
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+          >
+            <option value="">Keine Rösterei</option>
+            {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </select>
+          {roasters.length === 0 && (
+            <p className="text-xs text-slate-400 mt-1">Noch keine Röstereien — im 📍 Röstereien-Tab anlegen.</p>
+          )}
         </div>
 
         <div>
@@ -421,9 +430,10 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
 
 function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const createCoffee = useCreateCoffee()
+  const { data: roasters = [] } = useRoasters()
 
   const [name, setName] = useState('')
-  const [roaster, setRoaster] = useState('')
+  const [roasterId, setRoasterId] = useState('')
   const [hasArabica, setHasArabica] = useState(false)
   const [hasRobusta, setHasRobusta] = useState(false)
   const [arabicaPct, setArabicaPct] = useState('100')
@@ -449,9 +459,11 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       robusta = 100
     }
 
+    const selectedRoaster = roasters.find(r => r.id === roasterId)
     await createCoffee.mutateAsync({
       name: name.trim(),
-      roaster: roaster.trim() || null,
+      roaster_id: roasterId || null,
+      roaster: selectedRoaster?.name ?? null,
       origin: null,
       roast_date: null,
       notes: null,
@@ -483,12 +495,17 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
             placeholder="Name *"
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
-          <input
-            value={roaster}
-            onChange={e => setRoaster(e.target.value)}
-            placeholder="Rösterei"
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
+          <select
+            value={roasterId}
+            onChange={e => setRoasterId(e.target.value)}
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+          >
+            <option value="">Keine Rösterei</option>
+            {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+          </select>
+          {roasters.length === 0 && (
+            <p className="text-xs text-slate-400 mt-1">Noch keine Röstereien — im 📍 Röstereien-Tab anlegen.</p>
+          )}
         </div>
 
         <div>
