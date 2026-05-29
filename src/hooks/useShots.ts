@@ -5,6 +5,9 @@ import type { Shot, NewShot } from '../types'
 export type ShotWithCoffee = Shot & {
   coffees: { name: string } | null
   roast_dates: { roast_date: string } | null
+  grinders: { name: string } | null
+  machines: { name: string } | null
+  baskets: { name: string; size_g: number | null } | null
 }
 
 export function useShots(coffeeId?: string, roastDateId?: string) {
@@ -13,7 +16,7 @@ export function useShots(coffeeId?: string, roastDateId?: string) {
     queryFn: async () => {
       let query = supabase
         .from('shots')
-        .select('*, coffees(name), roast_dates(roast_date)')
+        .select('*, coffees(name), roast_dates(roast_date), grinders(name), machines(name), baskets(name, size_g)')
         .order('pulled_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (roastDateId) query = query.eq('roast_date_id', roastDateId)
@@ -46,7 +49,7 @@ export function useShot(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('shots')
-        .select('*, coffees(name), roast_dates(roast_date)')
+        .select('*, coffees(name), roast_dates(roast_date), grinders(name), machines(name), baskets(name, size_g)')
         .eq('id', id)
         .single()
       if (error) throw error

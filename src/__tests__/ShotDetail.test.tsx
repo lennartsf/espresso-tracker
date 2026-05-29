@@ -25,10 +25,16 @@ vi.mock('../hooks/useShots', () => ({
       used_rdt: false,
       used_wdt: false,
       used_leveler: false,
+      grinder_id: null,
+      machine_id: null,
+      basket_id: null,
       pulled_at: '2026-05-29T09:32:00.000Z',
       created_at: '2026-05-29T09:32:00.000Z',
       coffees: { name: 'Ethiopia Yirgacheffe' },
       roast_dates: null,
+      grinders: null,
+      machines: null,
+      baskets: null,
     },
     isLoading: false,
   }),
@@ -39,6 +45,12 @@ vi.mock('../hooks/useShots', () => ({
 vi.mock('../hooks/useCoffees', () => ({
   useCoffees: () => ({ data: [] }),
   useRoastDates: () => ({ data: [] }),
+}))
+
+vi.mock('../hooks/useEquipment', () => ({
+  useGrinders: () => ({ data: [] }),
+  useMachines: () => ({ data: [] }),
+  useBaskets: () => ({ data: [] }),
 }))
 
 function renderDetail() {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useShot, useUpdateShot, useDeleteShot } from '../hooks/useShots'
 import { useCoffees, useRoastDates } from '../hooks/useCoffees'
+import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { ratingColor } from '../utils/ratingColor'
@@ -173,6 +174,29 @@ export function ShotDetail() {
           )}
         </div>
       )}
+      {/* Equipment */}
+      {(shot.grinders || shot.machines || shot.baskets) && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mt-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Ausrüstung</p>
+          <div className="flex flex-wrap gap-2">
+            {shot.grinders && (
+              <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded font-medium">
+                ⚙️ {shot.grinders.name}
+              </span>
+            )}
+            {shot.machines && (
+              <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded font-medium">
+                🔧 {shot.machines.name}
+              </span>
+            )}
+            {shot.baskets && (
+              <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded font-medium">
+                🫙 {shot.baskets.name}{shot.baskets.size_g ? ` ${shot.baskets.size_g}g` : ''}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -186,6 +210,9 @@ function ShotEditForm({
 }) {
   const updateShot = useUpdateShot()
   const { data: coffees = [] } = useCoffees()
+  const { data: grinders = [] } = useGrinders()
+  const { data: machines = [] } = useMachines()
+  const { data: baskets = [] } = useBaskets()
 
   const [pulledAt, setPulledAt] = useState(toDatetimeLocal(shot.pulled_at))
   const [coffeeId, setCoffeeId] = useState(shot.coffee_id)
@@ -205,6 +232,9 @@ function ShotEditForm({
   const [pressureBar, setPressureBar] = useState(
     shot.pressure_bar !== null ? String(shot.pressure_bar) : '9'
   )
+  const [grinderId, setGrinderId] = useState(shot.grinder_id ?? '')
+  const [machineId, setMachineId] = useState(shot.machine_id ?? '')
+  const [basketId, setBasketId] = useState(shot.basket_id ?? '')
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
@@ -245,6 +275,9 @@ function ShotEditForm({
         used_rdt: usedRdt,
         used_wdt: usedWdt,
         used_leveler: usedLeveler,
+        grinder_id: grinderId || null,
+        machine_id: machineId || null,
+        basket_id: basketId || null,
       })
       onSaved()
     } catch (err: unknown) {
@@ -404,6 +437,43 @@ function ShotEditForm({
               <input type="checkbox" checked={usedLeveler} onChange={e => setUsedLeveler(e.target.checked)} className="w-4 h-4 accent-orange-500" />
               Leveler
             </label>
+          </div>
+        </div>
+
+        {/* Ausrüstung */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Ausrüstung</label>
+          <div className="grid gap-2">
+            <select
+              value={grinderId}
+              onChange={e => setGrinderId(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Mühle (optional)</option>
+              {grinders.map(g => (
+                <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
+              ))}
+            </select>
+            <select
+              value={machineId}
+              onChange={e => setMachineId(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Maschine (optional)</option>
+              {machines.map(m => (
+                <option key={m.id} value={m.id}>{m.name}{m.brand ? ` / ${m.brand}` : ''}</option>
+              ))}
+            </select>
+            <select
+              value={basketId}
+              onChange={e => setBasketId(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Sieb (optional)</option>
+              {baskets.map(b => (
+                <option key={b.id} value={b.id}>{b.name}{b.size_g ? ` ${b.size_g}g` : ''}</option>
+              ))}
+            </select>
           </div>
         </div>
 
