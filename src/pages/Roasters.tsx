@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, searchAddresses, type GeoResult } from '../hooks/useRoasters'
 import { useCoffeesByRoaster } from '../hooks/useCoffees'
 import { RoasterMap } from '../components/RoasterMap'
+import { PhotoUpload } from '../components/PhotoUpload'
 import type { Roaster, Coffee } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -52,9 +53,18 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
             onClick={() => onSelect(r)}
             className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center text-left w-full hover:border-orange-300 transition-colors"
           >
-            <div>
-              <p className="font-medium text-slate-800 text-sm">{r.name}</p>
-              {r.address && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[220px]">{r.address}</p>}
+            <div className="flex items-center gap-3">
+              {r.photo_url ? (
+                <img src={r.photo_url} alt={r.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-orange-600 font-bold text-sm">{r.name[0]}</span>
+                </div>
+              )}
+              <div>
+                <p className="font-medium text-slate-800 text-sm">{r.name}</p>
+                {r.address && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[180px]">{r.address}</p>}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {r.lat !== null && <span className="text-xs text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded">📍</span>}
@@ -191,6 +201,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
   const [searching, setSearching] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [error, setError] = useState('')
+  const [photoUrl, setPhotoUrl] = useState<string | null>(roaster?.photo_url ?? null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -224,7 +235,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
       lat,
       lng,
       website: website.trim() || null,
-      photo_url: null,
+      photo_url: photoUrl,
     }
     let result: Roaster
     if (isEdit) {
@@ -249,13 +260,21 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Name *</label>
-          <input
-            autoFocus
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="z.B. Five Elephant"
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
+          <div className="flex gap-3 items-start">
+            <PhotoUpload
+              bucket="roaster-photos"
+              value={photoUrl}
+              onChange={setPhotoUrl}
+              name={name}
+            />
+            <input
+              autoFocus
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="z.B. Five Elephant"
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
         </div>
 
         <div>
