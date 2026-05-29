@@ -21,6 +21,8 @@ export function NewShot() {
   const [brewTimeS, setBrewTimeS] = useState('')
   const [tempC, setTempC] = useState('')
   const [rating, setRating] = useState<number | null>(null)
+  const [bodyScore, setBodyScore] = useState<number | null>(null)
+  const [acidityScore, setAcidityScore] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [error, setError] = useState('')
 
@@ -77,6 +79,8 @@ export function NewShot() {
       brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
       temp_c: tempC ? parseFloat(tempC) : null,
       rating,
+      body_score: bodyScore,
+      acidity_score: acidityScore,
       tasting_notes: tastingNotes.trim() || null,
       pulled_at: new Date().toISOString(),
     })
@@ -107,7 +111,11 @@ export function NewShot() {
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
               >
                 <option value="">Kaffee wählen...</option>
-                {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {coffees.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}{c.roaster ? ` / ${c.roaster}` : ''}
+                  </option>
+                ))}
               </select>
               <button
                 type="button"
@@ -241,10 +249,20 @@ export function NewShot() {
           </div>
         </div>
 
-        {/* Rating */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bewertung *</label>
-          <RatingInput value={rating} onChange={setRating} />
+        {/* Ratings */}
+        <div className="grid gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Geschmack *</label>
+            <RatingInput value={rating} onChange={setRating} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Körper</label>
+            <RatingInput value={bodyScore} onChange={setBodyScore} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Säure</label>
+            <RatingInput value={acidityScore} onChange={setAcidityScore} />
+          </div>
         </div>
 
         {/* Notes */}
