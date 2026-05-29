@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, searchAddresses, type GeoResult } from '../hooks/useRoasters'
+import { useCoffeesByRoaster } from '../hooks/useCoffees'
 import { RoasterMap } from '../components/RoasterMap'
-import type { Roaster } from '../types'
+import type { Roaster, Coffee } from '../types'
 
 type View = 'list' | 'detail' | 'new'
 
@@ -73,6 +74,7 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
   const [editing, setEditing] = useState(false)
   const deleteRoaster = useDeleteRoaster()
   const { data: roasters = [] } = useRoasters()
+  const { data: coffees = [] } = useCoffeesByRoaster(initial.id)
   // Always use fresh data from cache so edits are reflected immediately
   const roaster = roasters.find(r => r.id === initial.id) ?? initial
 
@@ -128,6 +130,48 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
           <p className="text-slate-400 text-sm">Keine weiteren Infos hinterlegt.</p>
         )}
       </div>
+
+      <div className="mt-3">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+          Kaffees dieser Rösterei
+        </p>
+        {coffees.length === 0 ? (
+          <p className="text-slate-400 text-sm text-center py-4 bg-white border border-slate-200 rounded-lg">
+            Noch kein Kaffee dieser Rösterei eingetragen.
+          </p>
+        ) : (
+          <div className="grid gap-2">
+            {coffees.map(c => <RoasterCoffeeCard key={c.id} coffee={c} />)}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function RoasterCoffeeCard({ coffee }: { coffee: Coffee }) {
+  function beanLabel() {
+    if (coffee.arabica_pct !== null && coffee.robusta_pct !== null)
+      return `${coffee.arabica_pct}% Arabica · ${coffee.robusta_pct}% Robusta`
+    if (coffee.arabica_pct === 100) return '100% Arabica'
+    if (coffee.robusta_pct === 100) return '100% Robusta'
+    return null
+  }
+
+  const origin = [coffee.origin_country, coffee.origin_region].filter(Boolean).join(', ')
+  const details = [beanLabel(), origin].filter(Boolean).join(' · ')
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center">
+      <div>
+        <p className="font-medium text-slate-800 text-sm">{coffee.name}</p>
+        {details && <p className="text-xs text-slate-400 mt-0.5">{details}</p>}
+      </div>
+      {coffee.roast_level !== null && (
+        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium whitespace-nowrap">
+          Röstgrad {coffee.roast_level}
+        </span>
+      )}
     </div>
   )
 }

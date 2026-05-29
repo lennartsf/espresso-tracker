@@ -16,6 +16,22 @@ export function useCoffees() {
   })
 }
 
+export function useCoffeesByRoaster(roasterId: string) {
+  return useQuery({
+    queryKey: ['coffees', 'roaster', roasterId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('coffees')
+        .select('*')
+        .eq('roaster_id', roasterId)
+        .order('name')
+      if (error) throw error
+      return data as Coffee[]
+    },
+    enabled: !!roasterId,
+  })
+}
+
 export function useCreateCoffee() {
   const qc = useQueryClient()
   return useMutation({
