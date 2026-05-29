@@ -52,6 +52,9 @@ export interface Shot {
   used_rdt: boolean
   used_wdt: boolean
   used_leveler: boolean
+  grinder_id: string | null
+  machine_id: string | null
+  basket_id: string | null
   pulled_at: string
   created_at: string
 }
@@ -60,3 +63,35 @@ export type NewRoaster = Omit<Roaster, 'id' | 'created_at'>
 export type NewCoffee = Omit<Coffee, 'id' | 'created_at'>
 export type NewRoastDate = Omit<RoastDate, 'id' | 'created_at'>
 export type NewShot = Omit<Shot, 'id' | 'created_at'>
+
+export interface Grinder {
+  id: string
+  name: string
+  brand: string | null
+  notes: string | null
+  is_favorite: boolean
+  created_at: string
+}
+
+export interface Machine {
+  id: string
+  name: string
+  brand: string | null
+  notes: string | null
+  is_favorite: boolean
+  created_at: string
+}
+
+export interface Basket {
+  id: string
+  name: string
+  brand: string | null
+  size_g: number | null
+  notes: string | null
+  is_favorite: boolean
+  created_at: string
+}
+
+export type NewGrinder = Omit<Grinder, 'id' | 'created_at'>
+export type NewMachine = Omit<Machine, 'id' | 'created_at'>
+export type NewBasket = Omit<Basket, 'id' | 'created_at'>
