@@ -5,36 +5,60 @@ import { useCreateShot } from '../hooks/useShots'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 
-const INFO_TEXTS = {
-  rating: 'Wie gut schmeckt der Shot insgesamt? 1 = kaum trinkbar · 10 = perfekter Espresso.',
-  body_score: 'Wie voll und cremig fühlt sich der Espresso an? 1 = cremig und vollmundig · 10 = dünn und wässrig.',
-  acidity_score: 'Wie ausgeprägt ist die Säure im Shot? 1 = sehr mild · 10 = stark und spritzig.',
+const RATING_INFO = {
+  rating:       { question: 'Wie gut schmeckt der Shot insgesamt?', low: 'kaum trinkbar',       high: 'perfekter Espresso'    },
+  body_score:   { question: 'Wie voll und cremig fühlt sich der Espresso an?', low: 'cremig & vollmundig', high: 'dünn & wässrig' },
+  acidity_score:{ question: 'Wie ausgeprägt ist die Säure im Shot?', low: 'sehr mild',           high: 'stark & spritzig'      },
 }
 
-function InfoButton({ text }: { text: string }) {
+function RatingField({
+  label, required, infoKey, value, onChange,
+}: {
+  label: string
+  required?: boolean
+  infoKey: keyof typeof RATING_INFO
+  value: number | null
+  onChange: (v: number) => void
+}) {
   const [open, setOpen] = useState(false)
+  const info = RATING_INFO[infoKey]
+
   return (
-    <span className="relative inline-block align-middle ml-1">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold inline-flex items-center justify-center hover:bg-slate-300 leading-none"
-      >
-        i
-      </button>
-      {open && (
-        <span className="absolute left-6 top-0 z-50 w-56 bg-slate-800 text-white text-xs rounded-lg px-3 py-2.5 shadow-lg leading-relaxed">
-          {text}
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-sm leading-none"
-          >
-            ×
-          </button>
+    <div>
+      <div className="flex items-center gap-2 mb-2">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className={`w-4 h-4 rounded-full text-[10px] font-bold flex-shrink-0 flex items-center justify-center transition-colors ${
+            open ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+          }`}
+        >
+          i
+        </button>
+        <span className="text-xs font-semibold text-slate-400 uppercase">
+          {label}{required && ' *'}
         </span>
+      </div>
+
+      {open && (
+        <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p className="text-xs text-slate-600 mb-2.5">{info.question}</p>
+          <div className="flex items-stretch gap-2">
+            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
+              <span className="block text-base font-bold text-slate-700 leading-none mb-1">1</span>
+              <span className="text-xs text-slate-500 leading-snug">{info.low}</span>
+            </div>
+            <div className="flex items-center text-slate-300 text-xs px-1">→</div>
+            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
+              <span className="block text-base font-bold text-slate-700 leading-none mb-1">10</span>
+              <span className="text-xs text-slate-500 leading-snug">{info.high}</span>
+            </div>
+          </div>
+        </div>
       )}
-    </span>
+
+      <RatingInput value={value} onChange={onChange} />
+    </div>
   )
 }
 
@@ -285,27 +309,9 @@ export function NewShot() {
 
         {/* Ratings */}
         <div className="grid gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
-              Geschmack *
-              <InfoButton text={INFO_TEXTS.rating} />
-            </label>
-            <RatingInput value={rating} onChange={setRating} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
-              Körper
-              <InfoButton text={INFO_TEXTS.body_score} />
-            </label>
-            <RatingInput value={bodyScore} onChange={setBodyScore} />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
-              Säure
-              <InfoButton text={INFO_TEXTS.acidity_score} />
-            </label>
-            <RatingInput value={acidityScore} onChange={setAcidityScore} />
-          </div>
+          <RatingField label="Geschmack" required infoKey="rating" value={rating} onChange={setRating} />
+          <RatingField label="Körper" infoKey="body_score" value={bodyScore} onChange={setBodyScore} />
+          <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
         </div>
 
         {/* Notes */}
