@@ -1,0 +1,63 @@
+import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { vi } from 'vitest'
+import type { ReactNode } from 'react'
+import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
+import type { Grinder, Machine, Basket } from '../types'
+
+const mockGrinder: Grinder = {
+  id: 'g1', name: 'Niche Zero', brand: 'Niche',
+  notes: null, is_favorite: false, created_at: '2026-01-01T00:00:00Z',
+}
+const mockMachine: Machine = {
+  id: 'm1', name: 'Rancilio Silvia', brand: 'Rancilio',
+  notes: null, is_favorite: true, created_at: '2026-01-01T00:00:00Z',
+}
+const mockBasket: Basket = {
+  id: 'b1', name: 'VST 18g', brand: 'VST', size_g: 18,
+  notes: null, is_favorite: false, created_at: '2026-01-01T00:00:00Z',
+}
+
+vi.mock('../lib/supabase', () => ({
+  supabase: {
+    from: (table: string) => ({
+      select: () => ({
+        order: () => Promise.resolve({
+          data: table === 'grinders' ? [mockGrinder]
+               : table === 'machines' ? [mockMachine]
+               : [mockBasket],
+          error: null,
+        }),
+      }),
+    }),
+  },
+}))
+
+function wrapper({ children }: { children: ReactNode }) {
+  return (
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  )
+}
+
+test('useGrinders gibt Mühlen zurück', async () => {
+  const { result } = renderHook(() => useGrinders(), { wrapper })
+  await waitFor(() => expect(result.current.data).toBeDefined())
+  expect(result.current.data).toHaveLength(1)
+  expect(result.current.data![0].name).toBe('Niche Zero')
+})
+
+test('useMachines gibt Maschinen zurück', async () => {
+  const { result } = renderHook(() => useMachines(), { wrapper })
+  await waitFor(() => expect(result.current.data).toBeDefined())
+  expect(result.current.data![0].name).toBe('Rancilio Silvia')
+  expect(result.current.data![0].is_favorite).toBe(true)
+})
+
+test('useBaskets gibt Siebe zurück', async () => {
+  const { result } = renderHook(() => useBaskets(), { wrapper })
+  await waitFor(() => expect(result.current.data).toBeDefined())
+  expect(result.current.data![0].name).toBe('VST 18g')
+  expect(result.current.data![0].size_g).toBe(18)
+})
