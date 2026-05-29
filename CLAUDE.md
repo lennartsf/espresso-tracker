@@ -34,6 +34,7 @@ src/
 | address | text |
 | lat, lng | float8 |
 | website | text |
+| photo_url | text |
 | created_at | timestamptz |
 
 ### `coffees`
@@ -52,6 +53,7 @@ src/
 | origin_country | text |
 | origin_region | text |
 | altitude_m | int4 |
+| photo_url | text |
 | created_at | timestamptz |
 
 ### `roast_dates`
@@ -74,7 +76,7 @@ src/
 | brew_ratio | float4 (auto-calc: yield/dose) |
 | brew_time_s | int4 |
 | temp_c | float4 |
-| pressure_bar | float4 (noch nicht migriert) |
+| pressure_bar | float4 (DEFAULT 9) |
 | rating | int2 (1–10, Pflicht) |
 | body_score | int2 (1–10) |
 | acidity_score | int2 (1–10) |
@@ -87,23 +89,21 @@ src/
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
 - [x] Inline-Rösterei-Erstellung aus NewShot und CoffeeManager heraus
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
-- [x] NewShot: Kaffee-Dropdown, Röstdatum-Auswahl (2 neueste), Brew-Ratio Auto-Calc, BrewTimer, Bewertungen mit Info-Buttons
+- [x] NewShot: Kaffee-Dropdown, Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, 3er-Grid (Mahlgrad/Temp/Druck), Bewertungen
+- [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus (alle Felder editierbar)
+- [x] BrewRatioBar-Komponente (permanent, Dose/Yield proportional)
+- [x] Druckfeld (pressure_bar, DEFAULT 9 bar) in NewShot + ShotDetail
+- [x] Kaffee-Fotos: Upload via Supabase Storage (coffee-photos), Thumbnail in Liste + Form
+- [x] Rösterei-Fotos: Upload via Supabase Storage (roaster-photos), Thumbnail in Liste + Form
 - [x] Analysis: Filter nach Kaffee, Körper-/Säure-Scores
 - [x] Responsives Layout: Mobile Bottom-Nav, Desktop Sidebar
 
 ## Offene Aufgaben (nächste Session)
 
-### 1. Shot-Detail und Bearbeitung
-- ShotHistory: Shots anklickbar machen → Shot-Detailansicht
-- Detailansicht zeigt alle gespeicherten Parameter
-- Edit-Button → Formular analog zu NewShot, aber vorausgefüllt
-- `useUpdateShot` Hook + Supabase UPDATE
-
-### 2. Brew-Ratio als permanente Bar-Anzeige
-- In NewShot: Unter den Einwaage/Ausbeute-Feldern eine längliche Balken-Visualisierung
-- Zieht sich über beide Spalten (full-width)
-- Zeigt 1:X Ratio grafisch (z. B. schmaler oranger Balken für Dose, breiterer für Yield)
-- Nur sichtbar wenn beide Werte eingegeben, ersetzt die bisherige Textzeile
+Alle geplanten Features vom 29.05.2026 sind implementiert. Mögliche nächste Schritte:
+- Analysis-Seite: Druck-Auswertung (pressure_bar einbeziehen)
+- Multi-User via Supabase Auth
+- PWA-Verbesserungen (Offline-Support)
 
 ### 3. Druckangabe beim Shot
 - Neues Feld `pressure_bar` (float) in der `shots`-Tabelle
