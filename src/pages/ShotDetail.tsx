@@ -18,11 +18,17 @@ function ratingBadge(v: number) {
 export function ShotDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data: shot, isLoading } = useShot(id!)
+  const { data: shot, isLoading, error } = useShot(id ?? '')
   const deleteShot = useDeleteShot()
   const [editing, setEditing] = useState(false)
 
   if (isLoading) return <p className="text-slate-400 text-sm text-center py-10">Laden...</p>
+  if (error) return (
+    <div className="text-center py-10">
+      <p className="text-slate-500 text-sm mb-3">Fehler beim Laden des Shots.</p>
+      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Zurück</button>
+    </div>
+  )
   if (!shot) return (
     <div className="text-center py-10">
       <p className="text-slate-500 text-sm mb-3">Shot nicht gefunden.</p>
@@ -50,8 +56,12 @@ export function ShotDetail() {
           <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">
             Bearbeiten
           </button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">
-            Löschen
+          <button
+            onClick={handleDelete}
+            disabled={deleteShot.isPending}
+            className="text-slate-300 hover:text-red-400 text-sm disabled:opacity-50"
+          >
+            {deleteShot.isPending ? 'Löschen...' : 'Löschen'}
           </button>
         </div>
       </div>
