@@ -44,6 +44,7 @@ export interface Shot {
   rating: number
   body_score: number | null
   acidity_score: number | null
+  brew_ratio: number | null
   tasting_notes: string | null
   pulled_at: string
   created_at: string

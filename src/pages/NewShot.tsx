@@ -5,6 +5,39 @@ import { useCreateShot } from '../hooks/useShots'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 
+const INFO_TEXTS = {
+  rating: 'Wie gut schmeckt der Shot insgesamt? 1 = kaum trinkbar · 10 = perfekter Espresso.',
+  body_score: 'Wie voll und cremig fühlt sich der Espresso an? 1 = cremig und vollmundig · 10 = dünn und wässrig.',
+  acidity_score: 'Wie ausgeprägt ist die Säure im Shot? 1 = sehr mild · 10 = stark und spritzig.',
+}
+
+function InfoButton({ text }: { text: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <span className="relative inline-block align-middle ml-1">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold inline-flex items-center justify-center hover:bg-slate-300 leading-none"
+      >
+        i
+      </button>
+      {open && (
+        <span className="absolute left-6 top-0 z-50 w-56 bg-slate-800 text-white text-xs rounded-lg px-3 py-2.5 shadow-lg leading-relaxed">
+          {text}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="absolute top-1.5 right-2 text-slate-400 hover:text-white text-sm leading-none"
+          >
+            ×
+          </button>
+        </span>
+      )}
+    </span>
+  )
+}
+
 export function NewShot() {
   const navigate = useNavigate()
   const { data: coffees = [] } = useCoffees()
@@ -28,6 +61,11 @@ export function NewShot() {
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
   const recentDates = roastDates.slice(0, 2)
+
+  // Auto-calculate brew ratio
+  const doseNum = parseFloat(doseG)
+  const yieldNum = parseFloat(yieldG)
+  const brewRatio = doseNum > 0 && yieldNum > 0 ? yieldNum / doseNum : null
 
   function handleCoffeeChange(id: string) {
     setCoffeeId(id)
@@ -76,6 +114,7 @@ export function NewShot() {
       grind_setting: parseFloat(grindSetting),
       dose_g: doseG ? parseFloat(doseG) : null,
       yield_g: yieldG ? parseFloat(yieldG) : null,
+      brew_ratio: brewRatio,
       brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
       temp_c: tempC ? parseFloat(tempC) : null,
       rating,
@@ -145,7 +184,7 @@ export function NewShot() {
           )}
         </div>
 
-        {/* Roast date — only if coffee selected and has dates */}
+        {/* Roast date */}
         {coffeeId && recentDates.length > 0 && (
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Röstdatum</label>
@@ -154,9 +193,7 @@ export function NewShot() {
                 type="button"
                 onClick={() => setRoastDateId('')}
                 className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
-                  roastDateId === ''
-                    ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold'
-                    : 'border-slate-200 text-slate-500 bg-white'
+                  roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-500 bg-white'
                 }`}
               >
                 Keine Angabe
@@ -167,9 +204,7 @@ export function NewShot() {
                   type="button"
                   onClick={() => setRoastDateId(rd.id)}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors text-center ${
-                    roastDateId === rd.id
-                      ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold'
-                      : 'border-slate-200 text-slate-600 bg-white'
+                    roastDateId === rd.id ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-600 bg-white'
                   }`}
                 >
                   {formatDate(rd.roast_date)}
@@ -185,9 +220,7 @@ export function NewShot() {
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad *</label>
             <input
-              type="number"
-              step="0.5"
-              value={grindSetting}
+              type="number" step="0.5" value={grindSetting}
               onChange={e => setGrindSetting(e.target.value)}
               placeholder="12"
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
@@ -196,8 +229,7 @@ export function NewShot() {
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Temp (°C)</label>
             <input
-              type="number"
-              value={tempC}
+              type="number" value={tempC}
               onChange={e => setTempC(e.target.value)}
               placeholder="93"
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
@@ -205,30 +237,33 @@ export function NewShot() {
           </div>
         </div>
 
-        {/* Dose + Yield */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Einwaage (g)</label>
-            <input
-              type="number"
-              step="0.1"
-              value={doseG}
-              onChange={e => setDoseG(e.target.value)}
-              placeholder="18"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+        {/* Dose + Yield + Ratio */}
+        <div>
+          <div className="grid grid-cols-2 gap-3 mb-1">
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Einwaage (g)</label>
+              <input
+                type="number" step="0.1" value={doseG}
+                onChange={e => setDoseG(e.target.value)}
+                placeholder="18"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Ausbeute (g)</label>
+              <input
+                type="number" step="0.1" value={yieldG}
+                onChange={e => setYieldG(e.target.value)}
+                placeholder="36"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Ausbeute (g)</label>
-            <input
-              type="number"
-              step="0.1"
-              value={yieldG}
-              onChange={e => setYieldG(e.target.value)}
-              placeholder="36"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
-          </div>
+          {brewRatio !== null && (
+            <p className="text-xs text-slate-500 text-right">
+              Verhältnis <span className="font-semibold text-orange-500">1 : {brewRatio.toFixed(2)}</span>
+            </p>
+          )}
         </div>
 
         {/* Brew time */}
@@ -237,8 +272,7 @@ export function NewShot() {
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <input
-                type="number"
-                value={brewTimeS}
+                type="number" value={brewTimeS}
                 onChange={e => setBrewTimeS(e.target.value)}
                 placeholder="28"
                 className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
@@ -252,15 +286,24 @@ export function NewShot() {
         {/* Ratings */}
         <div className="grid gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Geschmack *</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
+              Geschmack *
+              <InfoButton text={INFO_TEXTS.rating} />
+            </label>
             <RatingInput value={rating} onChange={setRating} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Körper</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
+              Körper
+              <InfoButton text={INFO_TEXTS.body_score} />
+            </label>
             <RatingInput value={bodyScore} onChange={setBodyScore} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Säure</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">
+              Säure
+              <InfoButton text={INFO_TEXTS.acidity_score} />
+            </label>
             <RatingInput value={acidityScore} onChange={setAcidityScore} />
           </div>
         </div>
