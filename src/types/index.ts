@@ -49,6 +49,9 @@ export interface Shot {
   brew_ratio: number | null
   pressure_bar: number | null
   tasting_notes: string | null
+  used_rdt: boolean
+  used_wdt: boolean
+  used_leveler: boolean
   pulled_at: string
   created_at: string
 }

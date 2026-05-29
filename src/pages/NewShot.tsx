@@ -83,6 +83,9 @@ export function NewShot() {
   const [acidityScore, setAcidityScore] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [pressureBar, setPressureBar] = useState('9')
+  const [usedRdt, setUsedRdt] = useState(false)
+  const [usedWdt, setUsedWdt] = useState(false)
+  const [usedLeveler, setUsedLeveler] = useState(false)
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
@@ -149,6 +152,9 @@ export function NewShot() {
       body_score: bodyScore,
       acidity_score: acidityScore,
       tasting_notes: tastingNotes.trim() || null,
+      used_rdt: usedRdt,
+      used_wdt: usedWdt,
+      used_leveler: usedLeveler,
       pulled_at: new Date().toISOString(),
     })
 
@@ -316,6 +322,25 @@ export function NewShot() {
               <span className="text-sm text-slate-400">s</span>
             </div>
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
+          </div>
+        </div>
+
+        {/* Prep Tools */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Vorbereitung</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              RDT
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedWdt} onChange={e => setUsedWdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              WDT
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+              <input type="checkbox" checked={usedLeveler} onChange={e => setUsedLeveler(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+              Leveler
+            </label>
           </div>
         </div>
 
