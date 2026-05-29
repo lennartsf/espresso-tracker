@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 interface Props {
@@ -16,7 +17,10 @@ export function ShotCard({ shot }: Props) {
     : null
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center">
+    <Link
+      to={`/shots/${shot.id}`}
+      className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center hover:border-orange-300 transition-colors"
+    >
       <div>
         <p className="font-medium text-slate-800 text-sm">{shot.coffees?.name ?? '—'}</p>
         <p className="text-xs text-slate-400 mt-0.5">
@@ -28,6 +32,6 @@ export function ShotCard({ shot }: Props) {
       <span className={`text-sm font-bold px-2 py-0.5 rounded ${ratingStyle(shot.rating)}`}>
         {shot.rating}
       </span>
-    </div>
+    </Link>
   )
 }
