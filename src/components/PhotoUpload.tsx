@@ -39,8 +39,13 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
       return
     }
 
-    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filename)
-    onChange(publicUrl)
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filename)
+    if (!data?.publicUrl) {
+      setError('Upload fehlgeschlagen')
+      setUploading(false)
+      return
+    }
+    onChange(data.publicUrl)
     setUploading(false)
     e.target.value = ''
   }
@@ -49,7 +54,11 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
     e.stopPropagation()
     if (!value) return
     const filename = value.split('/').pop()!
-    await supabase.storage.from(bucket).remove([filename])
+    const { error } = await supabase.storage.from(bucket).remove([filename])
+    if (error) {
+      setError('Foto konnte nicht entfernt werden.')
+      return
+    }
     onChange(null)
   }
 
@@ -58,7 +67,10 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
   return (
     <div className="flex-shrink-0">
       <div
+        role="button"
+        tabIndex={0}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inputRef.current?.click() } }}
         className="relative rounded-lg overflow-hidden cursor-pointer group"
         style={{ width: 52, height: 52 }}
       >
@@ -82,7 +94,8 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/50 rounded-full flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+            aria-label="Foto entfernen"
+            className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity leading-none"
           >
             ×
           </button>
