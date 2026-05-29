@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
+import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
@@ -86,9 +87,15 @@ export function NewShot() {
   const [usedRdt, setUsedRdt] = useState(false)
   const [usedWdt, setUsedWdt] = useState(false)
   const [usedLeveler, setUsedLeveler] = useState(false)
+  const [grinderId, setGrinderId] = useState('')
+  const [machineId, setMachineId] = useState('')
+  const [basketId, setBasketId] = useState('')
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
+  const { data: grinders = [] } = useGrinders()
+  const { data: machines = [] } = useMachines()
+  const { data: baskets = [] } = useBaskets()
   const recentDates = roastDates.slice(0, 2)
 
   // Auto-calculate brew ratio
@@ -155,6 +162,9 @@ export function NewShot() {
       used_rdt: usedRdt,
       used_wdt: usedWdt,
       used_leveler: usedLeveler,
+      grinder_id: grinderId || null,
+      machine_id: machineId || null,
+      basket_id: basketId || null,
       pulled_at: new Date().toISOString(),
     })
 
@@ -343,6 +353,51 @@ export function NewShot() {
             </label>
           </div>
         </div>
+
+        {/* Ausrüstung */}
+        {(grinders.length > 0 || machines.length > 0 || baskets.length > 0) && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Ausrüstung</label>
+            <div className="grid gap-2">
+              {grinders.length > 0 && (
+                <select
+                  value={grinderId}
+                  onChange={e => setGrinderId(e.target.value)}
+                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                >
+                  <option value="">Mühle (optional)</option>
+                  {grinders.map(g => (
+                    <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
+                  ))}
+                </select>
+              )}
+              {machines.length > 0 && (
+                <select
+                  value={machineId}
+                  onChange={e => setMachineId(e.target.value)}
+                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                >
+                  <option value="">Maschine (optional)</option>
+                  {machines.map(m => (
+                    <option key={m.id} value={m.id}>{m.name}{m.brand ? ` / ${m.brand}` : ''}</option>
+                  ))}
+                </select>
+              )}
+              {baskets.length > 0 && (
+                <select
+                  value={basketId}
+                  onChange={e => setBasketId(e.target.value)}
+                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                >
+                  <option value="">Sieb (optional)</option>
+                  {baskets.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}{b.size_g ? ` ${b.size_g}g` : ''}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Ratings */}
         <div className="grid gap-3">
