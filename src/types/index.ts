@@ -5,6 +5,7 @@ export interface Roaster {
   lat: number | null
   lng: number | null
   website: string | null
+  photo_url: string | null
   created_at: string
 }
 
@@ -23,6 +24,7 @@ export interface Coffee {
   origin_country: string | null
   origin_region: string | null
   altitude_m: number | null
+  photo_url: string | null
 }
 
 export interface RoastDate {

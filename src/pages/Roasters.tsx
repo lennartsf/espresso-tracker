@@ -224,6 +224,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
       lat,
       lng,
       website: website.trim() || null,
+      photo_url: null,
     }
     let result: Roaster
     if (isEdit) {
@@ -293,7 +294,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
         {lat !== null && lng !== null && !compact && (
           <div className="rounded-xl overflow-hidden border border-slate-200">
             <RoasterMap
-              roasters={[{ id: 'preview', name, address, lat, lng, website: null, created_at: '' }]}
+              roasters={[{ id: 'preview', name, address, lat, lng, website: null, photo_url: null, created_at: '' }]}
               center={{ lat, lng }}
               height="180px"
               zoom={14}

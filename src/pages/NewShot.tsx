@@ -130,6 +130,7 @@ export function NewShot() {
         origin_country: null,
         origin_region: null,
         altitude_m: null,
+        photo_url: null,
       })
       resolvedCoffeeId = coffee.id
     }

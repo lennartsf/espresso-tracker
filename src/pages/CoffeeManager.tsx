@@ -475,6 +475,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
+      photo_url: null,
     })
     onBack()
   }
