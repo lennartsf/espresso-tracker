@@ -6,6 +6,7 @@ import {
 import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
+import { PhotoUpload } from '../components/PhotoUpload'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -57,11 +58,20 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             onClick={() => onSelect(c)}
             className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center text-left w-full hover:border-orange-300 transition-colors"
           >
-            <div>
-              <p className="font-medium text-slate-800 text-sm">{c.name}</p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {[c.roaster, beanLabel(c)].filter(Boolean).join(' · ')}
-              </p>
+            <div className="flex items-center gap-3">
+              {c.photo_url ? (
+                <img src={c.photo_url} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-orange-600 font-bold text-sm">{c.name[0]}</span>
+                </div>
+              )}
+              <div>
+                <p className="font-medium text-slate-800 text-sm">{c.name}</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {[c.roaster, beanLabel(c)].filter(Boolean).join(' · ')}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {c.roast_level && (
@@ -284,6 +294,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   const [originCountry, setOriginCountry] = useState(coffee.origin_country ?? '')
   const [originRegion, setOriginRegion] = useState(coffee.origin_region ?? '')
   const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
+  const [photoUrl, setPhotoUrl] = useState<string | null>(coffee.photo_url ?? null)
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -313,6 +324,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
+      photo_url: photoUrl,
     })
     onBack()
   }
@@ -328,12 +340,20 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
 
       <form onSubmit={handleSubmit} className="grid gap-5">
         <div className="grid gap-3">
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Name *"
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
+          <div className="flex gap-3 items-start">
+            <PhotoUpload
+              bucket="coffee-photos"
+              value={photoUrl}
+              onChange={setPhotoUrl}
+              name={name}
+            />
+            <input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Name *"
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
           <select
             value={roasterId}
             onChange={e => setRoasterId(e.target.value)}
@@ -444,6 +464,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const [originCountry, setOriginCountry] = useState('')
   const [originRegion, setOriginRegion] = useState('')
   const [altitudeM, setAltitudeM] = useState('')
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -475,7 +496,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
-      photo_url: null,
+      photo_url: photoUrl,
     })
     onBack()
   }
@@ -491,13 +512,21 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
 
       <form onSubmit={handleSubmit} className="grid gap-5">
         <div className="grid gap-3">
-          <input
-            autoFocus
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Name *"
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-          />
+          <div className="flex gap-3 items-start">
+            <PhotoUpload
+              bucket="coffee-photos"
+              value={photoUrl}
+              onChange={setPhotoUrl}
+              name={name}
+            />
+            <input
+              autoFocus
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Name *"
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
           <div className="flex gap-2">
             <select
               value={roasterId}
