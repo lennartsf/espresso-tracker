@@ -4,6 +4,7 @@ import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
+import { BrewRatioBar } from '../components/BrewRatioBar'
 
 const RATING_INFO = {
   rating:       { question: 'Wie gut schmeckt der Shot insgesamt?', low: 'kaum trinkbar',       high: 'perfekter Espresso'    },
@@ -81,6 +82,7 @@ export function NewShot() {
   const [bodyScore, setBodyScore] = useState<number | null>(null)
   const [acidityScore, setAcidityScore] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
+  const [pressureBar, setPressureBar] = useState('9')
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
@@ -139,7 +141,7 @@ export function NewShot() {
       dose_g: doseG ? parseFloat(doseG) : null,
       yield_g: yieldG ? parseFloat(yieldG) : null,
       brew_ratio: brewRatio,
-      pressure_bar: null,
+      pressure_bar: pressureBar ? parseFloat(pressureBar) : null,
       brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
       temp_c: tempC ? parseFloat(tempC) : null,
       rating,
@@ -240,8 +242,8 @@ export function NewShot() {
           </div>
         )}
 
-        {/* Grind + Temp */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Grind + Temp + Pressure */}
+        <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad *</label>
             <input
@@ -257,6 +259,15 @@ export function NewShot() {
               type="number" value={tempC}
               onChange={e => setTempC(e.target.value)}
               placeholder="93"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Druck (bar)</label>
+            <input
+              type="number" step="0.1" value={pressureBar}
+              onChange={e => setPressureBar(e.target.value)}
+              placeholder="9"
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
           </div>
@@ -284,11 +295,10 @@ export function NewShot() {
               />
             </div>
           </div>
-          {brewRatio !== null && (
-            <p className="text-xs text-slate-500 text-right">
-              Verhältnis <span className="font-semibold text-orange-500">1 : {brewRatio.toFixed(2)}</span>
-            </p>
-          )}
+          <BrewRatioBar
+            doseG={doseG ? parseFloat(doseG) : null}
+            yieldG={yieldG ? parseFloat(yieldG) : null}
+          />
         </div>
 
         {/* Brew time */}
