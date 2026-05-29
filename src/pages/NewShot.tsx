@@ -139,6 +139,7 @@ export function NewShot() {
       dose_g: doseG ? parseFloat(doseG) : null,
       yield_g: yieldG ? parseFloat(yieldG) : null,
       brew_ratio: brewRatio,
+      pressure_bar: null,
       brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
       temp_c: tempC ? parseFloat(tempC) : null,
       rating,

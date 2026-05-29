@@ -14,6 +14,7 @@ const makeShot = (overrides: Partial<Shot>): Shot => ({
   body_score: null,
   acidity_score: null,
   brew_ratio: null,
+  pressure_bar: null,
   tasting_notes: null,
   pulled_at: new Date().toISOString(),
   created_at: new Date().toISOString(),
