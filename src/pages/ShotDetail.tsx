@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useShot, useUpdateShot, useDeleteShot } from '../hooks/useShots'
 import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { RatingInput } from '../components/RatingInput'
+import { BrewRatioBar } from '../components/BrewRatioBar'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 function formatDate(iso: string) {
@@ -127,13 +128,19 @@ export function ShotDetail() {
         </div>
       </div>
 
-      {/* Temp + Röstdatum */}
-      {(shot.temp_c !== null || shot.roast_dates?.roast_date) && (
+      {/* Temp + Druck + Röstdatum */}
+      {(shot.temp_c !== null || shot.pressure_bar !== null || shot.roast_dates?.roast_date) && (
         <div className="grid grid-cols-2 gap-2 mb-3">
           {shot.temp_c !== null && (
             <div className="bg-white border border-slate-200 rounded-lg p-3">
               <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Temperatur</p>
               <p className="text-base font-bold text-slate-800">{shot.temp_c}°C</p>
+            </div>
+          )}
+          {shot.pressure_bar !== null && (
+            <div className="bg-white border border-slate-200 rounded-lg p-3">
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Druck</p>
+              <p className="text-base font-bold text-slate-800">{shot.pressure_bar} bar</p>
             </div>
           )}
           {shot.roast_dates?.roast_date && (
@@ -183,6 +190,9 @@ function ShotEditForm({
   const [bodyScore, setBodyScore] = useState<number | null>(shot.body_score)
   const [acidityScore, setAcidityScore] = useState<number | null>(shot.acidity_score)
   const [tastingNotes, setTastingNotes] = useState(shot.tasting_notes ?? '')
+  const [pressureBar, setPressureBar] = useState(
+    shot.pressure_bar !== null ? String(shot.pressure_bar) : '9'
+  )
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
@@ -203,23 +213,28 @@ function ShotEditForm({
     if (!grindSetting) { setError('Mahlgrad ist erforderlich.'); return }
     if (!rating) { setError('Bitte den Shot bewerten.'); return }
 
-    await updateShot.mutateAsync({
-      id: shot.id,
-      coffee_id: coffeeId,
-      roast_date_id: roastDateId || null,
-      pulled_at: fromDatetimeLocal(pulledAt),
-      grind_setting: parseFloat(grindSetting),
-      dose_g: doseG ? parseFloat(doseG) : null,
-      yield_g: yieldG ? parseFloat(yieldG) : null,
-      brew_ratio: brewRatio,
-      brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
-      temp_c: tempC ? parseFloat(tempC) : null,
-      rating,
-      body_score: bodyScore,
-      acidity_score: acidityScore,
-      tasting_notes: tastingNotes.trim() || null,
-    })
-    onSaved()
+    try {
+      await updateShot.mutateAsync({
+        id: shot.id,
+        coffee_id: coffeeId,
+        roast_date_id: roastDateId || null,
+        pulled_at: fromDatetimeLocal(pulledAt),
+        grind_setting: parseFloat(grindSetting),
+        dose_g: doseG ? parseFloat(doseG) : null,
+        yield_g: yieldG ? parseFloat(yieldG) : null,
+        brew_ratio: brewRatio,
+        pressure_bar: pressureBar ? parseFloat(pressureBar) : null,
+        brew_time_s: brewTimeS ? parseInt(brewTimeS, 10) : null,
+        temp_c: tempC ? parseFloat(tempC) : null,
+        rating,
+        body_score: bodyScore,
+        acidity_score: acidityScore,
+        tasting_notes: tastingNotes.trim() || null,
+      })
+      onSaved()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Fehler beim Speichern.')
+    }
   }
 
   function formatDate(d: string) {
@@ -294,8 +309,8 @@ function ShotEditForm({
           </div>
         )}
 
-        {/* Mahlgrad + Temp */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Mahlgrad + Temp + Pressure */}
+        <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad *</label>
             <input
@@ -309,6 +324,14 @@ function ShotEditForm({
             <input
               type="number" value={tempC}
               onChange={e => setTempC(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Druck (bar)</label>
+            <input
+              type="number" step="0.1" value={pressureBar}
+              onChange={e => setPressureBar(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
           </div>
@@ -334,11 +357,10 @@ function ShotEditForm({
               />
             </div>
           </div>
-          {brewRatio !== null && (
-            <p className="text-xs text-slate-500 text-right">
-              Verhältnis <span className="font-semibold text-orange-500">1 : {brewRatio.toFixed(2)}</span>
-            </p>
-          )}
+          <BrewRatioBar
+            doseG={doseG ? parseFloat(doseG) : null}
+            yieldG={yieldG ? parseFloat(yieldG) : null}
+          />
         </div>
 
         {/* Brühzeit */}

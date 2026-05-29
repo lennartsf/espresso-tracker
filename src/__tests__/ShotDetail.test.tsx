@@ -15,6 +15,7 @@ vi.mock('../hooks/useShots', () => ({
       dose_g: 18,
       yield_g: 36,
       brew_ratio: 2.0,
+      pressure_bar: 9,
       brew_time_s: 28,
       temp_c: 93,
       rating: 8,
@@ -63,6 +64,11 @@ test('zeigt Mahlgrad', () => {
 test('zeigt Tasting Notes', () => {
   renderDetail()
   expect(screen.getByText(/Schokolade/)).toBeInTheDocument()
+})
+
+test('zeigt Druck wenn pressure_bar vorhanden', () => {
+  renderDetail()
+  expect(screen.getByText('9 bar')).toBeInTheDocument()
 })
 
 test('zeigt Edit-Formular nach Klick auf Bearbeiten', async () => {
