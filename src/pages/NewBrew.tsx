@@ -4,7 +4,7 @@ import { useCoffees } from '../hooks/useCoffees'
 import { useGrinders } from '../hooks/useEquipment'
 import { useCreateBrew } from '../hooks/useBrews'
 import { RatingInput } from '../components/RatingInput'
-import { BREW_METHODS } from '../utils/brewMethods'
+import { BREW_METHODS, BREW_METHOD_INFO } from '../utils/brewMethods'
 import { normalizeTimeInput, MMSSToSeconds } from '../utils/timeFormat'
 
 export function NewBrew() {
@@ -28,6 +28,7 @@ export function NewBrew() {
   const [rating, setRating] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [error, setError] = useState('')
+  const [showMethodInfo, setShowMethodInfo] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -77,7 +78,23 @@ export function NewBrew() {
       <form onSubmit={handleSubmit} className="grid gap-4">
         {/* Brühmethode */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Brühmethode</label>
+          <div className="flex items-center gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => setShowMethodInfo(v => !v)}
+              className={`w-4 h-4 rounded-full text-[10px] font-bold flex-shrink-0 flex items-center justify-center transition-colors ${
+                showMethodInfo ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+              }`}
+            >
+              i
+            </button>
+            <label className="text-xs font-semibold text-slate-400 uppercase">Brühmethode</label>
+          </div>
+          {showMethodInfo && (
+            <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+              <p className="text-xs text-slate-500 leading-relaxed">{BREW_METHOD_INFO[brewMethod]}</p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             {BREW_METHODS.map(m => (
               <button
