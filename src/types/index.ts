@@ -55,6 +55,9 @@ export interface Shot {
   grinder_id: string | null
   machine_id: string | null
   basket_id: string | null
+  drink_type: string
+  milk_type: string | null
+  milk_ml: number | null
   pulled_at: string
   created_at: string
 }

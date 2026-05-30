@@ -165,6 +165,9 @@ export function NewShot() {
       grinder_id: grinderId || null,
       machine_id: machineId || null,
       basket_id: basketId || null,
+      drink_type: 'espresso',
+      milk_type: null,
+      milk_ml: null,
       pulled_at: new Date().toISOString(),
     })
 
