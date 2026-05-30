@@ -9,6 +9,61 @@ import { brewMethodLabel, BREW_METHODS, BREW_METHOD_INFO } from '../utils/brewMe
 import { secondsToMMSS, normalizeTimeInput, MMSSToSeconds } from '../utils/timeFormat'
 import type { BrewWithCoffee } from '../hooks/useBrews'
 
+const RATING_INFO = {
+  rating:          { question: 'Wie gut schmeckt der Brew insgesamt?', low: 'kaum trinkbar',  high: 'perfekter Brew'   },
+  acidity_score:   { question: 'Wie ausgeprägt ist die Säure im Brew?', low: 'sehr mild',     high: 'stark & spritzig' },
+  bitterness_score:{ question: 'Wie stark ist die Bitterkeit im Brew?', low: 'kaum bitter',   high: 'sehr bitter'      },
+}
+
+function RatingField({
+  label, required, infoKey, value, onChange,
+}: {
+  label: string
+  required?: boolean
+  infoKey: keyof typeof RATING_INFO
+  value: number | null
+  onChange: (v: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const info = RATING_INFO[infoKey]
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-2">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className={`w-4 h-4 rounded-full text-[10px] font-bold flex-shrink-0 flex items-center justify-center transition-colors ${
+            open ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
+          }`}
+        >
+          i
+        </button>
+        <span className="text-xs font-semibold text-slate-400 uppercase">
+          {label}{required && ' *'}
+        </span>
+      </div>
+      {open && (
+        <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <p className="text-xs text-slate-600 mb-2.5">{info.question}</p>
+          <div className="flex items-stretch gap-2">
+            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
+              <span className="block text-base font-bold text-slate-700 leading-none mb-1">1</span>
+              <span className="text-xs text-slate-500 leading-snug">{info.low}</span>
+            </div>
+            <div className="flex items-center text-slate-300 text-xs px-1">→</div>
+            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
+              <span className="block text-base font-bold text-slate-700 leading-none mb-1">10</span>
+              <span className="text-xs text-slate-500 leading-snug">{info.high}</span>
+            </div>
+          </div>
+        </div>
+      )}
+      <RatingInput value={value} onChange={onChange} />
+    </div>
+  )
+}
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('de-DE', {
     day: '2-digit', month: '2-digit', year: 'numeric',
@@ -372,17 +427,10 @@ function BrewEditForm({
         )}
 
         {/* Bewertung */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bewertung *</label>
-          <RatingInput value={rating} onChange={setRating} />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Säure</label>
-          <RatingInput value={acidityScore} onChange={setAcidityScore} />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bitterkeit</label>
-          <RatingInput value={bitternessScore} onChange={setBitternessScore} />
+        <div className="grid gap-3">
+          <RatingField label="Bewertung" required infoKey="rating" value={rating} onChange={setRating} />
+          <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
+          <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notizen */}
