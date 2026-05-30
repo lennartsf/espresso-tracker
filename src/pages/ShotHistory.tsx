@@ -7,9 +7,9 @@ import { ShotCard } from '../components/ShotCard'
 type DrinkFilter = 'all' | 'espresso' | 'milk'
 
 const DRINK_FILTER_LABELS: Record<DrinkFilter, string> = {
-  all: 'Alle',
+  all: 'All',
   espresso: 'Espresso',
-  milk: 'Milchgetränke',
+  milk: 'Milk Drinks',
 }
 
 export function ShotHistory() {
@@ -30,7 +30,7 @@ export function ShotHistory() {
           to="/shots/new"
           className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg"
         >
-          + Neu
+          + New
         </Link>
       </div>
 
@@ -55,16 +55,16 @@ export function ShotHistory() {
         onChange={e => setFilterCoffeeId(e.target.value)}
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white mb-4 focus:outline-none focus:border-orange-400"
       >
-        <option value="">Alle Kaffees</option>
+        <option value="">All Coffees</option>
         {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select>
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
 
       <div className="grid md:grid-cols-2 gap-2">
         {shots.map(shot => <ShotCard key={shot.id} shot={shot} />)}
         {!isLoading && shots.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10 md:col-span-2">Keine Shots gefunden.</p>
+          <p className="text-center text-slate-400 text-sm py-10 md:col-span-2">No shots found.</p>
         )}
       </div>
     </div>

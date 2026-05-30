@@ -10,7 +10,7 @@ interface Props {
 
 export function BrewCard({ brew }: Props) {
   const subtitle = [
-    brew.grind_setting != null ? `Mahlgrad ${brew.grind_setting}` : null,
+    brew.grind_setting != null ? `Grind ${brew.grind_setting}` : null,
     brew.dose_g != null ? `${brew.dose_g}g` : null,
     brew.water_ml != null ? `${brew.water_ml} ml` : null,
     brew.brew_time_s != null ? secondsToMMSS(brew.brew_time_s) : null,

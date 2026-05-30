@@ -11,21 +11,21 @@ export function ShotCard({ shot }: Props) {
   const isMilkDrink = shot.drink_type !== 'espresso'
 
   const roastDate = shot.roast_dates?.roast_date
-    ? new Date(shot.roast_dates.roast_date).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    ? new Date(shot.roast_dates.roast_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     : null
 
   const subtitle = isMilkDrink
     ? [
         shot.milk_type ? milkTypeLabel(shot.milk_type) : null,
         shot.milk_ml ? `${shot.milk_ml} ml` : null,
-        `Mahlgrad ${shot.grind_setting}`,
+        `Grind ${shot.grind_setting}`,
         shot.grinders?.name ?? null,
       ].filter(Boolean).join(' · ')
     : [
-        `Mahlgrad ${shot.grind_setting}`,
+        `Grind ${shot.grind_setting}`,
         shot.brew_time_s ? `${shot.brew_time_s}s` : null,
         shot.grinders?.name ?? null,
-        roastDate ? `Röstung ${roastDate}` : null,
+        roastDate ? `Roast ${roastDate}` : null,
       ].filter(Boolean).join(' · ')
 
   return (

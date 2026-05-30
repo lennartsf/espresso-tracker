@@ -49,23 +49,23 @@ function renderCard(shot: ShotWithCoffee) {
   )
 }
 
-test('zeigt Espresso-Badge für espresso shots', () => {
+test('shows Espresso badge for espresso shots', () => {
   renderCard(baseShot)
   expect(screen.getByText('Espresso')).toBeInTheDocument()
 })
 
-test('zeigt Cappuccino-Badge für cappuccino shots', () => {
+test('shows Cappuccino badge for cappuccino shots', () => {
   renderCard({ ...baseShot, drink_type: 'cappuccino', milk_type: 'hafer', milk_ml: 120 })
   expect(screen.getByText('Cappuccino')).toBeInTheDocument()
 })
 
-test('zeigt Milchsorte + ml in der Unterzeile bei Milchgetränken', () => {
+test('shows milk type and ml in subtitle for milk drinks', () => {
   renderCard({ ...baseShot, drink_type: 'cappuccino', milk_type: 'hafer', milk_ml: 120 })
   expect(screen.getByText(/Oat Milk/)).toBeInTheDocument()
   expect(screen.getByText(/120 ml/)).toBeInTheDocument()
 })
 
-test('zeigt Mahlgrad in der Unterzeile bei Espresso', () => {
+test('shows grind setting in subtitle for espresso', () => {
   renderCard(baseShot)
-  expect(screen.getByText(/Mahlgrad 12/)).toBeInTheDocument()
+  expect(screen.getByText(/Grind 12/)).toBeInTheDocument()
 })

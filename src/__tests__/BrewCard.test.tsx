@@ -40,32 +40,32 @@ function renderCard(brew: BrewWithCoffee) {
   )
 }
 
-test('zeigt Methoden-Badge V60', () => {
+test('shows V60 method badge', () => {
   renderCard(baseBrew)
   expect(screen.getByText('V60')).toBeInTheDocument()
 })
 
-test('zeigt Kaffee-Name', () => {
+test('shows coffee name', () => {
   renderCard(baseBrew)
   expect(screen.getByText('Ethiopia')).toBeInTheDocument()
 })
 
-test('zeigt Brühzeit als 03:30', () => {
+test('shows brew time as 03:30', () => {
   renderCard(baseBrew)
   expect(screen.getByText(/03:30/)).toBeInTheDocument()
 })
 
-test('zeigt Bewertungs-Badge', () => {
+test('shows rating badge', () => {
   renderCard(baseBrew)
   expect(screen.getByText('8')).toBeInTheDocument()
 })
 
-test('zeigt French Press Badge', () => {
+test('shows French Press badge', () => {
   renderCard({ ...baseBrew, brew_method: 'french_press' })
   expect(screen.getByText('French Press')).toBeInTheDocument()
 })
 
-test('zeigt Fallback-Dash wenn coffees null', () => {
+test('shows fallback dash when coffees is null', () => {
   renderCard({ ...baseBrew, coffees: null })
   expect(screen.getByText('—')).toBeInTheDocument()
 })
