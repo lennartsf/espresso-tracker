@@ -16,12 +16,12 @@ npm run dev
 ## Projektstruktur
 ```
 src/
-  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment
-  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewRatioBar, PhotoUpload, Layout
-  hooks/         useCoffees, useRoasters, useShots, useEquipment
+  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail
+  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
+  hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
-  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts
+  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts
 ```
 
 ## Datenbank-Schema (aktuell)
@@ -77,9 +77,11 @@ src/
 | brew_time_s | int4 |
 | temp_c | float4 |
 | pressure_bar | float4 (DEFAULT 9) |
+| preinfusion_s | float4 |
 | rating | int2 (1–10, Pflicht) |
 | body_score | int2 (1–10) |
 | acidity_score | int2 (1–10) |
+| bitterness_score | int2 (1–10) |
 | tasting_notes | text |
 | used_rdt | boolean DEFAULT false |
 | used_wdt | boolean DEFAULT false |
@@ -133,42 +135,78 @@ src/
 | is_favorite | boolean DEFAULT false |
 | created_at | timestamptz |
 
+### `brew_devices`
+| Spalte | Typ |
+|--------|-----|
+| id | uuid PK |
+| name | text |
+| brand | text |
+| device_type | text ('french_press' / 'v60' / 'aeropress' / 'moka_pot' / 'chemex' / 'other') |
+| notes | text |
+| is_favorite | boolean DEFAULT false |
+| created_at | timestamptz |
+
+### `equipment_defaults`
+| Spalte | Typ |
+|--------|-----|
+| method | text PK ('espresso' / 'french_press' / 'v60' / 'aeropress' / 'moka_pot') |
+| grinder_id | uuid FK → grinders ON DELETE SET NULL |
+| machine_id | uuid FK → machines ON DELETE SET NULL |
+| basket_id | uuid FK → baskets ON DELETE SET NULL |
+| brew_device_id | uuid FK → brew_devices ON DELETE SET NULL |
+
+### `brews`
+| Spalte | Typ |
+|--------|-----|
+| id | uuid PK |
+| coffee_id | uuid FK → coffees |
+| grinder_id | uuid FK → grinders ON DELETE SET NULL |
+| brew_device_id | uuid FK → brew_devices ON DELETE SET NULL |
+| brew_method | text ('french_press' / 'v60' / 'aeropress' / 'moka_pot') |
+| grind_setting | float4 |
+| dose_g | float4 |
+| water_ml | float4 |
+| temp_c | float4 |
+| brew_time_s | int4 |
+| rating | int2 (1–10, Pflicht) |
+| acidity_score | int2 (1–10) |
+| bitterness_score | int2 (1–10) |
+| tasting_notes | text |
+| bloom_ml | float4 |
+| bloom_time_s | int4 |
+| inverted | boolean DEFAULT false |
+| first_stir_s | int4 |
+| brewed_at | timestamptz |
+| created_at | timestamptz |
+
 ## Implementierter Stand (Mai 2026)
 - [x] 5 Screens: Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
-- [x] NewShot: Kaffee-Dropdown, Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Bewertungen
+- [x] NewShot: Kaffee-Dropdown (+ Mühle direkt darunter), Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Preinfusion (Checkbox + inline Sekunden), Bewertungen mit i-Button
 - [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
 - [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
 - [x] Responsives Layout: Mobile Bottom-Nav, Desktop Sidebar
 - [x] Bewertungs-Farbskala 10-stufig (ratingColor utility)
 - [x] RDT / WDT / Leveler Checkboxen beim Shot
-- [x] Equipment-Seite (/ausruestung): Mühlen, Maschinen, Siebe mit CRUD + ⭐ Favorit
-- [x] Equipment-Felder: Grinder (Typ, Mahlwerk-mm, Watt, stufenlos, Behälter), Machine (Funktionsweise, Brühgruppe), Basket (Ø mm, Nenndosis g)
+- [x] Shot-Bewertungsparameter: rating (Pflicht), body_score, acidity_score, bitterness_score — alle mit i-Button Erklärung
+- [x] Equipment-Seite (/ausruestung): Mühlen, Maschinen, Siebe, **Geräte** mit CRUD + ⭐ Favorit
+- [x] Equipment-Felder: Grinder (Typ, Mahlwerk-mm, Watt, stufenlos, Behälter), Machine (Funktionsweise, Brühgruppe), Basket (Ø mm, Nenndosis g), BrewDevice (Typ, Marke)
 - [x] Shot ↔ Equipment FK-Verknüpfung (grinder_id, machine_id, basket_id)
+- [x] **Equipment-Defaults**: „Standard für ▾"-Button auf jeder Equipment-Karte → setzt Methoden-spezifische Vorauswahl in `equipment_defaults`
+- [x] **Automatische Vorauswahl** in NewShot (espresso-Defaults) und NewBrew (methodenspezifisch, wechselt bei Methodenwahl); Fallback auf `is_favorite`
 - [x] Milchgetränke: drink_type (Espresso/Cappuccino/Latte/Flat White/Cortado/Macchiato), Milchsorte + ml
 - [x] ShotHistory: Filter-Tabs (Alle / Espresso / Milchgetränke)
 - [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile
 - [x] Brühmethoden: `/brews` Seite (French Press, V60, AeroPress, Moka Pot), BrewCard, NewBrew, BrewDetail, MM:SS-Zeitformat
+- [x] Brew-Bewertungsparameter: rating (Pflicht), acidity_score, bitterness_score — alle mit i-Button Erklärung
+- [x] Brew ↔ Brew-Device FK-Verknüpfung (brew_device_id); Gerät-Dropdown in NewBrew + BrewDetail
 - [x] i-Button Methoden-Erklärung in NewBrew + BrewDetail (BREW_METHOD_INFO in brewMethods.ts)
+- [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 
-## Offene Aufgaben (nächste Session)
-
-### Als nächstes umsetzen: Guide-Tab
-**Was:** Neuer `/guide` Tab mit umfassenden Brüh-Guides und Troubleshooting.
-**Inhalt:**
-- Espresso: Schritt-für-Schritt + Troubleshooting (zu sauer / zu bitter / zu wässrig / channeling etc.)
-- Brühmethoden: French Press, V60, AeroPress, Moka Pot je mit Anleitung + Troubleshooting
-- Milch aufschäumen + Latte Art: Technik, häufige Fehler
-**Phase 1:** Rein textbasiert (kein DB-Schema nötig — statischer Content in `src/utils/guideContent.ts`)
-**Phase 2 (später):** UI/UX mit Animationen — noch nicht spezifiziert
-**Status:** Brainstorming gestartet, noch keine Spec geschrieben. Nächster Schritt: Clarifying questions → Spec schreiben → Plan → Implementierung.
-**Vorgehen beim Start:** `superpowers:brainstorming` Skill aufrufen mit dem Guide-Tab als Topic.
-
-### Weitere geplante Features
+## Weitere geplante Features
 - [ ] **App auf Englisch** — komplette UI-Übersetzung
 - [ ] Analysis-Seite: pressure_bar + Getränketyp-Auswertung
-- [ ] Favoriten als Vorauswahl in NewShot/NewBrew
 - [ ] Multi-User via Supabase Auth
 - [ ] PWA-Verbesserungen (Offline-Support)
 
@@ -178,8 +216,11 @@ src/
 - Brew-Ratio wird client-seitig berechnet (yield / dose), nicht als Trigger in DB
 - `roaster`-Spalte in `coffees` ist denormalisiert (Name-Cache), wird bei Update mitgeschrieben
 - `drink_type` DEFAULT 'espresso' — alle bestehenden Shots sind automatisch Espresso
+- `equipment_defaults` hat kein RLS — Single-User-App ohne Auth (wie `brews`)
+- Vorauswahl in NewShot/NewBrew: `useRef`-Guard verhindert Überschreiben nach User-Auswahl bei react-query-Refetches
 - `drinkTypes.ts`: DRINK_TYPES, MILK_TYPES, drinkTypeLabel(), milkTypeLabel()
-- `equipmentTypes.ts`: GRINDER_TYPES, FUNKTIONSWEISE_TYPES, grinderTypeLabel(), funktionsweiseLabel()
+- `equipmentTypes.ts`: GRINDER_TYPES, FUNKTIONSWEISE_TYPES, DEVICE_TYPES, grinderTypeLabel(), funktionsweiseLabel(), deviceTypeLabel()
 - `brewMethods.ts`: BREW_METHODS, BREW_METHOD_INFO, brewMethodLabel()
 - `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
+- `guideContent.ts`: GUIDES (Guide[]), Typen QuickProblem, TroubleshootingItem, Step, Guide
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
