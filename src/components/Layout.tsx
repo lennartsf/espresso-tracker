@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 const navItems = [
   { to: '/', label: 'Home', icon: '🏠' },
@@ -11,7 +12,19 @@ const navItems = [
   { to: '/guide', label: 'Guide', icon: '📖' },
 ]
 
+const primaryNav = navItems.slice(0, 4)   // Home, Shots, Brühen, Analyse
+const moreNav    = navItems.slice(4)      // Kaffee, Röstereien, Ausrüstung, Guide
+
 export function Layout() {
+  const [moreOpen, setMoreOpen] = useState(false)
+  const location = useLocation()
+
+  const isMoreActive = moreNav.some(item =>
+    item.to === '/'
+      ? location.pathname === '/'
+      : location.pathname.startsWith(item.to)
+  )
+
   return (
     <div className="flex min-h-screen bg-slate-50">
 
@@ -44,13 +57,46 @@ export function Layout() {
         </div>
       </main>
 
+      {/* "Mehr" overlay — mobile only */}
+      {moreOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-20"
+          onClick={() => setMoreOpen(false)}
+        >
+          <div
+            className="absolute bottom-16 left-0 right-0 bg-white border-t border-slate-200 shadow-lg"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="grid grid-cols-4 px-2 py-3">
+              {moreNav.map(({ to, label, icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={to === '/'}
+                  onClick={() => setMoreOpen(false)}
+                  className={({ isActive }) =>
+                    `flex flex-col items-center py-2 px-1 rounded-lg text-xs font-medium transition-colors ${
+                      isActive ? 'text-orange-500' : 'text-slate-500 hover:text-slate-700'
+                    }`
+                  }
+                >
+                  <span className="text-2xl leading-tight mb-0.5">{icon}</span>
+                  {label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom nav — mobile only */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex z-10">
-        {navItems.map(({ to, label, icon }) => (
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex z-30">
+        {primaryNav.map(({ to, label, icon }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
+            onClick={() => setMoreOpen(false)}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors ${
                 isActive ? 'text-orange-500' : 'text-slate-400 hover:text-slate-600'
@@ -61,6 +107,15 @@ export function Layout() {
             {label}
           </NavLink>
         ))}
+        <button
+          onClick={() => setMoreOpen(v => !v)}
+          className={`flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors ${
+            moreOpen || isMoreActive ? 'text-orange-500' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <span className="text-xl leading-tight">⋯</span>
+          Mehr
+        </button>
       </nav>
     </div>
   )

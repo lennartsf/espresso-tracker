@@ -8,12 +8,13 @@ import { useShots } from '../hooks/useShots'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 
-type Metric = 'rating' | 'body_score' | 'acidity_score'
+type Metric = 'rating' | 'body_score' | 'acidity_score' | 'bitterness_score'
 
 const METRICS: { key: Metric; label: string }[] = [
-  { key: 'rating', label: 'Geschmack' },
-  { key: 'body_score', label: 'Körper' },
-  { key: 'acidity_score', label: 'Säure' },
+  { key: 'rating',           label: 'Geschmack' },
+  { key: 'body_score',       label: 'Körper' },
+  { key: 'acidity_score',    label: 'Säure' },
+  { key: 'bitterness_score', label: 'Bitterkeit' },
 ]
 
 export function Analysis() {
