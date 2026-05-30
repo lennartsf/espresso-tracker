@@ -14,6 +14,8 @@ export function BrewCard({ brew }: Props) {
     brew.dose_g != null ? `${brew.dose_g}g` : null,
     brew.water_ml != null ? `${brew.water_ml} ml` : null,
     brew.brew_time_s != null ? secondsToMMSS(brew.brew_time_s) : null,
+    brew.grinders?.name ?? null,
+    brew.brew_devices?.name ?? null,
   ].filter(Boolean).join(' · ')
 
   return (

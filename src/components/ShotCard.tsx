@@ -19,10 +19,12 @@ export function ShotCard({ shot }: Props) {
         shot.milk_type ? milkTypeLabel(shot.milk_type) : null,
         shot.milk_ml ? `${shot.milk_ml} ml` : null,
         `Mahlgrad ${shot.grind_setting}`,
+        shot.grinders?.name ?? null,
       ].filter(Boolean).join(' · ')
     : [
         `Mahlgrad ${shot.grind_setting}`,
         shot.brew_time_s ? `${shot.brew_time_s}s` : null,
+        shot.grinders?.name ?? null,
         roastDate ? `Röstung ${roastDate}` : null,
       ].filter(Boolean).join(' · ')
 

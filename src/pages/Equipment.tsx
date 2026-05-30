@@ -261,6 +261,9 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
           <p className="text-sm text-slate-800">{grinder.notes}</p>
         </div>
       )}
+      {!grinder.brand && !grinder.grinder_type && grinder.burr_size_mm === null && grinder.motor_watt === null && !grinder.stepless && !grinder.has_hopper && !grinder.notes && (
+        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
+      )}
     </div>
   )
 }
@@ -508,6 +511,9 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
           <p className="text-sm text-slate-800">{machine.notes}</p>
         </div>
       )}
+      {!machine.brand && !machine.funktionsweise && !machine.brew_group_type && machine.brew_group_size_mm === null && !machine.notes && (
+        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
+      )}
     </div>
   )
 }
@@ -726,6 +732,9 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
           <p className="text-sm text-slate-800">{basket.notes}</p>
         </div>
+      )}
+      {!basket.brand && basket.diameter_mm === null && basket.size_g === null && !basket.notes && (
+        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
       )}
     </div>
   )

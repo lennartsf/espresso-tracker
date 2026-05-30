@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useShots } from '../hooks/useShots'
+import { useBrews } from '../hooks/useBrews'
 import { ShotCard } from '../components/ShotCard'
+import { BrewCard } from '../components/BrewCard'
 
 export function Dashboard() {
   const { data: shots = [], isLoading } = useShots()
+  const { data: brews = [] } = useBrews()
 
   const avgRating = shots.length > 0
     ? (shots.reduce((sum, s) => sum + s.rating, 0) / shots.length).toFixed(1)
@@ -21,8 +24,8 @@ export function Dashboard() {
         </Link>
       </div>
 
-      {/* Stats — 2 cols on mobile, 4 cols on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      {/* Shot Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-blue-600">{shots.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Shots total</p>
@@ -47,6 +50,23 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* Brew Stats */}
+      {brews.length > 0 && (
+        <div className="grid grid-cols-2 gap-3 mb-8">
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-teal-600">{brews.length}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Brews total</p>
+          </div>
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-center">
+            <p className="text-2xl font-bold text-teal-600">
+              {(brews.reduce((sum, b) => sum + b.rating, 0) / brews.length).toFixed(1)}
+            </p>
+            <p className="text-xs text-slate-500 mt-0.5">Ø Brew-Bewertung</p>
+          </div>
+        </div>
+      )}
+      {brews.length === 0 && <div className="mb-8" />}
+
       {/* Shot list — on desktop 2 columns */}
       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
         Letzte Shots
@@ -55,7 +75,7 @@ export function Dashboard() {
       {isLoading && <p className="text-slate-400 text-sm text-center py-4">Laden...</p>}
 
       <div className="grid md:grid-cols-2 gap-2 mb-6">
-        {shots.slice(0, 10).map(shot => (
+        {shots.slice(0, 6).map(shot => (
           <ShotCard key={shot.id} shot={shot} />
         ))}
         {!isLoading && shots.length === 0 && (
@@ -64,6 +84,19 @@ export function Dashboard() {
           </p>
         )}
       </div>
+
+      {brews.length > 0 && (
+        <>
+          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+            Letzte Brews
+          </h2>
+          <div className="grid md:grid-cols-2 gap-2 mb-6">
+            {brews.slice(0, 4).map(brew => (
+              <BrewCard key={brew.id} brew={brew} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* CTA only on mobile (desktop has it in header) */}
       <Link
