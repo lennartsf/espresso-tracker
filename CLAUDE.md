@@ -180,33 +180,36 @@ src/
 | created_at | timestamptz |
 
 ## Implementierter Stand (Mai 2026)
-- [x] 5 Screens: Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis
+- [x] Dashboard: Shot-Statistiken (total, Ø Bewertung, Top Shots, Ø Verhältnis) + Brews-Statistiken + letzte Shots & Brews
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
 - [x] NewShot: Kaffee-Dropdown (+ Mühle direkt darunter), Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Preinfusion (Checkbox + inline Sekunden), Bewertungen mit i-Button
 - [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
 - [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
-- [x] Responsives Layout: Mobile Bottom-Nav, Desktop Sidebar
+- [x] Responsives Layout: Mobile Bottom-Nav (4 primäre + „⋯ Mehr"-Panel), Desktop Sidebar (alle 8)
 - [x] Bewertungs-Farbskala 10-stufig (ratingColor utility)
 - [x] RDT / WDT / Leveler Checkboxen beim Shot
 - [x] Shot-Bewertungsparameter: rating (Pflicht), body_score, acidity_score, bitterness_score — alle mit i-Button Erklärung
-- [x] Equipment-Seite (/ausruestung): Mühlen, Maschinen, Siebe, **Geräte** mit CRUD + ⭐ Favorit
+- [x] ShotCard: zeigt Mühlenname in Unterzeile wenn verknüpft
+- [x] Equipment-Seite (/ausruestung): Mühlen, Maschinen, Siebe, **Geräte** mit CRUD + ⭐ Favorit; Detail-View zeigt Leerstate wenn keine optionalen Felder gesetzt
 - [x] Equipment-Felder: Grinder (Typ, Mahlwerk-mm, Watt, stufenlos, Behälter), Machine (Funktionsweise, Brühgruppe), Basket (Ø mm, Nenndosis g), BrewDevice (Typ, Marke)
 - [x] Shot ↔ Equipment FK-Verknüpfung (grinder_id, machine_id, basket_id)
 - [x] **Equipment-Defaults**: „Standard für ▾"-Button auf jeder Equipment-Karte → setzt Methoden-spezifische Vorauswahl in `equipment_defaults`
 - [x] **Automatische Vorauswahl** in NewShot (espresso-Defaults) und NewBrew (methodenspezifisch, wechselt bei Methodenwahl); Fallback auf `is_favorite`
 - [x] Milchgetränke: drink_type (Espresso/Cappuccino/Latte/Flat White/Cortado/Macchiato), Milchsorte + ml
 - [x] ShotHistory: Filter-Tabs (Alle / Espresso / Milchgetränke)
-- [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile
+- [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile + Mühlenname
 - [x] Brühmethoden: `/brews` Seite (French Press, V60, AeroPress, Moka Pot), BrewCard, NewBrew, BrewDetail, MM:SS-Zeitformat
 - [x] Brew-Bewertungsparameter: rating (Pflicht), acidity_score, bitterness_score — alle mit i-Button Erklärung
 - [x] Brew ↔ Brew-Device FK-Verknüpfung (brew_device_id); Gerät-Dropdown in NewBrew + BrewDetail
+- [x] BrewCard: zeigt Mühle + Gerät in Unterzeile wenn verknüpft
 - [x] i-Button Methoden-Erklärung in NewBrew + BrewDetail (BREW_METHOD_INFO in brewMethods.ts)
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
+- [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 
 ## Weitere geplante Features
 - [ ] **App auf Englisch** — komplette UI-Übersetzung
-- [ ] Analysis-Seite: pressure_bar + Getränketyp-Auswertung
+- [ ] Analysis: pressure_bar in Espresso-Tab einbeziehen
 - [ ] Multi-User via Supabase Auth
 - [ ] PWA-Verbesserungen (Offline-Support)
 
