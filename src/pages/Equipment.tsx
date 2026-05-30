@@ -404,6 +404,31 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
           <p className="text-sm text-slate-800">{machine.brand}</p>
         </div>
       )}
+      {machine.funktionsweise && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Funktionsweise</p>
+          <p className="text-sm text-slate-800">{funktionsweiseLabel(machine.funktionsweise)}</p>
+        </div>
+      )}
+      {(machine.brew_group_type || machine.brew_group_size_mm !== null) && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Brühgruppe</p>
+          <div className="grid gap-1">
+            {machine.brew_group_type && (
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Typ</span>
+                <span className="text-slate-800">{machine.brew_group_type}</span>
+              </div>
+            )}
+            {machine.brew_group_size_mm !== null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Durchmesser</span>
+                <span className="text-slate-800">{machine.brew_group_size_mm} mm</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {machine.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
@@ -420,13 +445,24 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
   const [name, setName] = useState(machine?.name ?? '')
   const [brand, setBrand] = useState(machine?.brand ?? '')
   const [notes, setNotes] = useState(machine?.notes ?? '')
+  const [funktionsweise, setFunktionsweise] = useState(machine?.funktionsweise ?? '')
+  const [brewGroupType, setBrewGroupType] = useState(machine?.brew_group_type ?? '')
+  const [brewGroupSizeMm, setBrewGroupSizeMm] = useState(machine?.brew_group_size_mm != null ? String(machine.brew_group_size_mm) : '')
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
-    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, funktionsweise: null, brew_group_type: null, brew_group_size_mm: null, is_favorite: machine?.is_favorite ?? false }
+    const payload = {
+      name: name.trim(),
+      brand: brand.trim() || null,
+      notes: notes.trim() || null,
+      funktionsweise: funktionsweise || null,
+      brew_group_type: brewGroupType.trim() || null,
+      brew_group_size_mm: brewGroupSizeMm ? (isNaN(parseFloat(brewGroupSizeMm)) ? null : parseFloat(brewGroupSizeMm)) : null,
+      is_favorite: machine?.is_favorite ?? false,
+    }
     try {
       if (machine) {
         await updateMachine.mutateAsync({ id: machine.id, ...payload })
@@ -452,6 +488,31 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
+        <select
+          value={funktionsweise}
+          onChange={e => setFunktionsweise(e.target.value)}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+        >
+          <option value="">Funktionsweise (optional)</option>
+          {FUNKTIONSWEISE_TYPES.map(ft => (
+            <option key={ft.value} value={ft.value}>{ft.label}</option>
+          ))}
+        </select>
+        <input
+          value={brewGroupType}
+          onChange={e => setBrewGroupType(e.target.value)}
+          placeholder="Brühgruppe (z.B. E61)"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+        />
+        <div className="flex items-center gap-2">
+          <input
+            type="number" step="0.5" value={brewGroupSizeMm}
+            onChange={e => setBrewGroupSizeMm(e.target.value)}
+            placeholder="Brühgruppen-Ø"
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+          />
+          <span className="text-sm text-slate-400">mm</span>
+        </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notizen" rows={2}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         {error && <p className="text-red-500 text-sm">{error}</p>}
