@@ -9,6 +9,9 @@ import { Analysis } from './pages/Analysis'
 import { Roasters } from './pages/Roasters'
 import { ShotDetail } from './pages/ShotDetail'
 import { Equipment } from './pages/Equipment'
+import { Brews } from './pages/Brews'
+import { NewBrew } from './pages/NewBrew'
+import { BrewDetail } from './pages/BrewDetail'
 
 const queryClient = new QueryClient()
 
@@ -26,6 +29,9 @@ export default function App() {
             <Route path="kaffee" element={<CoffeeManager />} />
             <Route path="roasters" element={<Roasters />} />
             <Route path="ausruestung" element={<Equipment />} />
+            <Route path="brews" element={<Brews />} />
+            <Route path="brews/new" element={<NewBrew />} />
+            <Route path="brews/:id" element={<BrewDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>

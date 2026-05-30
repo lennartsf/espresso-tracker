@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 const navItems = [
   { to: '/', label: 'Home', icon: '🏠' },
   { to: '/shots', label: 'Shots', icon: '📋' },
+  { to: '/brews', label: 'Brühen', icon: '🫖' },
   { to: '/analyse', label: 'Analyse', icon: '📊' },
   { to: '/kaffee', label: 'Kaffee', icon: '☕' },
   { to: '/roasters', label: 'Röstereien', icon: '📍' },
