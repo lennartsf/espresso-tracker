@@ -14,6 +14,7 @@ import { NewBrew } from './pages/NewBrew'
 import { BrewDetail } from './pages/BrewDetail'
 import { Guide } from './pages/Guide'
 import { GuideDetail } from './pages/GuideDetail'
+import { Glossar } from './pages/Glossar'
 
 const queryClient = new QueryClient()
 
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="brews/:id" element={<BrewDetail />} />
             <Route path="guide" element={<Guide />} />
             <Route path="guide/:id" element={<GuideDetail />} />
+            <Route path="glossar" element={<Glossar />} />
           </Route>
         </Routes>
       </BrowserRouter>

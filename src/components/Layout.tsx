@@ -10,6 +10,7 @@ const navItems = [
   { to: '/roasters', label: 'Röstereien', icon: '📍' },
   { to: '/ausruestung', label: 'Ausrüstung', icon: '⚙️' },
   { to: '/guide', label: 'Guide', icon: '📖' },
+  { to: '/glossar', label: 'Glossar', icon: '📚' },
 ]
 
 const primaryNav = navItems.slice(0, 4)   // Home, Shots, Brühen, Analyse
