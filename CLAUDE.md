@@ -16,12 +16,12 @@ npm run dev
 ## Projektstruktur
 ```
 src/
-  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail
+  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossar
   components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
-  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts
+  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts, glossaryContent.ts
 ```
 
 ## Datenbank-Schema (aktuell)
@@ -206,6 +206,7 @@ src/
 - [x] i-Button Methoden-Erklärung in NewBrew + BrewDetail (BREW_METHOD_INFO in brewMethods.ts)
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
+- [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
 
 ## Weitere geplante Features
 - [ ] **App auf Englisch** — komplette UI-Übersetzung
@@ -226,4 +227,5 @@ src/
 - `brewMethods.ts`: BREW_METHODS, BREW_METHOD_INFO, brewMethodLabel()
 - `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
 - `guideContent.ts`: GUIDES (Guide[]), Typen QuickProblem, TroubleshootingItem, Step, Guide
+- `glossaryContent.ts`: GLOSSARY (GlossaryTerm[]), Interface GlossaryTerm { term, definition, category }; 46 Begriffe alphabetisch sortiert
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
