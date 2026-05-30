@@ -150,16 +150,27 @@ src/
 - [x] ShotHistory: Filter-Tabs (Alle / Espresso / Milchgetränke)
 - [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile
 - [x] Brühmethoden: `/brews` Seite (French Press, V60, AeroPress, Moka Pot), BrewCard, NewBrew, BrewDetail, MM:SS-Zeitformat
+- [x] i-Button Methoden-Erklärung in NewBrew + BrewDetail (BREW_METHOD_INFO in brewMethods.ts)
 
 ## Offene Aufgaben (nächste Session)
 
-### Geplant
+### Als nächstes umsetzen: Guide-Tab
+**Was:** Neuer `/guide` Tab mit umfassenden Brüh-Guides und Troubleshooting.
+**Inhalt:**
+- Espresso: Schritt-für-Schritt + Troubleshooting (zu sauer / zu bitter / zu wässrig / channeling etc.)
+- Brühmethoden: French Press, V60, AeroPress, Moka Pot je mit Anleitung + Troubleshooting
+- Milch aufschäumen + Latte Art: Technik, häufige Fehler
+**Phase 1:** Rein textbasiert (kein DB-Schema nötig — statischer Content in `src/utils/guideContent.ts`)
+**Phase 2 (später):** UI/UX mit Animationen — noch nicht spezifiziert
+**Status:** Brainstorming gestartet, noch keine Spec geschrieben. Nächster Schritt: Clarifying questions → Spec schreiben → Plan → Implementierung.
+**Vorgehen beim Start:** `superpowers:brainstorming` Skill aufrufen mit dem Guide-Tab als Topic.
+
+### Weitere geplante Features
 - [ ] **App auf Englisch** — komplette UI-Übersetzung
 - [ ] Analysis-Seite: pressure_bar + Getränketyp-Auswertung
+- [ ] Favoriten als Vorauswahl in NewShot/NewBrew
 - [ ] Multi-User via Supabase Auth
 - [ ] PWA-Verbesserungen (Offline-Support)
-- [ ] Equipment i-Button (Methoden-Erklärung, zurückgestellt)
-- [ ] Favoriten als Vorauswahl in NewShot/NewBrew
 
 ## Wichtige Hinweise
 - Nach jeder Supabase-Migration immer fragen ob User die SQL bereits ausgeführt hat
@@ -169,3 +180,6 @@ src/
 - `drink_type` DEFAULT 'espresso' — alle bestehenden Shots sind automatisch Espresso
 - `drinkTypes.ts`: DRINK_TYPES, MILK_TYPES, drinkTypeLabel(), milkTypeLabel()
 - `equipmentTypes.ts`: GRINDER_TYPES, FUNKTIONSWEISE_TYPES, grinderTypeLabel(), funktionsweiseLabel()
+- `brewMethods.ts`: BREW_METHODS, BREW_METHOD_INFO, brewMethodLabel()
+- `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
+- `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
