@@ -16,7 +16,7 @@ npm run dev
 ## Projektstruktur
 ```
 src/
-  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossar
+  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary
   components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
@@ -186,7 +186,8 @@ src/
 - [x] NewShot: Kaffee-Dropdown (+ Mühle direkt darunter), Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Preinfusion (Checkbox + inline Sekunden), Bewertungen mit i-Button
 - [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
 - [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
-- [x] Responsives Layout: Mobile Bottom-Nav (4 primäre + „⋯ Mehr"-Panel), Desktop Sidebar (alle 8)
+- [x] Responsive layout: Mobile Bottom-Nav (4 primary + "⋯ More" panel), Desktop Sidebar (all 8)
+- [x] **App in English** — UI fully translated (routes, labels, content, guides, glossary)
 - [x] Bewertungs-Farbskala 10-stufig (ratingColor utility)
 - [x] RDT / WDT / Leveler Checkboxen beim Shot
 - [x] Shot-Bewertungsparameter: rating (Pflicht), body_score, acidity_score, bitterness_score — alle mit i-Button Erklärung
@@ -209,10 +210,8 @@ src/
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
 
 ## Weitere geplante Features
-- [ ] **App auf Englisch** — komplette UI-Übersetzung
-- [ ] Analysis: pressure_bar in Espresso-Tab einbeziehen
+- [x] **App in English** — complete UI translation
 - [ ] Multi-User via Supabase Auth
-- [ ] PWA-Verbesserungen (Offline-Support)
 
 ## Wichtige Hinweise
 - Nach jeder Supabase-Migration immer fragen ob User die SQL bereits ausgeführt hat
