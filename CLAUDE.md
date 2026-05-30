@@ -16,12 +16,12 @@ npm run dev
 ## Projektstruktur
 ```
 src/
-  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters
-  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, Layout
-  hooks/         useCoffees, useRoasters, useShots
+  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment
+  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewRatioBar, PhotoUpload, Layout
+  hooks/         useCoffees, useRoasters, useShots, useEquipment
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
-  utils/         recipeCalc.ts
+  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts
 ```
 
 ## Datenbank-Schema (aktuell)
@@ -81,52 +81,93 @@ src/
 | body_score | int2 (1–10) |
 | acidity_score | int2 (1–10) |
 | tasting_notes | text |
+| used_rdt | boolean DEFAULT false |
+| used_wdt | boolean DEFAULT false |
+| used_leveler | boolean DEFAULT false |
+| grinder_id | uuid FK → grinders ON DELETE SET NULL |
+| machine_id | uuid FK → machines ON DELETE SET NULL |
+| basket_id | uuid FK → baskets ON DELETE SET NULL |
+| drink_type | text DEFAULT 'espresso' |
+| milk_type | text |
+| milk_ml | float4 |
 | pulled_at | timestamptz |
+| created_at | timestamptz |
+
+### `grinders`
+| Spalte | Typ |
+|--------|-----|
+| id | uuid PK |
+| name | text |
+| brand | text |
+| notes | text |
+| grinder_type | text ('flat' / 'conical') |
+| burr_size_mm | float4 |
+| motor_watt | int4 |
+| stepless | boolean DEFAULT false |
+| has_hopper | boolean DEFAULT false |
+| is_favorite | boolean DEFAULT false |
+| created_at | timestamptz |
+
+### `machines`
+| Spalte | Typ |
+|--------|-----|
+| id | uuid PK |
+| name | text |
+| brand | text |
+| notes | text |
+| funktionsweise | text ('einkreiser' / 'zweikreiser' / 'dualboiler' / 'thermoblock') |
+| brew_group_type | text |
+| brew_group_size_mm | float4 |
+| is_favorite | boolean DEFAULT false |
+| created_at | timestamptz |
+
+### `baskets`
+| Spalte | Typ |
+|--------|-----|
+| id | uuid PK |
+| name | text |
+| brand | text |
+| diameter_mm | float4 |
+| size_g | float4 |
+| notes | text |
+| is_favorite | boolean DEFAULT false |
 | created_at | timestamptz |
 
 ## Implementierter Stand (Mai 2026)
 - [x] 5 Screens: Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
-- [x] Inline-Rösterei-Erstellung aus NewShot und CoffeeManager heraus
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
-- [x] NewShot: Kaffee-Dropdown, Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, 3er-Grid (Mahlgrad/Temp/Druck), Bewertungen
-- [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus (alle Felder editierbar)
-- [x] BrewRatioBar-Komponente (permanent, Dose/Yield proportional)
-- [x] Druckfeld (pressure_bar, DEFAULT 9 bar) in NewShot + ShotDetail
-- [x] Kaffee-Fotos: Upload via Supabase Storage (coffee-photos), Thumbnail in Liste + Form
-- [x] Rösterei-Fotos: Upload via Supabase Storage (roaster-photos), Thumbnail in Liste + Form
-- [x] Analysis: Filter nach Kaffee, Körper-/Säure-Scores
+- [x] NewShot: Kaffee-Dropdown, Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Bewertungen
+- [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
+- [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
 - [x] Responsives Layout: Mobile Bottom-Nav, Desktop Sidebar
+- [x] Bewertungs-Farbskala 10-stufig (ratingColor utility)
+- [x] RDT / WDT / Leveler Checkboxen beim Shot
+- [x] Equipment-Seite (/ausruestung): Mühlen, Maschinen, Siebe mit CRUD + ⭐ Favorit
+- [x] Equipment-Felder: Grinder (Typ, Mahlwerk-mm, Watt, stufenlos, Behälter), Machine (Funktionsweise, Brühgruppe), Basket (Ø mm, Nenndosis g)
+- [x] Shot ↔ Equipment FK-Verknüpfung (grinder_id, machine_id, basket_id)
+- [x] Milchgetränke: drink_type (Espresso/Cappuccino/Latte/Flat White/Cortado/Macchiato), Milchsorte + ml
+- [x] ShotHistory: Filter-Tabs (Alle / Espresso / Milchgetränke)
+- [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile
 
 ## Offene Aufgaben (nächste Session)
 
-Alle geplanten Features vom 29.05.2026 sind implementiert. Mögliche nächste Schritte:
-- Analysis-Seite: Druck-Auswertung (pressure_bar einbeziehen)
-- Multi-User via Supabase Auth
-- PWA-Verbesserungen (Offline-Support)
+### In Arbeit / Spec fertig
+- [ ] **Weitere Brühmethoden** (French Press, V60, AeroPress, Moka Pot) — Spec: `docs/superpowers/specs/2026-05-30-brew-methods-design.md`
 
-### 3. Druckangabe beim Shot
-- Neues Feld `pressure_bar` (float) in der `shots`-Tabelle
-- Standard: 9 bar (vorausgefüllt)
-- UI: Nummernfeld mit Einheit "bar" neben Temp-Feld (2er-Grid)
-- Supabase-Migration erforderlich: `ALTER TABLE shots ADD COLUMN pressure_bar float4 DEFAULT 9;`
-
-### 4. Kaffee-Foto
-- Neues Feld `photo_url` in `coffees`-Tabelle
-- Upload über Supabase Storage (Bucket: `coffee-photos`)
-- Anzeige in CoffeeDetail oben als Thumbnail/Header-Bild
-- Upload-UI in NewCoffeeForm und EditCoffeeForm
-- Supabase-Migration: `ALTER TABLE coffees ADD COLUMN photo_url text;`
-
-### 5. Rösterei-Foto
-- Analog zu Kaffee-Foto
-- Feld `photo_url` in `roasters`-Tabelle
-- Bucket: `roaster-photos`
-- Anzeige in RoasterDetail / Röstereien-Karte
-- Supabase-Migration: `ALTER TABLE roasters ADD COLUMN photo_url text;`
+### Geplant
+- [ ] **App auf Englisch** — komplette UI-Übersetzung
+- [ ] Analysis-Seite: pressure_bar + Getränketyp-Auswertung
+- [ ] Multi-User via Supabase Auth
+- [ ] PWA-Verbesserungen (Offline-Support)
+- [ ] Equipment i-Button (Methoden-Erklärung, zurückgestellt)
+- [ ] Favoriten als Vorauswahl in NewShot/NewBrew
 
 ## Wichtige Hinweise
 - Nach jeder Supabase-Migration immer fragen ob User die SQL bereits ausgeführt hat
 - Supabase Storage-Uploads brauchen einen öffentlichen Bucket oder signierte URLs
 - Brew-Ratio wird client-seitig berechnet (yield / dose), nicht als Trigger in DB
 - `roaster`-Spalte in `coffees` ist denormalisiert (Name-Cache), wird bei Update mitgeschrieben
+- `drink_type` DEFAULT 'espresso' — alle bestehenden Shots sind automatisch Espresso
+- `drinkTypes.ts`: DRINK_TYPES, MILK_TYPES, drinkTypeLabel(), milkTypeLabel()
+- `equipmentTypes.ts`: GRINDER_TYPES, FUNKTIONSWEISE_TYPES, grinderTypeLabel(), funktionsweiseLabel()
