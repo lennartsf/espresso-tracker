@@ -8,66 +8,66 @@ function renderDetail(id: string) {
     <MemoryRouter initialEntries={[`/guide/${id}`]}>
       <Routes>
         <Route path="/guide/:id" element={<GuideDetail />} />
-        <Route path="/guide" element={<div>Guide Übersicht</div>} />
+        <Route path="/guide" element={<div>Guide Overview</div>} />
       </Routes>
     </MemoryRouter>
   )
 }
 
-test('zeigt Titel und Icon des Espresso-Guides', () => {
+test('shows title and icon of Espresso guide', () => {
   renderDetail('espresso')
   expect(screen.getByText('Espresso')).toBeInTheDocument()
-  expect(screen.getByText('Extraktion · Troubleshooting')).toBeInTheDocument()
+  expect(screen.getByText('Extraction · Troubleshooting')).toBeInTheDocument()
 })
 
-test('zeigt Quick-Chips für Espresso', () => {
+test('shows quick chips for Espresso', () => {
   renderDetail('espresso')
-  expect(screen.getByText('Zu sauer?')).toBeInTheDocument()
-  expect(screen.getByText('Zu bitter?')).toBeInTheDocument()
+  expect(screen.getByText('Too sour?')).toBeInTheDocument()
+  expect(screen.getByText('Too bitter?')).toBeInTheDocument()
 })
 
-test('zeigt Schritt-für-Schritt für Espresso', () => {
+test('shows step by step for Espresso', () => {
   renderDetail('espresso')
-  expect(screen.getByText('Mühle vorbereiten')).toBeInTheDocument()
-  expect(screen.getByText('Dosieren')).toBeInTheDocument()
+  expect(screen.getByText('Prepare grinder')).toBeInTheDocument()
+  expect(screen.getByText('Dose')).toBeInTheDocument()
 })
 
-test('Troubleshooting-Items sind initial zugeklappt', () => {
+test('troubleshooting items are collapsed by default', () => {
   renderDetail('espresso')
-  expect(screen.queryByText(/Unterextraktion/)).not.toBeInTheDocument()
+  expect(screen.queryByText(/Under-extraction/)).not.toBeInTheDocument()
 })
 
-test('öffnet Akkordeon-Item beim Klick', async () => {
-  renderDetail('espresso')
-  const user = userEvent.setup()
-  await user.click(screen.getByText('Espresso zu sauer / adstringierend'))
-  expect(screen.getByText(/Unterextraktion/)).toBeInTheDocument()
-})
-
-test('schließt offenes Akkordeon beim zweiten Klick', async () => {
+test('opens accordion item on click', async () => {
   renderDetail('espresso')
   const user = userEvent.setup()
-  const item = screen.getByText('Espresso zu sauer / adstringierend')
+  await user.click(screen.getByText('Espresso too sour / astringent'))
+  expect(screen.getByText(/Under-extraction/)).toBeInTheDocument()
+})
+
+test('closes open accordion item on second click', async () => {
+  renderDetail('espresso')
+  const user = userEvent.setup()
+  const item = screen.getByText('Espresso too sour / astringent')
   await user.click(item)
   await user.click(item)
-  expect(screen.queryByText(/Unterextraktion/)).not.toBeInTheDocument()
+  expect(screen.queryByText(/Under-extraction/)).not.toBeInTheDocument()
 })
 
-test('öffnet nur ein Akkordeon-Item gleichzeitig', async () => {
+test('opens only one accordion item at a time', async () => {
   renderDetail('espresso')
   const user = userEvent.setup()
-  await user.click(screen.getByText('Espresso zu sauer / adstringierend'))
-  await user.click(screen.getByText('Espresso zu bitter / verbrannt'))
-  expect(screen.queryByText(/Unterextraktion/)).not.toBeInTheDocument()
-  expect(screen.getByText(/Überextraktion/)).toBeInTheDocument()
+  await user.click(screen.getByText('Espresso too sour / astringent'))
+  await user.click(screen.getByText('Espresso too bitter / burnt'))
+  expect(screen.queryByText(/Under-extraction/)).not.toBeInTheDocument()
+  expect(screen.getByText(/Over-extraction/)).toBeInTheDocument()
 })
 
-test('redirectet bei unbekannter ID zu /guide', () => {
-  renderDetail('unbekannt')
-  expect(screen.getByText('Guide Übersicht')).toBeInTheDocument()
+test('redirects to /guide for unknown id', () => {
+  renderDetail('unknown')
+  expect(screen.getByText('Guide Overview')).toBeInTheDocument()
 })
 
-test('rendert alle 6 Guides ohne Fehler', () => {
+test('renders all 6 guides without error', () => {
   const ids = ['espresso', 'french-press', 'v60', 'aeropress', 'moka-pot', 'milch']
   for (const id of ids) {
     const { unmount } = renderDetail(id)
