@@ -110,6 +110,26 @@ export type NewGrinder = Omit<Grinder, 'id' | 'created_at'>
 export type NewMachine = Omit<Machine, 'id' | 'created_at'>
 export type NewBasket = Omit<Basket, 'id' | 'created_at'>
 
+export interface BrewDevice {
+  id: string
+  name: string
+  brand: string | null
+  device_type: string | null
+  notes: string | null
+  is_favorite: boolean
+  created_at: string
+}
+
+export type NewBrewDevice = Omit<BrewDevice, 'id' | 'created_at'>
+
+export interface EquipmentDefault {
+  method: string
+  grinder_id: string | null
+  machine_id: string | null
+  basket_id: string | null
+  brew_device_id: string | null
+}
+
 export interface Brew {
   id: string
   coffee_id: string
@@ -123,6 +143,7 @@ export interface Brew {
   rating: number
   acidity_score: number | null
   bitterness_score: number | null
+  brew_device_id: string | null
   tasting_notes: string | null
   bloom_ml: number | null
   bloom_time_s: number | null

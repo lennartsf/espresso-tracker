@@ -1,6 +1,7 @@
 import {
   GRINDER_TYPES, FUNKTIONSWEISE_TYPES,
   grinderTypeLabel, funktionsweiseLabel,
+  DEVICE_TYPES, deviceTypeLabel,
 } from '../utils/equipmentTypes'
 
 test('GRINDER_TYPES enthält 2 Einträge', () => {
@@ -41,4 +42,20 @@ test('funktionsweiseLabel gibt Thermoblock zurück', () => {
 
 test('funktionsweiseLabel Fallback für unbekannten Wert', () => {
   expect(funktionsweiseLabel('unknown')).toBe('unknown')
+})
+
+test('DEVICE_TYPES hat 6 Einträge', () => {
+  expect(DEVICE_TYPES).toHaveLength(6)
+})
+
+test('deviceTypeLabel gibt French Press zurück', () => {
+  expect(deviceTypeLabel('french_press')).toBe('French Press')
+})
+
+test('deviceTypeLabel gibt V60 zurück', () => {
+  expect(deviceTypeLabel('v60')).toBe('V60')
+})
+
+test('deviceTypeLabel Fallback für unbekannten Wert', () => {
+  expect(deviceTypeLabel('unknown')).toBe('unknown')
 })
