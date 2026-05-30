@@ -8,6 +8,7 @@ const navItems = [
   { to: '/kaffee', label: 'Kaffee', icon: '☕' },
   { to: '/roasters', label: 'Röstereien', icon: '📍' },
   { to: '/ausruestung', label: 'Ausrüstung', icon: '⚙️' },
+  { to: '/guide', label: 'Guide', icon: '📖' },
 ]
 
 export function Layout() {

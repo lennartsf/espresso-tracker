@@ -12,6 +12,8 @@ import { Equipment } from './pages/Equipment'
 import { Brews } from './pages/Brews'
 import { NewBrew } from './pages/NewBrew'
 import { BrewDetail } from './pages/BrewDetail'
+import { Guide } from './pages/Guide'
+import { GuideDetail } from './pages/GuideDetail'
 
 const queryClient = new QueryClient()
 
@@ -32,6 +34,8 @@ export default function App() {
             <Route path="brews" element={<Brews />} />
             <Route path="brews/new" element={<NewBrew />} />
             <Route path="brews/:id" element={<BrewDetail />} />
+            <Route path="guide" element={<Guide />} />
+            <Route path="guide/:id" element={<GuideDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
