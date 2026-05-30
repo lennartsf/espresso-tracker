@@ -33,6 +33,12 @@ vi.mock('../hooks/useEquipment', () => ({
   useCreateBasket: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUpdateBasket: () => ({ mutateAsync: vi.fn(), mutate: vi.fn(), isPending: false }),
   useDeleteBasket: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useBrewDevices: () => ({ data: [], isLoading: false }),
+  useCreateBrewDevice: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUpdateBrewDevice: () => ({ mutateAsync: vi.fn(), mutate: vi.fn(), isPending: false }),
+  useDeleteBrewDevice: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useEquipmentDefaults: () => ({ data: [] }),
+  useSetEquipmentDefault: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 
 function renderEquipment() {
@@ -46,6 +52,13 @@ function renderEquipment() {
 test('zeigt Mühlen-Tab standardmäßig', () => {
   renderEquipment()
   expect(screen.getByText('Niche Zero')).toBeInTheDocument()
+})
+
+test('zeigt Geräte-Tab wenn angeklickt', async () => {
+  renderEquipment()
+  const user = userEvent.setup()
+  await user.click(screen.getByText('Geräte'))
+  expect(screen.getByText(/Noch keine Geräte/)).toBeInTheDocument()
 })
 
 test('wechselt zu Maschinen-Tab', async () => {
