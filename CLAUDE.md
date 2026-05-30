@@ -149,11 +149,9 @@ src/
 - [x] Milchgetränke: drink_type (Espresso/Cappuccino/Latte/Flat White/Cortado/Macchiato), Milchsorte + ml
 - [x] ShotHistory: Filter-Tabs (Alle / Espresso / Milchgetränke)
 - [x] ShotCard: Getränketyp-Badge + angepasste Unterzeile
+- [x] Brühmethoden: `/brews` Seite (French Press, V60, AeroPress, Moka Pot), BrewCard, NewBrew, BrewDetail, MM:SS-Zeitformat
 
 ## Offene Aufgaben (nächste Session)
-
-### In Arbeit / Spec fertig
-- [ ] **Weitere Brühmethoden** (French Press, V60, AeroPress, Moka Pot) — Spec: `docs/superpowers/specs/2026-05-30-brew-methods-design.md`
 
 ### Geplant
 - [ ] **App auf Englisch** — komplette UI-Übersetzung
