@@ -126,7 +126,8 @@ test('zeigt Ausrüstungs-Chips wenn Equipment vorhanden', () => {
       baskets: { name: 'VST 18g', size_g: 18 },
     },
     isLoading: false,
-  })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any)
   renderDetail()
   expect(screen.getByText(/Niche Zero/)).toBeInTheDocument()
   expect(screen.getByText(/VST 18g/)).toBeInTheDocument()
