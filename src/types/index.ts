@@ -86,6 +86,7 @@ export interface Basket {
   id: string
   name: string
   brand: string | null
+  diameter_mm: number | null
   size_g: number | null
   notes: string | null
   is_favorite: boolean

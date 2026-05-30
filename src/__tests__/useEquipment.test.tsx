@@ -14,7 +14,7 @@ const mockMachine: Machine = {
   notes: null, is_favorite: true, created_at: '2026-01-01T00:00:00Z',
 }
 const mockBasket: Basket = {
-  id: 'b1', name: 'VST 18g', brand: 'VST', size_g: 18,
+  id: 'b1', name: 'VST 18g', brand: 'VST', diameter_mm: 58, size_g: 18,
   notes: null, is_favorite: false, created_at: '2026-01-01T00:00:00Z',
 }
 

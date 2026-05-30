@@ -419,9 +419,9 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
             </button>
             <button onClick={() => onSelect(b)} className="flex-1 text-left min-w-0">
               <p className="font-medium text-slate-800 text-sm truncate">{b.name}</p>
-              {(b.brand || b.size_g) && (
+              {(b.brand || b.diameter_mm || b.size_g) && (
                 <p className="text-xs text-slate-400 mt-0.5">
-                  {[b.brand, b.size_g ? `${b.size_g}g` : null].filter(Boolean).join(' · ')}
+                  {[b.brand, b.diameter_mm ? `⌀${b.diameter_mm}mm` : null, b.size_g ? `${b.size_g}g` : null].filter(Boolean).join(' · ')}
                 </p>
               )}
             </button>
@@ -481,9 +481,15 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
           <p className="text-sm text-slate-800">{basket.brand}</p>
         </div>
       )}
+      {basket.diameter_mm !== null && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Durchmesser</p>
+          <p className="text-sm text-slate-800">{basket.diameter_mm} mm</p>
+        </div>
+      )}
       {basket.size_g !== null && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Größe</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Nenndosis</p>
           <p className="text-sm text-slate-800">{basket.size_g} g</p>
         </div>
       )}
@@ -502,6 +508,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
   const updateBasket = useUpdateBasket()
   const [name, setName] = useState(basket?.name ?? '')
   const [brand, setBrand] = useState(basket?.brand ?? '')
+  const [diameterMm, setDiameterMm] = useState(basket?.diameter_mm != null ? String(basket.diameter_mm) : '')
   const [sizeG, setSizeG] = useState(basket?.size_g != null ? String(basket.size_g) : '')
   const [notes, setNotes] = useState(basket?.notes ?? '')
   const [error, setError] = useState('')
@@ -513,6 +520,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
     const payload = {
       name: name.trim(),
       brand: brand.trim() || null,
+      diameter_mm: diameterMm ? (isNaN(parseFloat(diameterMm)) ? null : parseFloat(diameterMm)) : null,
       size_g: sizeG ? (isNaN(parseFloat(sizeG)) ? null : parseFloat(sizeG)) : null,
       notes: notes.trim() || null,
       is_favorite: basket?.is_favorite ?? false,
@@ -543,7 +551,12 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <div className="flex items-center gap-2">
-          <input type="number" step="0.5" value={sizeG} onChange={e => setSizeG(e.target.value)} placeholder="Größe"
+          <input type="number" step="1" value={diameterMm} onChange={e => setDiameterMm(e.target.value)} placeholder="Durchmesser"
+            className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
+          <span className="text-sm text-slate-400">mm</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="number" step="0.5" value={sizeG} onChange={e => setSizeG(e.target.value)} placeholder="Nenndosis"
             className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           <span className="text-sm text-slate-400">g</span>
         </div>
