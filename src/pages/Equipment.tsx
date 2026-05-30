@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { GRINDER_TYPES, FUNKTIONSWEISE_TYPES, grinderTypeLabel, funktionsweiseLabel } from '../utils/equipmentTypes'
 import {
   useGrinders, useCreateGrinder, useUpdateGrinder, useDeleteGrinder,
   useMachines, useCreateMachine, useUpdateMachine, useDeleteMachine,
@@ -149,6 +150,41 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
           <p className="text-sm text-slate-800">{grinder.brand}</p>
         </div>
       )}
+      {grinder.grinder_type && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Mahlscheibentyp</p>
+          <p className="text-sm text-slate-800">{grinderTypeLabel(grinder.grinder_type)}</p>
+        </div>
+      )}
+      {(grinder.burr_size_mm !== null || grinder.motor_watt !== null) && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Spezifikationen</p>
+          <div className="grid gap-1">
+            {grinder.burr_size_mm !== null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Mahlscheibe</span>
+                <span className="text-slate-800">{grinder.burr_size_mm} mm</span>
+              </div>
+            )}
+            {grinder.motor_watt !== null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Motor</span>
+                <span className="text-slate-800">{grinder.motor_watt} W</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {(grinder.stepless || grinder.has_hopper) && (
+        <div className="flex gap-2 mb-3">
+          {grinder.stepless && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Stufenlos</span>
+          )}
+          {grinder.has_hopper && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Behälter</span>
+          )}
+        </div>
+      )}
       {grinder.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
@@ -165,13 +201,28 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
   const [name, setName] = useState(grinder?.name ?? '')
   const [brand, setBrand] = useState(grinder?.brand ?? '')
   const [notes, setNotes] = useState(grinder?.notes ?? '')
+  const [grinderType, setGrinderType] = useState(grinder?.grinder_type ?? '')
+  const [burrSizeMm, setBurrSizeMm] = useState(grinder?.burr_size_mm != null ? String(grinder.burr_size_mm) : '')
+  const [motorWatt, setMotorWatt] = useState(grinder?.motor_watt != null ? String(grinder.motor_watt) : '')
+  const [stepless, setStepless] = useState(grinder?.stepless ?? false)
+  const [hasHopper, setHasHopper] = useState(grinder?.has_hopper ?? false)
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
-    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, grinder_type: null, burr_size_mm: null, motor_watt: null, stepless: false, has_hopper: false, is_favorite: grinder?.is_favorite ?? false }
+    const payload = {
+      name: name.trim(),
+      brand: brand.trim() || null,
+      notes: notes.trim() || null,
+      grinder_type: grinderType || null,
+      burr_size_mm: burrSizeMm ? (isNaN(parseFloat(burrSizeMm)) ? null : parseFloat(burrSizeMm)) : null,
+      motor_watt: motorWatt ? (isNaN(parseInt(motorWatt, 10)) ? null : parseInt(motorWatt, 10)) : null,
+      stepless,
+      has_hopper: hasHopper,
+      is_favorite: grinder?.is_favorite ?? false,
+    }
     try {
       if (grinder) {
         await updateGrinder.mutateAsync({ id: grinder.id, ...payload })
@@ -197,6 +248,46 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
+        <select
+          value={grinderType}
+          onChange={e => setGrinderType(e.target.value)}
+          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+        >
+          <option value="">Mahlscheibentyp (optional)</option>
+          {GRINDER_TYPES.map(gt => (
+            <option key={gt.value} value={gt.value}>{gt.label}</option>
+          ))}
+        </select>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="number" step="0.5" value={burrSizeMm}
+              onChange={e => setBurrSizeMm(e.target.value)}
+              placeholder="Mahlscheibe"
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+            <span className="text-sm text-slate-400">mm</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="number" step="1" value={motorWatt}
+              onChange={e => setMotorWatt(e.target.value)}
+              placeholder="Motor"
+              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+            />
+            <span className="text-sm text-slate-400">W</span>
+          </div>
+        </div>
+        <div className="flex gap-6">
+          <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <input type="checkbox" checked={stepless} onChange={e => setStepless(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            Stufenlos
+          </label>
+          <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <input type="checkbox" checked={hasHopper} onChange={e => setHasHopper(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            Behälter
+          </label>
+        </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notizen" rows={2}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         {error && <p className="text-red-500 text-sm">{error}</p>}
