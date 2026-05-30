@@ -10,9 +10,9 @@ export type ShotWithCoffee = Shot & {
   baskets: { name: string; size_g: number | null } | null
 }
 
-export function useShots(coffeeId?: string, roastDateId?: string) {
+export function useShots(coffeeId?: string, roastDateId?: string, drinkFilter?: 'espresso' | 'milk') {
   return useQuery({
-    queryKey: ['shots', coffeeId ?? 'all', roastDateId ?? 'all'],
+    queryKey: ['shots', coffeeId ?? 'all', roastDateId ?? 'all', drinkFilter ?? 'all'],
     queryFn: async () => {
       let query = supabase
         .from('shots')
@@ -20,6 +20,8 @@ export function useShots(coffeeId?: string, roastDateId?: string) {
         .order('pulled_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (roastDateId) query = query.eq('roast_date_id', roastDateId)
+      if (drinkFilter === 'espresso') query = query.eq('drink_type', 'espresso')
+      if (drinkFilter === 'milk') query = query.neq('drink_type', 'espresso')
       const { data, error } = await query
       if (error) throw error
       return data as ShotWithCoffee[]
