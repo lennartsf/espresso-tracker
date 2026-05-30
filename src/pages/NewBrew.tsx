@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees } from '../hooks/useCoffees'
-import { useGrinders } from '../hooks/useEquipment'
+import { useGrinders, useBrewDevices, useEquipmentDefaults } from '../hooks/useEquipment'
 import { useCreateBrew } from '../hooks/useBrews'
 import { RatingInput } from '../components/RatingInput'
 import { BREW_METHODS, BREW_METHOD_INFO } from '../utils/brewMethods'
@@ -66,15 +66,23 @@ export function NewBrew() {
   const navigate = useNavigate()
   const { data: coffees = [] } = useCoffees()
   const { data: grinders = [] } = useGrinders()
+  const { data: brewDevices = [] } = useBrewDevices()
+  const { data: defaults = [] } = useEquipmentDefaults()
   const createBrew = useCreateBrew()
 
   const [brewMethod, setBrewMethod] = useState('french_press')
 
   const [coffeeId, setCoffeeId] = useState('')
   const [grinderId, setGrinderId] = useState('')
+  const [brewDeviceId, setBrewDeviceId] = useState('')
   const [grindSetting, setGrindSetting] = useState('')
 
-  useEffect(() => { if (!grinderId) { const f = grinders.find(g => g.is_favorite); if (f) setGrinderId(f.id) } }, [grinders])
+  useEffect(() => {
+    const d = defaults.find(d => d.method === brewMethod)
+    if (d?.grinder_id) setGrinderId(d.grinder_id)
+    if (d?.brew_device_id) setBrewDeviceId(d.brew_device_id)
+    else setBrewDeviceId('')
+  }, [defaults, brewMethod])
   const [doseG, setDoseG] = useState('')
   const [waterMl, setWaterMl] = useState('')
   const [tempC, setTempC] = useState('')
@@ -122,7 +130,7 @@ export function NewBrew() {
         bloom_time_s: brewMethod === 'v60' ? MMSSToSeconds(bloomTime) : null,
         inverted: brewMethod === 'aeropress' ? inverted : false,
         first_stir_s: brewMethod === 'french_press' ? firstStirS : null,
-        brew_device_id: null,
+        brew_device_id: brewDeviceId || null,
         brewed_at: new Date().toISOString(),
       })
       navigate('/brews')
@@ -203,6 +211,23 @@ export function NewBrew() {
               <option value="">Mühle (optional)</option>
               {grinders.map(g => (
                 <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Gerät */}
+        {brewDevices.length > 0 && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Gerät</label>
+            <select
+              value={brewDeviceId}
+              onChange={e => setBrewDeviceId(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Kein Gerät</option>
+              {brewDevices.map(d => (
+                <option key={d.id} value={d.id}>{d.name}{d.brand ? ` / ${d.brand}` : ''}</option>
               ))}
             </select>
           </div>

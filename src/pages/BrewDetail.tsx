@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useBrew, useUpdateBrew, useDeleteBrew } from '../hooks/useBrews'
 import { useCoffees } from '../hooks/useCoffees'
-import { useGrinders } from '../hooks/useEquipment'
+import { useGrinders, useBrewDevices } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { ratingColor } from '../utils/ratingColor'
 import { brewMethodLabel, BREW_METHODS, BREW_METHOD_INFO } from '../utils/brewMethods'
@@ -75,6 +75,7 @@ export function BrewDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: brew, isLoading, error } = useBrew(id ?? '')
+  const { data: brewDevices = [] } = useBrewDevices()
   const deleteBrew = useDeleteBrew()
   const [editing, setEditing] = useState(false)
 
@@ -135,6 +136,16 @@ export function BrewDetail() {
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(brew.bitterness_score)}`}>{brew.bitterness_score}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Gerät */}
+      {brew.brew_device_id && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3 flex justify-between items-center">
+          <p className="text-xs text-slate-400 uppercase font-semibold">Gerät</p>
+          <p className="text-sm font-bold text-slate-800">
+            {brewDevices.find(d => d.id === brew.brew_device_id)?.name ?? '—'}
+          </p>
         </div>
       )}
 
@@ -229,10 +240,12 @@ function BrewEditForm({
   const updateBrew = useUpdateBrew()
   const { data: coffees = [] } = useCoffees()
   const { data: grinders = [] } = useGrinders()
+  const { data: brewDevices = [] } = useBrewDevices()
 
   const [brewMethod, setBrewMethod] = useState(brew.brew_method)
   const [coffeeId, setCoffeeId] = useState(brew.coffee_id)
   const [grinderId, setGrinderId] = useState(brew.grinder_id ?? '')
+  const [brewDeviceId, setBrewDeviceId] = useState(brew.brew_device_id ?? '')
   const [grindSetting, setGrindSetting] = useState(brew.grind_setting != null ? String(brew.grind_setting) : '')
   const [doseG, setDoseG] = useState(brew.dose_g != null ? String(brew.dose_g) : '')
   const [waterMl, setWaterMl] = useState(brew.water_ml != null ? String(brew.water_ml) : '')
@@ -281,6 +294,7 @@ function BrewEditForm({
         bloom_time_s: brewMethod === 'v60' ? MMSSToSeconds(bloomTime) : null,
         inverted: brewMethod === 'aeropress' ? inverted : false,
         first_stir_s: brewMethod === 'french_press' ? firstStirS : null,
+        brew_device_id: brewDeviceId || null,
       })
       onSaved()
     } catch {
@@ -432,6 +446,23 @@ function BrewEditForm({
           <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
           <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
+
+        {/* Gerät */}
+        {brewDevices.length > 0 && (
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Gerät</label>
+            <select
+              value={brewDeviceId}
+              onChange={e => setBrewDeviceId(e.target.value)}
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+            >
+              <option value="">Kein Gerät</option>
+              {brewDevices.map(d => (
+                <option key={d.id} value={d.id}>{d.name}{d.brand ? ` / ${d.brand}` : ''}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Notizen */}
         <div>
