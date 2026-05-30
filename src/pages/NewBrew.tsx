@@ -122,6 +122,7 @@ export function NewBrew() {
         bloom_time_s: brewMethod === 'v60' ? MMSSToSeconds(bloomTime) : null,
         inverted: brewMethod === 'aeropress' ? inverted : false,
         first_stir_s: brewMethod === 'french_press' ? firstStirS : null,
+        brew_device_id: null,
         brewed_at: new Date().toISOString(),
       })
       navigate('/brews')
