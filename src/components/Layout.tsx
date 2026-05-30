@@ -2,19 +2,19 @@ import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 const navItems = [
-  { to: '/', label: 'Home', icon: '🏠' },
-  { to: '/shots', label: 'Shots', icon: '📋' },
-  { to: '/brews', label: 'Brühen', icon: '🫖' },
-  { to: '/analyse', label: 'Analyse', icon: '📊' },
-  { to: '/kaffee', label: 'Kaffee', icon: '☕' },
-  { to: '/roasters', label: 'Röstereien', icon: '📍' },
-  { to: '/ausruestung', label: 'Ausrüstung', icon: '⚙️' },
-  { to: '/guide', label: 'Guide', icon: '📖' },
-  { to: '/glossar', label: 'Glossar', icon: '📚' },
+  { to: '/',          label: 'Home',      icon: '🏠' },
+  { to: '/shots',     label: 'Shots',     icon: '📋' },
+  { to: '/brews',     label: 'Brews',     icon: '🫖' },
+  { to: '/analysis',  label: 'Analysis',  icon: '📊' },
+  { to: '/coffees',   label: 'Coffees',   icon: '☕' },
+  { to: '/roasters',  label: 'Roasters',  icon: '📍' },
+  { to: '/equipment', label: 'Equipment', icon: '⚙️' },
+  { to: '/guide',     label: 'Guide',     icon: '📖' },
+  { to: '/glossary',  label: 'Glossary',  icon: '📚' },
 ]
 
-const primaryNav = navItems.slice(0, 4)   // Home, Shots, Brühen, Analyse
-const moreNav    = navItems.slice(4)      // Kaffee, Röstereien, Ausrüstung, Guide
+const primaryNav = navItems.slice(0, 4)
+const moreNav    = navItems.slice(4)
 
 export function Layout() {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -58,7 +58,7 @@ export function Layout() {
         </div>
       </main>
 
-      {/* "Mehr" overlay — mobile only */}
+      {/* "More" overlay — mobile only */}
       {moreOpen && (
         <div
           className="md:hidden fixed inset-0 z-20"
@@ -115,7 +115,7 @@ export function Layout() {
           }`}
         >
           <span className="text-xl leading-tight">⋯</span>
-          Mehr
+          More
         </button>
       </nav>
     </div>

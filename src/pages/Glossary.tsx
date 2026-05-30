@@ -3,12 +3,12 @@ import { GLOSSARY } from '../utils/glossaryContent'
 
 const CATEGORY_LABELS = {
   espresso:  '☕ Espresso',
-  brew:      '🫖 Brühen',
+  brew:      '🫖 Brew',
   equipment: '⚙️ Equipment',
-  milch:     '🥛 Milch',
+  milk:      '🥛 Milk',
 }
 
-export function Glossar() {
+export function Glossary() {
   const [query, setQuery] = useState('')
 
   const filtered = GLOSSARY.filter(entry =>
@@ -18,19 +18,19 @@ export function Glossar() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-800 mb-1">📚 Glossar</h1>
-      <p className="text-sm text-slate-500 mb-4">{GLOSSARY.length} Begriffe</p>
+      <h1 className="text-xl font-bold text-slate-800 mb-1">📚 Glossary</h1>
+      <p className="text-sm text-slate-500 mb-4">{GLOSSARY.length} terms</p>
 
       <input
         type="search"
         value={query}
         onChange={e => setQuery(e.target.value)}
-        placeholder="Begriff suchen..."
+        placeholder="Search terms..."
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400 mb-4"
       />
 
       {filtered.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">Kein Begriff gefunden.</p>
+        <p className="text-center text-slate-400 text-sm py-10">No terms found.</p>
       ) : (
         <div className="flex flex-col gap-2">
           {filtered.map(entry => (

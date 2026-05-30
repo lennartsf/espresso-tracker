@@ -14,7 +14,7 @@ import { NewBrew } from './pages/NewBrew'
 import { BrewDetail } from './pages/BrewDetail'
 import { Guide } from './pages/Guide'
 import { GuideDetail } from './pages/GuideDetail'
-import { Glossar } from './pages/Glossar'
+import { Glossary } from './pages/Glossary'
 
 const queryClient = new QueryClient()
 
@@ -28,16 +28,16 @@ export default function App() {
             <Route path="shots" element={<ShotHistory />} />
             <Route path="shots/new" element={<NewShot />} />
             <Route path="shots/:id" element={<ShotDetail />} />
-            <Route path="analyse" element={<Analysis />} />
-            <Route path="kaffee" element={<CoffeeManager />} />
+            <Route path="analysis" element={<Analysis />} />
+            <Route path="coffees" element={<CoffeeManager />} />
             <Route path="roasters" element={<Roasters />} />
-            <Route path="ausruestung" element={<Equipment />} />
+            <Route path="equipment" element={<Equipment />} />
             <Route path="brews" element={<Brews />} />
             <Route path="brews/new" element={<NewBrew />} />
             <Route path="brews/:id" element={<BrewDetail />} />
             <Route path="guide" element={<Guide />} />
             <Route path="guide/:id" element={<GuideDetail />} />
-            <Route path="glossar" element={<Glossar />} />
+            <Route path="glossary" element={<Glossary />} />
           </Route>
         </Routes>
       </BrowserRouter>
