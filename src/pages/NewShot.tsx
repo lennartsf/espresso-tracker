@@ -9,10 +9,10 @@ import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 
 const RATING_INFO = {
-  rating:       { question: 'Wie gut schmeckt der Shot insgesamt?', low: 'kaum trinkbar',       high: 'perfekter Espresso'    },
-  body_score:   { question: 'Wie voll und cremig fühlt sich der Espresso an?', low: 'cremig & vollmundig', high: 'dünn & wässrig' },
-  acidity_score:   { question: 'Wie ausgeprägt ist die Säure im Shot?', low: 'sehr mild',       high: 'stark & spritzig'      },
-  bitterness_score:{ question: 'Wie stark ist die Bitterkeit im Shot?', low: 'kaum bitter',      high: 'sehr bitter'           },
+  rating:          { question: 'How good does the shot taste overall?', low: 'barely drinkable',  high: 'perfect espresso'   },
+  body_score:      { question: 'How full and creamy does the espresso feel?', low: 'thin & watery', high: 'rich & creamy'    },
+  acidity_score:   { question: 'How pronounced is the acidity in the shot?', low: 'very mild',     high: 'bright & lively'   },
+  bitterness_score:{ question: 'How strong is the bitterness in the shot?', low: 'barely bitter',  high: 'very bitter'       },
 }
 
 function RatingField({
@@ -136,15 +136,15 @@ export function NewShot() {
     setError('')
 
     if (!coffeeId && !newCoffeeName.trim()) {
-      setError('Bitte einen Kaffee auswählen oder eingeben.')
+      setError('Please select or enter a coffee.')
       return
     }
     if (!grindSetting) {
-      setError('Mahlgrad ist erforderlich.')
+      setError('Grind setting is required.')
       return
     }
     if (!rating) {
-      setError('Bitte den Shot bewerten.')
+      setError('Please rate the shot.')
       return
     }
 
@@ -200,20 +200,20 @@ export function NewShot() {
   }
 
   function formatDate(d: string) {
-    return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={() => navigate(-1)} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Neuer Shot</h1>
+        <h1 className="text-xl font-bold text-slate-800">New Shot</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         {/* Getränketyp */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Getränketyp</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Drink Type</label>
           <div className="flex flex-wrap gap-2">
             {DRINK_TYPES.map(dt => (
               <button
@@ -234,7 +234,7 @@ export function NewShot() {
 
         {/* Coffee */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee *</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee *</label>
           {!showNewCoffee ? (
             <div className="flex gap-2">
               <select
@@ -242,7 +242,7 @@ export function NewShot() {
                 onChange={e => handleCoffeeChange(e.target.value)}
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
               >
-                <option value="">Kaffee wählen...</option>
+                <option value="">Select coffee...</option>
                 {coffees.map(c => (
                   <option key={c.id} value={c.id}>
                     {c.name}{c.roaster ? ` / ${c.roaster}` : ''}
@@ -254,7 +254,7 @@ export function NewShot() {
                 onClick={() => { setShowNewCoffee(true); handleCoffeeChange('') }}
                 className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50"
               >
-                + Neu
+                + New
               </button>
             </div>
           ) : (
@@ -263,7 +263,7 @@ export function NewShot() {
                 autoFocus
                 value={newCoffeeName}
                 onChange={e => setNewCoffeeName(e.target.value)}
-                placeholder="Kaffee-Name"
+                placeholder="Coffee name"
                 className="flex-1 border border-orange-400 rounded-lg px-3 py-2 text-sm focus:outline-none"
               />
               <button
@@ -271,7 +271,7 @@ export function NewShot() {
                 onClick={() => setShowNewCoffee(false)}
                 className="px-3 py-2 text-sm text-slate-400 hover:text-slate-600"
               >
-                Abbrechen
+                Cancel
               </button>
             </div>
           )}
@@ -280,7 +280,7 @@ export function NewShot() {
         {/* Roast date */}
         {coffeeId && recentDates.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Röstdatum</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Roast Date</label>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -289,7 +289,7 @@ export function NewShot() {
                   roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-500 bg-white'
                 }`}
               >
-                Keine Angabe
+                Not specified
               </button>
               {recentDates.map((rd, i) => (
                 <button
@@ -301,7 +301,7 @@ export function NewShot() {
                   }`}
                 >
                   {formatDate(rd.roast_date)}
-                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Aktuell</span>}
+                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Current</span>}
                 </button>
               ))}
             </div>
@@ -315,7 +315,7 @@ export function NewShot() {
             onChange={e => setGrinderId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
           >
-            <option value="">Mühle (optional)</option>
+            <option value="">Grinder (optional)</option>
             {grinders.map(g => (
               <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
             ))}
@@ -325,7 +325,7 @@ export function NewShot() {
         {/* Grind + Temp + Pressure */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad *</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grind Setting *</label>
             <input
               type="number" step="0.5" value={grindSetting}
               onChange={e => setGrindSetting(e.target.value)}
@@ -343,7 +343,7 @@ export function NewShot() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Druck (bar)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Pressure (bar)</label>
             <input
               type="number" step="0.1" value={pressureBar}
               onChange={e => setPressureBar(e.target.value)}
@@ -357,7 +357,7 @@ export function NewShot() {
         <div>
           <div className="grid grid-cols-2 gap-3 mb-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Einwaage (g)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Dose (g)</label>
               <input
                 type="number" step="0.1" value={doseG}
                 onChange={e => setDoseG(e.target.value)}
@@ -366,7 +366,7 @@ export function NewShot() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Ausbeute (g)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Yield (g)</label>
               <input
                 type="number" step="0.1" value={yieldG}
                 onChange={e => setYieldG(e.target.value)}
@@ -383,7 +383,7 @@ export function NewShot() {
 
         {/* Brew time */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brühzeit</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brew Time</label>
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <input
@@ -427,23 +427,23 @@ export function NewShot() {
         {/* Milch */}
         {drinkType !== 'espresso' && (
           <div className="border border-orange-200 bg-orange-50 rounded-xl p-3">
-            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milch</label>
+            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milk</label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Sorte</label>
+                <label className="block text-xs text-slate-500 mb-1">Type</label>
                 <select
                   value={milkType}
                   onChange={e => setMilkType(e.target.value)}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
-                  <option value="">Wählen...</option>
+                  <option value="">Select...</option>
                   {MILK_TYPES.map(mt => (
                     <option key={mt.value} value={mt.value}>{mt.label}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Menge</label>
+                <label className="block text-xs text-slate-500 mb-1">Amount</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -462,7 +462,7 @@ export function NewShot() {
 
         {/* Prep Tools */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Vorbereitung</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Prep</label>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
               <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
@@ -482,7 +482,7 @@ export function NewShot() {
         {/* Ausrüstung */}
         {(machines.length > 0 || baskets.length > 0) && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Ausrüstung</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Equipment</label>
             <div className="grid gap-2">
               {machines.length > 0 && (
                 <select
@@ -490,7 +490,7 @@ export function NewShot() {
                   onChange={e => setMachineId(e.target.value)}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
-                  <option value="">Maschine (optional)</option>
+                  <option value="">Machine (optional)</option>
                   {machines.map(m => (
                     <option key={m.id} value={m.id}>{m.name}{m.brand ? ` / ${m.brand}` : ''}</option>
                   ))}
@@ -502,7 +502,7 @@ export function NewShot() {
                   onChange={e => setBasketId(e.target.value)}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
-                  <option value="">Sieb (optional)</option>
+                  <option value="">Basket (optional)</option>
                   {baskets.map(b => (
                     <option key={b.id} value={b.id}>{b.name}{b.size_g ? ` ${b.size_g}g` : ''}</option>
                   ))}
@@ -514,20 +514,20 @@ export function NewShot() {
 
         {/* Ratings */}
         <div className="grid gap-3">
-          <RatingField label="Geschmack" required infoKey="rating" value={rating} onChange={setRating} />
-          <RatingField label="Körper" infoKey="body_score" value={bodyScore} onChange={setBodyScore} />
-          <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
-          <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
+          <RatingField label="Flavor" required infoKey="rating" value={rating} onChange={setRating} />
+          <RatingField label="Body" infoKey="body_score" value={bodyScore} onChange={setBodyScore} />
+          <RatingField label="Acidity" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
+          <RatingField label="Bitterness" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notes */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Geschmacksnotizen</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Tasting Notes</label>
           <textarea
             value={tastingNotes}
             onChange={e => setTastingNotes(e.target.value)}
             rows={2}
-            placeholder="Schokolade, Nuss, leicht säuerlich..."
+            placeholder="Chocolate, nuts, slightly acidic..."
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400"
           />
         </div>
@@ -539,7 +539,7 @@ export function NewShot() {
           disabled={createShot.isPending || createCoffee.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {createShot.isPending ? 'Speichern...' : 'Shot speichern'}
+          {createShot.isPending ? 'Saving...' : 'Save Shot'}
         </button>
       </form>
     </div>
