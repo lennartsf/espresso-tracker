@@ -159,24 +159,9 @@ export function ShotDetail() {
         </div>
       )}
 
-      {/* Timestamp */}
-      <p className="text-xs text-slate-400 text-center mt-4">{formatDate(shot.pulled_at)}</p>
-      {(shot.used_rdt || shot.used_wdt || shot.used_leveler) && (
-        <div className="flex gap-2 justify-center mt-2">
-          {shot.used_rdt && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">RDT</span>
-          )}
-          {shot.used_wdt && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">WDT</span>
-          )}
-          {shot.used_leveler && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Leveler</span>
-          )}
-        </div>
-      )}
       {/* Equipment */}
       {(shot.grinders || shot.machines || shot.baskets) && (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 mt-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Ausrüstung</p>
           <div className="flex flex-wrap gap-2">
             {shot.grinders && (
@@ -195,6 +180,21 @@ export function ShotDetail() {
               </span>
             )}
           </div>
+        </div>
+      )}
+      {/* Timestamp */}
+      <p className="text-xs text-slate-400 text-center mt-4">{formatDate(shot.pulled_at)}</p>
+      {(shot.used_rdt || shot.used_wdt || shot.used_leveler) && (
+        <div className="flex gap-2 justify-center mt-2">
+          {shot.used_rdt && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">RDT</span>
+          )}
+          {shot.used_wdt && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">WDT</span>
+          )}
+          {shot.used_leveler && (
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Leveler</span>
+          )}
         </div>
       )}
     </div>
@@ -447,7 +447,7 @@ function ShotEditForm({
             <select
               value={grinderId}
               onChange={e => setGrinderId(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
               <option value="">Mühle (optional)</option>
               {grinders.map(g => (
@@ -457,7 +457,7 @@ function ShotEditForm({
             <select
               value={machineId}
               onChange={e => setMachineId(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
               <option value="">Maschine (optional)</option>
               {machines.map(m => (
@@ -467,7 +467,7 @@ function ShotEditForm({
             <select
               value={basketId}
               onChange={e => setBasketId(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
               <option value="">Sieb (optional)</option>
               {baskets.map(b => (
