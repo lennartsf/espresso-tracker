@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
 import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
+import { DRINK_TYPES, MILK_TYPES } from '../utils/drinkTypes'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
@@ -87,6 +88,9 @@ export function NewShot() {
   const [usedRdt, setUsedRdt] = useState(false)
   const [usedWdt, setUsedWdt] = useState(false)
   const [usedLeveler, setUsedLeveler] = useState(false)
+  const [drinkType, setDrinkType] = useState('espresso')
+  const [milkType, setMilkType] = useState('')
+  const [milkMl, setMilkMl] = useState('')
   const [grinderId, setGrinderId] = useState('')
   const [machineId, setMachineId] = useState('')
   const [basketId, setBasketId] = useState('')
@@ -165,9 +169,9 @@ export function NewShot() {
       grinder_id: grinderId || null,
       machine_id: machineId || null,
       basket_id: basketId || null,
-      drink_type: 'espresso',
-      milk_type: null,
-      milk_ml: null,
+      drink_type: drinkType,
+      milk_type: drinkType !== 'espresso' ? (milkType || null) : null,
+      milk_ml: drinkType !== 'espresso' ? (milkMl ? parseFloat(milkMl) : null) : null,
       pulled_at: new Date().toISOString(),
     })
 
@@ -186,6 +190,27 @@ export function NewShot() {
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
+        {/* Getränketyp */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Getränketyp</label>
+          <div className="flex flex-wrap gap-2">
+            {DRINK_TYPES.map(dt => (
+              <button
+                key={dt.value}
+                type="button"
+                onClick={() => setDrinkType(dt.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  drinkType === dt.value
+                    ? 'bg-orange-500 text-white'
+                    : 'border border-slate-200 text-slate-500 bg-white hover:bg-slate-50'
+                }`}
+              >
+                {dt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Coffee */}
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee *</label>
@@ -337,6 +362,42 @@ export function NewShot() {
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
           </div>
         </div>
+
+        {/* Milch */}
+        {drinkType !== 'espresso' && (
+          <div className="border border-orange-200 bg-orange-50 rounded-xl p-3">
+            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milch</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Sorte</label>
+                <select
+                  value={milkType}
+                  onChange={e => setMilkType(e.target.value)}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                >
+                  <option value="">Wählen...</option>
+                  {MILK_TYPES.map(mt => (
+                    <option key={mt.value} value={mt.value}>{mt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Menge</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    step="10"
+                    value={milkMl}
+                    onChange={e => setMilkMl(e.target.value)}
+                    placeholder="120"
+                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                  />
+                  <span className="text-sm text-slate-400">ml</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Prep Tools */}
         <div>
