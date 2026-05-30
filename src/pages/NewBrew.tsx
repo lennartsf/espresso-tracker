@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees } from '../hooks/useCoffees'
 import { useGrinders } from '../hooks/useEquipment'
@@ -69,9 +69,12 @@ export function NewBrew() {
   const createBrew = useCreateBrew()
 
   const [brewMethod, setBrewMethod] = useState('french_press')
+
   const [coffeeId, setCoffeeId] = useState('')
   const [grinderId, setGrinderId] = useState('')
   const [grindSetting, setGrindSetting] = useState('')
+
+  useEffect(() => { if (!grinderId) { const f = grinders.find(g => g.is_favorite); if (f) setGrinderId(f.id) } }, [grinders])
   const [doseG, setDoseG] = useState('')
   const [waterMl, setWaterMl] = useState('')
   const [tempC, setTempC] = useState('')

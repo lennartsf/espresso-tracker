@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
@@ -105,6 +105,10 @@ export function NewShot() {
   const { data: machines = [] } = useMachines()
   const { data: baskets = [] } = useBaskets()
   const recentDates = roastDates.slice(0, 2)
+
+  useEffect(() => { if (!grinderId) { const f = grinders.find(g => g.is_favorite); if (f) setGrinderId(f.id) } }, [grinders])
+  useEffect(() => { if (!machineId) { const f = machines.find(m => m.is_favorite); if (f) setMachineId(f.id) } }, [machines])
+  useEffect(() => { if (!basketId)  { const f = baskets.find(b => b.is_favorite);  if (f) setBasketId(f.id)  } }, [baskets])
 
   // Auto-calculate brew ratio
   const doseNum = parseFloat(doseG)
