@@ -6,6 +6,7 @@ import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { ratingColor } from '../utils/ratingColor'
+import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 function formatDate(iso: string) {
@@ -59,7 +60,14 @@ export function ShotDetail() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/shots')} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">{shot.coffees?.name ?? '—'}</h1>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl font-bold text-slate-800">{shot.coffees?.name ?? '—'}</h1>
+            {shot.drink_type !== 'espresso' && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">
+                {drinkTypeLabel(shot.drink_type)}
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">
@@ -151,6 +159,21 @@ export function ShotDetail() {
         </div>
       )}
 
+      {/* Milch */}
+      {shot.drink_type !== 'espresso' && (shot.milk_type || shot.milk_ml) && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Milch</p>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-slate-800">
+              {shot.milk_type ? milkTypeLabel(shot.milk_type) : '—'}
+            </span>
+            {shot.milk_ml && (
+              <span className="text-sm font-semibold text-slate-600">{shot.milk_ml} ml</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tasting notes */}
       {shot.tasting_notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
@@ -235,6 +258,9 @@ function ShotEditForm({
   const [grinderId, setGrinderId] = useState(shot.grinder_id ?? '')
   const [machineId, setMachineId] = useState(shot.machine_id ?? '')
   const [basketId, setBasketId] = useState(shot.basket_id ?? '')
+  const [drinkType, setDrinkType] = useState(shot.drink_type ?? 'espresso')
+  const [milkType, setMilkType] = useState(shot.milk_type ?? '')
+  const [milkMl, setMilkMl] = useState(shot.milk_ml != null ? String(shot.milk_ml) : '')
   const [error, setError] = useState('')
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
@@ -278,6 +304,9 @@ function ShotEditForm({
         grinder_id: grinderId || null,
         machine_id: machineId || null,
         basket_id: basketId || null,
+        drink_type: drinkType,
+        milk_type: drinkType !== 'espresso' ? (milkType || null) : null,
+        milk_ml: drinkType !== 'espresso' ? (milkMl ? parseFloat(milkMl) : null) : null,
       })
       onSaved()
     } catch (err: unknown) {
@@ -299,6 +328,27 @@ function ShotEditForm({
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
+        {/* Getränketyp */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Getränketyp</label>
+          <div className="flex flex-wrap gap-2">
+            {DRINK_TYPES.map(dt => (
+              <button
+                key={dt.value}
+                type="button"
+                onClick={() => setDrinkType(dt.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  drinkType === dt.value
+                    ? 'bg-orange-500 text-white'
+                    : 'border border-slate-200 text-slate-500 bg-white hover:bg-slate-50'
+                }`}
+              >
+                {dt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Datum & Uhrzeit */}
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Datum & Uhrzeit</label>
@@ -420,6 +470,41 @@ function ShotEditForm({
             className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
         </div>
+
+        {/* Milch */}
+        {drinkType !== 'espresso' && (
+          <div className="border border-orange-200 bg-orange-50 rounded-xl p-3">
+            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milch</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Sorte</label>
+                <select
+                  value={milkType}
+                  onChange={e => setMilkType(e.target.value)}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                >
+                  <option value="">Wählen...</option>
+                  {MILK_TYPES.map(mt => (
+                    <option key={mt.value} value={mt.value}>{mt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Menge</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    step="10"
+                    value={milkMl}
+                    onChange={e => setMilkMl(e.target.value)}
+                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                  />
+                  <span className="text-sm text-slate-400">ml</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Prep Tools */}
         <div>

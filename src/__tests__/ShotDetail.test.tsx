@@ -97,6 +97,49 @@ test('zeigt Edit-Formular nach Klick auf Bearbeiten', async () => {
   expect(screen.getByText('Änderungen speichern')).toBeInTheDocument()
 })
 
+test('zeigt Getränketyp-Badge für Cappuccino', () => {
+  vi.mocked(useShot).mockReturnValueOnce({
+    data: {
+      id: 'shot-1',
+      coffee_id: 'coffee-1',
+      roast_date_id: null,
+      grind_setting: 12.5,
+      dose_g: 18,
+      yield_g: 36,
+      brew_ratio: 2.0,
+      pressure_bar: 9,
+      brew_time_s: 28,
+      temp_c: 93,
+      rating: 8,
+      body_score: 7,
+      acidity_score: 5,
+      tasting_notes: null,
+      used_rdt: false,
+      used_wdt: false,
+      used_leveler: false,
+      grinder_id: null,
+      machine_id: null,
+      basket_id: null,
+      drink_type: 'cappuccino',
+      milk_type: 'hafer',
+      milk_ml: 120,
+      pulled_at: '2026-05-30T10:00:00Z',
+      created_at: '2026-05-30T10:00:00Z',
+      coffees: { name: 'Ethiopia Yirgacheffe' },
+      roast_dates: null,
+      grinders: null,
+      machines: null,
+      baskets: null,
+    },
+    isLoading: false,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any)
+  renderDetail()
+  expect(screen.getByText('Cappuccino')).toBeInTheDocument()
+  expect(screen.getByText('Hafermilch')).toBeInTheDocument()
+  expect(screen.getByText('120 ml')).toBeInTheDocument()
+})
+
 test('zeigt Ausrüstungs-Chips wenn Equipment vorhanden', () => {
   vi.mocked(useShot).mockReturnValueOnce({
     data: {
