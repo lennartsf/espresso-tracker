@@ -85,6 +85,8 @@ export function NewShot() {
   const [bodyScore, setBodyScore] = useState<number | null>(null)
   const [acidityScore, setAcidityScore] = useState<number | null>(null)
   const [bitternessScore, setBitternessScore] = useState<number | null>(null)
+  const [preinfusion, setPreinfusion] = useState(false)
+  const [preinfusionS, setPreinfusionS] = useState('')
   const [tastingNotes, setTastingNotes] = useState('')
   const [pressureBar, setPressureBar] = useState('9')
   const [usedRdt, setUsedRdt] = useState(false)
@@ -165,6 +167,7 @@ export function NewShot() {
       body_score: bodyScore,
       acidity_score: acidityScore,
       bitterness_score: bitternessScore,
+      preinfusion_s: preinfusion && preinfusionS ? parseFloat(preinfusionS) : null,
       tasting_notes: tastingNotes.trim() || null,
       used_rdt: usedRdt,
       used_wdt: usedWdt,
@@ -364,6 +367,32 @@ export function NewShot() {
             </div>
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
           </div>
+        </div>
+
+        {/* Preinfusion */}
+        <div>
+          <label className="flex items-center gap-2 cursor-pointer w-fit">
+            <input
+              type="checkbox"
+              checked={preinfusion}
+              onChange={e => { setPreinfusion(e.target.checked); if (!e.target.checked) setPreinfusionS('') }}
+              className="w-4 h-4 accent-orange-500"
+            />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Preinfusion</span>
+          </label>
+          {preinfusion && (
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="number"
+                step="0.5"
+                value={preinfusionS}
+                onChange={e => setPreinfusionS(e.target.value)}
+                placeholder="5"
+                className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+              <span className="text-sm text-slate-400">s</span>
+            </div>
+          )}
         </div>
 
         {/* Milch */}

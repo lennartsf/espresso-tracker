@@ -165,6 +165,14 @@ export function ShotDetail() {
         </div>
       )}
 
+      {/* Preinfusion */}
+      {shot.preinfusion_s !== null && (
+        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3 flex justify-between items-center">
+          <p className="text-xs text-slate-400 uppercase font-semibold">Preinfusion</p>
+          <p className="text-base font-bold text-slate-800">{shot.preinfusion_s} s</p>
+        </div>
+      )}
+
       {/* Milch */}
       {shot.drink_type !== 'espresso' && (shot.milk_type || shot.milk_ml) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
@@ -255,6 +263,8 @@ function ShotEditForm({
   const [bodyScore, setBodyScore] = useState<number | null>(shot.body_score)
   const [acidityScore, setAcidityScore] = useState<number | null>(shot.acidity_score)
   const [bitternessScore, setBitternessScore] = useState<number | null>(shot.bitterness_score)
+  const [preinfusion, setPreinfusion] = useState(shot.preinfusion_s !== null)
+  const [preinfusionS, setPreinfusionS] = useState(shot.preinfusion_s != null ? String(shot.preinfusion_s) : '')
   const [tastingNotes, setTastingNotes] = useState(shot.tasting_notes ?? '')
   const [usedRdt, setUsedRdt] = useState(shot.used_rdt ?? false)
   const [usedWdt, setUsedWdt] = useState(shot.used_wdt ?? false)
@@ -305,6 +315,7 @@ function ShotEditForm({
         body_score: bodyScore,
         acidity_score: acidityScore,
         bitterness_score: bitternessScore,
+        preinfusion_s: preinfusion && preinfusionS ? parseFloat(preinfusionS) : null,
         tasting_notes: tastingNotes.trim() || null,
         used_rdt: usedRdt,
         used_wdt: usedWdt,
@@ -477,6 +488,32 @@ function ShotEditForm({
             onChange={e => setBrewTimeS(e.target.value)}
             className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
+        </div>
+
+        {/* Preinfusion */}
+        <div>
+          <label className="flex items-center gap-2 cursor-pointer w-fit">
+            <input
+              type="checkbox"
+              checked={preinfusion}
+              onChange={e => { setPreinfusion(e.target.checked); if (!e.target.checked) setPreinfusionS('') }}
+              className="w-4 h-4 accent-orange-500"
+            />
+            <span className="text-xs font-semibold text-slate-400 uppercase">Preinfusion</span>
+          </label>
+          {preinfusion && (
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="number"
+                step="0.5"
+                value={preinfusionS}
+                onChange={e => setPreinfusionS(e.target.value)}
+                placeholder="5"
+                className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              />
+              <span className="text-sm text-slate-400">s</span>
+            </div>
+          )}
         </div>
 
         {/* Milch */}
