@@ -491,8 +491,8 @@ function ShotEditForm({
         </div>
 
         {/* Preinfusion */}
-        <div>
-          <label className="flex items-center gap-2 cursor-pointer w-fit">
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={preinfusion}
@@ -502,7 +502,7 @@ function ShotEditForm({
             <span className="text-xs font-semibold text-slate-400 uppercase">Preinfusion</span>
           </label>
           {preinfusion && (
-            <div className="flex items-center gap-2 mt-2">
+            <>
               <input
                 type="number"
                 step="0.5"
@@ -512,7 +512,7 @@ function ShotEditForm({
                 className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
               />
               <span className="text-sm text-slate-400">s</span>
-            </div>
+            </>
           )}
         </div>
 
