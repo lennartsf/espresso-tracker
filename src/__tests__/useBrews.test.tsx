@@ -16,6 +16,8 @@ const mockBrew: BrewWithCoffee = {
   temp_c: 93,
   brew_time_s: 210,
   rating: 8,
+  acidity_score: null,
+  bitterness_score: null,
   tasting_notes: null,
   bloom_ml: 30,
   bloom_time_s: 45,

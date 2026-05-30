@@ -17,6 +17,7 @@ const baseShot: ShotWithCoffee = {
   rating: 8,
   body_score: null,
   acidity_score: null,
+  bitterness_score: null,
   brew_ratio: 2,
   tasting_notes: null,
   used_rdt: false,

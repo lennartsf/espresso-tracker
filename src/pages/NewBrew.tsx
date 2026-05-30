@@ -26,6 +26,8 @@ export function NewBrew() {
   const [inverted, setInverted] = useState(false)
   const [firstStir, setFirstStir] = useState('')
   const [rating, setRating] = useState<number | null>(null)
+  const [acidityScore, setAcidityScore] = useState<number | null>(null)
+  const [bitternessScore, setBitternessScore] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [error, setError] = useState('')
   const [showMethodInfo, setShowMethodInfo] = useState(false)
@@ -55,6 +57,8 @@ export function NewBrew() {
         temp_c: tempC ? parseFloat(tempC) : null,
         brew_time_s: brewTimeS,
         rating,
+        acidity_score: acidityScore,
+        bitterness_score: bitternessScore,
         tasting_notes: tastingNotes.trim() || null,
         bloom_ml: brewMethod === 'v60' && bloomMl ? parseFloat(bloomMl) : null,
         bloom_time_s: brewMethod === 'v60' ? MMSSToSeconds(bloomTime) : null,
@@ -263,6 +267,14 @@ export function NewBrew() {
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bewertung *</label>
           <RatingInput value={rating} onChange={setRating} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Säure</label>
+          <RatingInput value={acidityScore} onChange={setAcidityScore} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bitterkeit</label>
+          <RatingInput value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notizen */}

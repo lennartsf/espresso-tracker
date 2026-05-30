@@ -91,8 +91,8 @@ export function ShotDetail() {
         </span>
       </div>
 
-      {/* Body + Acidity badges */}
-      {(shot.body_score !== null || shot.acidity_score !== null) && (
+      {/* Body + Acidity + Bitterness badges */}
+      {(shot.body_score !== null || shot.acidity_score !== null || shot.bitterness_score !== null) && (
         <div className="flex gap-2 mb-3">
           {shot.body_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
@@ -104,6 +104,12 @@ export function ShotDetail() {
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
               <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Säure</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.acidity_score)}`}>{shot.acidity_score}</p>
+            </div>
+          )}
+          {shot.bitterness_score !== null && (
+            <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterkeit</p>
+              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.bitterness_score)}`}>{shot.bitterness_score}</p>
             </div>
           )}
         </div>
@@ -248,6 +254,7 @@ function ShotEditForm({
   const [rating, setRating] = useState<number | null>(shot.rating)
   const [bodyScore, setBodyScore] = useState<number | null>(shot.body_score)
   const [acidityScore, setAcidityScore] = useState<number | null>(shot.acidity_score)
+  const [bitternessScore, setBitternessScore] = useState<number | null>(shot.bitterness_score)
   const [tastingNotes, setTastingNotes] = useState(shot.tasting_notes ?? '')
   const [usedRdt, setUsedRdt] = useState(shot.used_rdt ?? false)
   const [usedWdt, setUsedWdt] = useState(shot.used_wdt ?? false)
@@ -297,6 +304,7 @@ function ShotEditForm({
         rating,
         body_score: bodyScore,
         acidity_score: acidityScore,
+        bitterness_score: bitternessScore,
         tasting_notes: tastingNotes.trim() || null,
         used_rdt: usedRdt,
         used_wdt: usedWdt,
@@ -575,6 +583,10 @@ function ShotEditForm({
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Säure</label>
             <RatingInput value={acidityScore} onChange={setAcidityScore} />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Bitterkeit</label>
+            <RatingInput value={bitternessScore} onChange={setBitternessScore} />
           </div>
         </div>
 

@@ -65,6 +65,24 @@ export function BrewDetail() {
         <span className={`text-2xl font-bold px-3 py-0.5 rounded-lg ${ratingColor(brew.rating)}`}>{brew.rating}</span>
       </div>
 
+      {/* Acidity + Bitterness badges */}
+      {(brew.acidity_score !== null || brew.bitterness_score !== null) && (
+        <div className="flex gap-2 mb-3">
+          {brew.acidity_score !== null && (
+            <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Säure</p>
+              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(brew.acidity_score)}`}>{brew.acidity_score}</p>
+            </div>
+          )}
+          {brew.bitterness_score !== null && (
+            <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterkeit</p>
+              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(brew.bitterness_score)}`}>{brew.bitterness_score}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Parameter Grid */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         {brew.grind_setting !== null && (
@@ -170,6 +188,8 @@ function BrewEditForm({
   const [inverted, setInverted] = useState(brew.inverted)
   const [firstStir, setFirstStir] = useState(brew.first_stir_s != null ? secondsToMMSS(brew.first_stir_s) : '')
   const [rating, setRating] = useState<number | null>(brew.rating)
+  const [acidityScore, setAcidityScore] = useState<number | null>(brew.acidity_score)
+  const [bitternessScore, setBitternessScore] = useState<number | null>(brew.bitterness_score)
   const [tastingNotes, setTastingNotes] = useState(brew.tasting_notes ?? '')
   const [error, setError] = useState('')
   const [showMethodInfo, setShowMethodInfo] = useState(false)
@@ -199,6 +219,8 @@ function BrewEditForm({
         temp_c: tempC ? parseFloat(tempC) : null,
         brew_time_s: brewTimeS,
         rating,
+        acidity_score: acidityScore,
+        bitterness_score: bitternessScore,
         tasting_notes: tastingNotes.trim() || null,
         bloom_ml: brewMethod === 'v60' && bloomMl ? parseFloat(bloomMl) : null,
         bloom_time_s: brewMethod === 'v60' ? MMSSToSeconds(bloomTime) : null,
@@ -353,6 +375,14 @@ function BrewEditForm({
         <div>
           <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bewertung *</label>
           <RatingInput value={rating} onChange={setRating} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Säure</label>
+          <RatingInput value={acidityScore} onChange={setAcidityScore} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Bitterkeit</label>
+          <RatingInput value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notizen */}

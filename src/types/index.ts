@@ -46,6 +46,7 @@ export interface Shot {
   rating: number
   body_score: number | null
   acidity_score: number | null
+  bitterness_score: number | null
   brew_ratio: number | null
   pressure_bar: number | null
   tasting_notes: string | null
@@ -119,6 +120,8 @@ export interface Brew {
   temp_c: number | null
   brew_time_s: number | null
   rating: number
+  acidity_score: number | null
+  bitterness_score: number | null
   tasting_notes: string | null
   bloom_ml: number | null
   bloom_time_s: number | null

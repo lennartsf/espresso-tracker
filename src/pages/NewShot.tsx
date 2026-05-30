@@ -11,7 +11,8 @@ import { BrewRatioBar } from '../components/BrewRatioBar'
 const RATING_INFO = {
   rating:       { question: 'Wie gut schmeckt der Shot insgesamt?', low: 'kaum trinkbar',       high: 'perfekter Espresso'    },
   body_score:   { question: 'Wie voll und cremig fühlt sich der Espresso an?', low: 'cremig & vollmundig', high: 'dünn & wässrig' },
-  acidity_score:{ question: 'Wie ausgeprägt ist die Säure im Shot?', low: 'sehr mild',           high: 'stark & spritzig'      },
+  acidity_score:   { question: 'Wie ausgeprägt ist die Säure im Shot?', low: 'sehr mild',       high: 'stark & spritzig'      },
+  bitterness_score:{ question: 'Wie stark ist die Bitterkeit im Shot?', low: 'kaum bitter',      high: 'sehr bitter'           },
 }
 
 function RatingField({
@@ -83,6 +84,7 @@ export function NewShot() {
   const [rating, setRating] = useState<number | null>(null)
   const [bodyScore, setBodyScore] = useState<number | null>(null)
   const [acidityScore, setAcidityScore] = useState<number | null>(null)
+  const [bitternessScore, setBitternessScore] = useState<number | null>(null)
   const [tastingNotes, setTastingNotes] = useState('')
   const [pressureBar, setPressureBar] = useState('9')
   const [usedRdt, setUsedRdt] = useState(false)
@@ -162,6 +164,7 @@ export function NewShot() {
       rating,
       body_score: bodyScore,
       acidity_score: acidityScore,
+      bitterness_score: bitternessScore,
       tasting_notes: tastingNotes.trim() || null,
       used_rdt: usedRdt,
       used_wdt: usedWdt,
@@ -468,6 +471,7 @@ export function NewShot() {
           <RatingField label="Geschmack" required infoKey="rating" value={rating} onChange={setRating} />
           <RatingField label="Körper" infoKey="body_score" value={bodyScore} onChange={setBodyScore} />
           <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
+          <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notes */}
