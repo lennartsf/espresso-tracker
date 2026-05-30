@@ -10,7 +10,7 @@ import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils
 import type { ShotWithCoffee } from '../hooks/useShots'
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('de-DE', {
+  return new Date(iso).toLocaleDateString('en-GB', {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })
@@ -32,24 +32,24 @@ export function ShotDetail() {
   const deleteShot = useDeleteShot()
   const [editing, setEditing] = useState(false)
 
-  if (isLoading) return <p className="text-slate-400 text-sm text-center py-10">Laden...</p>
+  if (isLoading) return <p className="text-slate-400 text-sm text-center py-10">Loading...</p>
   if (error) return (
     <div className="text-center py-10">
-      <p className="text-slate-500 text-sm mb-3">Fehler beim Laden des Shots.</p>
-      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Zurück</button>
+      <p className="text-slate-500 text-sm mb-3">Error loading shot.</p>
+      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
   if (!shot) return (
     <div className="text-center py-10">
-      <p className="text-slate-500 text-sm mb-3">Shot nicht gefunden.</p>
-      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Zurück</button>
+      <p className="text-slate-500 text-sm mb-3">Shot not found.</p>
+      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
 
   if (editing) return <ShotEditForm shot={shot} onCancel={() => setEditing(false)} onSaved={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm('Shot wirklich löschen?')) return
+    if (!confirm('Delete this shot?')) return
     await deleteShot.mutateAsync(shot!.id)
     navigate('/shots')
   }
@@ -71,21 +71,21 @@ export function ShotDetail() {
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">
-            Bearbeiten
+            Edit
           </button>
           <button
             onClick={handleDelete}
             disabled={deleteShot.isPending}
             className="text-slate-300 hover:text-red-400 text-sm disabled:opacity-50"
           >
-            {deleteShot.isPending ? 'Löschen...' : 'Löschen'}
+            {deleteShot.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>
 
       {/* Rating prominent */}
       <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 mb-3 flex justify-between items-center">
-        <span className="text-xs font-semibold text-slate-400 uppercase">Gesamtbewertung</span>
+        <span className="text-xs font-semibold text-slate-400 uppercase">Overall Rating</span>
         <span className={`text-2xl font-bold px-3 py-0.5 rounded-lg ${ratingColor(shot.rating)}`}>
           {shot.rating}
         </span>
@@ -96,19 +96,19 @@ export function ShotDetail() {
         <div className="flex gap-2 mb-3">
           {shot.body_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Körper</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Body</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.body_score)}`}>{shot.body_score}</p>
             </div>
           )}
           {shot.acidity_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Säure</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Acidity</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.acidity_score)}`}>{shot.acidity_score}</p>
             </div>
           )}
           {shot.bitterness_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterkeit</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterness</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(shot.bitterness_score)}`}>{shot.bitterness_score}</p>
             </div>
           )}
@@ -118,47 +118,47 @@ export function ShotDetail() {
       {/* 2×2 Parameter Grid */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Mahlgrad</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Grind Setting</p>
           <p className="text-base font-bold text-slate-800">{shot.grind_setting}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brühzeit</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brew Time</p>
           <p className="text-base font-bold text-slate-800">{shot.brew_time_s ? `${shot.brew_time_s}s` : '—'}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Einwaage → Ausbeute</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Dose → Yield</p>
           <p className="text-base font-bold text-slate-800">
             {shot.dose_g && shot.yield_g ? `${shot.dose_g}g → ${shot.yield_g}g` : '—'}
           </p>
         </div>
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Verhältnis</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Ratio</p>
           <p className="text-base font-bold text-orange-500">
             {shot.brew_ratio ? `1 : ${shot.brew_ratio.toFixed(2)}` : '—'}
           </p>
         </div>
       </div>
 
-      {/* Temp + Druck + Röstdatum */}
+      {/* Temp + Pressure + Roast Date */}
       {(shot.temp_c !== null || shot.pressure_bar !== null || shot.roast_dates?.roast_date) && (
         <div className="grid grid-cols-2 gap-2 mb-3">
           {shot.temp_c !== null && (
             <div className="bg-white border border-slate-200 rounded-lg p-3">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Temperatur</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Temperature</p>
               <p className="text-base font-bold text-slate-800">{shot.temp_c}°C</p>
             </div>
           )}
           {shot.pressure_bar !== null && (
             <div className="bg-white border border-slate-200 rounded-lg p-3">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Druck</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Pressure</p>
               <p className="text-base font-bold text-slate-800">{shot.pressure_bar} bar</p>
             </div>
           )}
           {shot.roast_dates?.roast_date && (
             <div className="bg-white border border-slate-200 rounded-lg p-3">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Röstdatum</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Roast Date</p>
               <p className="text-sm font-bold text-slate-800">
-                {new Date(shot.roast_dates.roast_date).toLocaleDateString('de-DE')}
+                {new Date(shot.roast_dates.roast_date).toLocaleDateString('en-GB')}
               </p>
             </div>
           )}
@@ -173,10 +173,10 @@ export function ShotDetail() {
         </div>
       )}
 
-      {/* Milch */}
+      {/* Milk */}
       {shot.drink_type !== 'espresso' && (shot.milk_type || shot.milk_ml) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Milch</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Milk</p>
           <div className="flex justify-between items-center">
             <span className="text-sm text-slate-800">
               {shot.milk_type ? milkTypeLabel(shot.milk_type) : '—'}
@@ -191,7 +191,7 @@ export function ShotDetail() {
       {/* Tasting notes */}
       {shot.tasting_notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Geschmacksnotizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Tasting Notes</p>
           <p className="text-sm text-slate-700 italic">„{shot.tasting_notes}"</p>
         </div>
       )}
@@ -199,7 +199,7 @@ export function ShotDetail() {
       {/* Equipment */}
       {(shot.grinders || shot.machines || shot.baskets) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Ausrüstung</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Equipment</p>
           <div className="flex flex-wrap gap-2">
             {shot.grinders && (
               <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded font-medium">
@@ -295,8 +295,8 @@ function ShotEditForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!grindSetting) { setError('Mahlgrad ist erforderlich.'); return }
-    if (!rating) { setError('Bitte den Shot bewerten.'); return }
+    if (!grindSetting) { setError('Grind setting is required.'); return }
+    if (!rating) { setError('Please rate the shot.'); return }
 
     try {
       await updateShot.mutateAsync({
@@ -329,12 +329,12 @@ function ShotEditForm({
       })
       onSaved()
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Fehler beim Speichern.')
+      setError(err instanceof Error ? err.message : 'Error saving.')
     }
   }
 
-  function formatDate(d: string) {
-    return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  function formatRoastDate(d: string) {
+    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   return (
@@ -342,14 +342,14 @@ function ShotEditForm({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button type="button" onClick={onCancel} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">Shot bearbeiten</h1>
+          <h1 className="text-xl font-bold text-slate-800">Edit Shot</h1>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
-        {/* Getränketyp */}
+        {/* Drink Type */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Getränketyp</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Drink Type</label>
           <div className="flex flex-wrap gap-2">
             {DRINK_TYPES.map(dt => (
               <button
@@ -368,9 +368,9 @@ function ShotEditForm({
           </div>
         </div>
 
-        {/* Datum & Uhrzeit */}
+        {/* Date & Time */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Datum & Uhrzeit</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Date & Time</label>
           <input
             type="datetime-local"
             value={pulledAt}
@@ -379,9 +379,9 @@ function ShotEditForm({
           />
         </div>
 
-        {/* Kaffee */}
+        {/* Coffee */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee *</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee *</label>
           <select
             value={coffeeId}
             onChange={e => handleCoffeeChange(e.target.value)}
@@ -395,10 +395,10 @@ function ShotEditForm({
           </select>
         </div>
 
-        {/* Röstdatum */}
+        {/* Roast Date */}
         {recentDates.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Röstdatum</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Roast Date</label>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -407,7 +407,7 @@ function ShotEditForm({
                   roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-500 bg-white'
                 }`}
               >
-                Keine
+                None
               </button>
               {recentDates.map((rd, i) => (
                 <button
@@ -418,18 +418,18 @@ function ShotEditForm({
                     roastDateId === rd.id ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-600 bg-white'
                   }`}
                 >
-                  {formatDate(rd.roast_date)}
-                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Aktuell</span>}
+                  {formatRoastDate(rd.roast_date)}
+                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Current</span>}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Mahlgrad + Temp + Pressure */}
+        {/* Grind + Temp + Pressure */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad *</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grind *</label>
             <input
               type="number" step="0.5" value={grindSetting}
               onChange={e => setGrindSetting(e.target.value)}
@@ -445,7 +445,7 @@ function ShotEditForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Druck (bar)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Pressure (bar)</label>
             <input
               type="number" step="0.1" value={pressureBar}
               onChange={e => setPressureBar(e.target.value)}
@@ -454,11 +454,11 @@ function ShotEditForm({
           </div>
         </div>
 
-        {/* Einwaage + Ausbeute + Ratio */}
+        {/* Dose + Yield + Ratio */}
         <div>
           <div className="grid grid-cols-2 gap-3 mb-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Einwaage (g)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Dose (g)</label>
               <input
                 type="number" step="0.1" value={doseG}
                 onChange={e => setDoseG(e.target.value)}
@@ -466,7 +466,7 @@ function ShotEditForm({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Ausbeute (g)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Yield (g)</label>
               <input
                 type="number" step="0.1" value={yieldG}
                 onChange={e => setYieldG(e.target.value)}
@@ -480,9 +480,9 @@ function ShotEditForm({
           />
         </div>
 
-        {/* Brühzeit */}
+        {/* Brew Time */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brühzeit (s)</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brew Time (s)</label>
           <input
             type="number" value={brewTimeS}
             onChange={e => setBrewTimeS(e.target.value)}
@@ -516,26 +516,26 @@ function ShotEditForm({
           )}
         </div>
 
-        {/* Milch */}
+        {/* Milk */}
         {drinkType !== 'espresso' && (
           <div className="border border-orange-200 bg-orange-50 rounded-xl p-3">
-            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milch</label>
+            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milk</label>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Sorte</label>
+                <label className="block text-xs text-slate-500 mb-1">Type</label>
                 <select
                   value={milkType}
                   onChange={e => setMilkType(e.target.value)}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
-                  <option value="">Wählen...</option>
+                  <option value="">Select...</option>
                   {MILK_TYPES.map(mt => (
                     <option key={mt.value} value={mt.value}>{mt.label}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Menge</label>
+                <label className="block text-xs text-slate-500 mb-1">Amount</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -553,7 +553,7 @@ function ShotEditForm({
 
         {/* Prep Tools */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Vorbereitung</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Prep</label>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
               <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
@@ -570,16 +570,16 @@ function ShotEditForm({
           </div>
         </div>
 
-        {/* Ausrüstung */}
+        {/* Equipment */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Ausrüstung</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Equipment</label>
           <div className="grid gap-2">
             <select
               value={grinderId}
               onChange={e => setGrinderId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Mühle (optional)</option>
+              <option value="">Grinder (optional)</option>
               {grinders.map(g => (
                 <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
               ))}
@@ -589,7 +589,7 @@ function ShotEditForm({
               onChange={e => setMachineId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Maschine (optional)</option>
+              <option value="">Machine (optional)</option>
               {machines.map(m => (
                 <option key={m.id} value={m.id}>{m.name}{m.brand ? ` / ${m.brand}` : ''}</option>
               ))}
@@ -599,7 +599,7 @@ function ShotEditForm({
               onChange={e => setBasketId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Sieb (optional)</option>
+              <option value="">Basket (optional)</option>
               {baskets.map(b => (
                 <option key={b.id} value={b.id}>{b.name}{b.size_g ? ` ${b.size_g}g` : ''}</option>
               ))}
@@ -610,26 +610,26 @@ function ShotEditForm({
         {/* Ratings */}
         <div className="grid gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Geschmack *</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Flavor *</label>
             <RatingInput value={rating} onChange={setRating} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Körper</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Body</label>
             <RatingInput value={bodyScore} onChange={setBodyScore} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Säure</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Acidity</label>
             <RatingInput value={acidityScore} onChange={setAcidityScore} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Bitterkeit</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Bitterness</label>
             <RatingInput value={bitternessScore} onChange={setBitternessScore} />
           </div>
         </div>
 
         {/* Tasting Notes */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Geschmacksnotizen</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Tasting Notes</label>
           <textarea
             value={tastingNotes}
             onChange={e => setTastingNotes(e.target.value)}
@@ -645,7 +645,7 @@ function ShotEditForm({
           disabled={updateShot.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {updateShot.isPending ? 'Speichern...' : 'Änderungen speichern'}
+          {updateShot.isPending ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>

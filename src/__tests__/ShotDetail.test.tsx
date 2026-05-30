@@ -71,35 +71,35 @@ function renderDetail() {
   )
 }
 
-test('zeigt Kaffee-Name und Bewertung', () => {
+test('shows coffee name and rating', () => {
   renderDetail()
   expect(screen.getByText('Ethiopia Yirgacheffe')).toBeInTheDocument()
   expect(screen.getByText('8')).toBeInTheDocument()
 })
 
-test('zeigt Mahlgrad', () => {
+test('shows grind setting', () => {
   renderDetail()
   expect(screen.getByText('12.5')).toBeInTheDocument()
 })
 
-test('zeigt Tasting Notes', () => {
+test('shows tasting notes', () => {
   renderDetail()
   expect(screen.getByText(/Schokolade/)).toBeInTheDocument()
 })
 
-test('zeigt Druck wenn pressure_bar vorhanden', () => {
+test('shows pressure when pressure_bar is set', () => {
   renderDetail()
   expect(screen.getByText('9 bar')).toBeInTheDocument()
 })
 
-test('zeigt Edit-Formular nach Klick auf Bearbeiten', async () => {
+test('shows edit form after clicking Edit', async () => {
   renderDetail()
-  await userEvent.click(screen.getByText('Bearbeiten'))
-  expect(screen.getByText('Shot bearbeiten')).toBeInTheDocument()
-  expect(screen.getByText('Änderungen speichern')).toBeInTheDocument()
+  await userEvent.click(screen.getByText('Edit'))
+  expect(screen.getByText('Edit Shot')).toBeInTheDocument()
+  expect(screen.getByText('Save Changes')).toBeInTheDocument()
 })
 
-test('zeigt Getränketyp-Badge für Cappuccino', () => {
+test('shows drink type badge for cappuccino', () => {
   vi.mocked(useShot).mockReturnValueOnce({
     data: {
       id: 'shot-1',
@@ -142,7 +142,7 @@ test('zeigt Getränketyp-Badge für Cappuccino', () => {
   expect(screen.getByText('120 ml')).toBeInTheDocument()
 })
 
-test('zeigt Ausrüstungs-Chips wenn Equipment vorhanden', () => {
+test('shows equipment chips when equipment is set', () => {
   vi.mocked(useShot).mockReturnValueOnce({
     data: {
       id: 'shot-1',
