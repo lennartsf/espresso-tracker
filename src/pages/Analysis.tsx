@@ -15,10 +15,10 @@ import { secondsToMMSS } from '../utils/timeFormat'
 import type { ShotWithCoffee } from '../hooks/useShots'
 import type { BrewWithCoffee } from '../hooks/useBrews'
 
-type AnalysisTab = 'espresso' | 'brews' | 'milch'
+type AnalysisTab = 'espresso' | 'brews' | 'milk'
 
 function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 // ── Scatter helpers ────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ function ScatterPlot({ data, xLabel, yLabel }: {
   yLabel: string
 }) {
   if (data.length === 0) {
-    return <p className="text-center text-slate-400 text-sm py-6">Noch keine Daten mit {yLabel}-Bewertung.</p>
+    return <p className="text-center text-slate-400 text-sm py-6">No data yet for {yLabel} rating.</p>
   }
   return (
     <>
@@ -73,10 +73,10 @@ function ScatterPlot({ data, xLabel, yLabel }: {
 type EspressoMetric = 'rating' | 'body_score' | 'acidity_score' | 'bitterness_score'
 
 const ESPRESSO_METRICS: { key: EspressoMetric; label: string }[] = [
-  { key: 'rating',           label: 'Geschmack' },
-  { key: 'body_score',       label: 'Körper' },
-  { key: 'acidity_score',    label: 'Säure' },
-  { key: 'bitterness_score', label: 'Bitterkeit' },
+  { key: 'rating',           label: 'Flavor' },
+  { key: 'body_score',       label: 'Body' },
+  { key: 'acidity_score',    label: 'Acidity' },
+  { key: 'bitterness_score', label: 'Bitterness' },
 ]
 
 function EspressoAnalysis() {
@@ -108,7 +108,7 @@ function EspressoAnalysis() {
       <div className="grid gap-2 mb-4">
         <select value={coffeeId} onChange={e => { setCoffeeId(e.target.value); setRoastDateId('') }}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-          <option value="">Alle Kaffees</option>
+          <option value="">All Coffees</option>
           {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
@@ -116,12 +116,12 @@ function EspressoAnalysis() {
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => setRoastDateId('')}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600' : 'border-slate-200 text-slate-500 bg-white'}`}>
-              Alle Röstungen
+              All Roasts
             </button>
             {roastDates.map((rd, i) => (
               <button key={rd.id} onClick={() => setRoastDateId(rd.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === rd.id ? 'border-orange-400 bg-orange-50 text-orange-600' : 'border-slate-200 text-slate-500 bg-white'}`}>
-                {formatDate(rd.roast_date)}{i === 0 ? ' (aktuell)' : ''}
+                {formatDate(rd.roast_date)}{i === 0 ? ' (current)' : ''}
               </button>
             ))}
           </div>
@@ -130,7 +130,7 @@ function EspressoAnalysis() {
         {grinders.length > 1 && (
           <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-            <option value="">Alle Mühlen</option>
+            <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
         )}
@@ -138,12 +138,12 @@ function EspressoAnalysis() {
 
       {!grinderId && grinders.length > 1 && (
         <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-          💡 Tipp: Filtere auf eine Mühle — Mahlgrad-Zahlen sind nur innerhalb derselben Mühle vergleichbar.
+          💡 Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
         </p>
       )}
 
       {shots.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">Noch keine Espresso-Shots für diese Auswahl.</p>
+        <p className="text-center text-slate-400 text-sm py-10">No espresso shots for this selection.</p>
       ) : (
         <div className="md:grid md:grid-cols-5 md:gap-6 md:items-start">
           <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg p-4 mb-4 md:mb-0">
@@ -156,15 +156,15 @@ function EspressoAnalysis() {
               ))}
             </div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Mahlgrad → {metricLabel}
+              Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Shot{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
-            <ScatterPlot data={scatterData} xLabel="Mahlgrad" yLabel={metricLabel} />
+            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} />
           </div>
           <div className="md:col-span-2">
             {recipe
               ? <RecipeCard stats={recipe} />
-              : <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">Noch keine Shots mit Geschmack ≥ 8.</div>
+              : <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">No shots with Flavor ≥ 8.</div>
             }
           </div>
         </div>
@@ -178,9 +178,9 @@ function EspressoAnalysis() {
 type BrewMetric = 'rating' | 'acidity_score' | 'bitterness_score'
 
 const BREW_METRICS: { key: BrewMetric; label: string }[] = [
-  { key: 'rating',           label: 'Geschmack' },
-  { key: 'acidity_score',    label: 'Säure' },
-  { key: 'bitterness_score', label: 'Bitterkeit' },
+  { key: 'rating',           label: 'Flavor' },
+  { key: 'acidity_score',    label: 'Acidity' },
+  { key: 'bitterness_score', label: 'Bitterness' },
 ]
 
 function BrewsAnalysis() {
@@ -221,20 +221,20 @@ function BrewsAnalysis() {
       <div className="grid gap-2 mb-4">
         <select value={brewMethod} onChange={e => setBrewMethod(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-          <option value="">Alle Methoden</option>
+          <option value="">All Methods</option>
           {BREW_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
         </select>
 
         <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-          <option value="">Alle Kaffees</option>
+          <option value="">All Coffees</option>
           {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
         {grinders.length > 1 && (
           <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-            <option value="">Alle Mühlen</option>
+            <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
         )}
@@ -242,12 +242,12 @@ function BrewsAnalysis() {
 
       {!grinderId && grinders.length > 1 && (
         <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-          💡 Tipp: Filtere auf eine Mühle — Mahlgrad-Zahlen sind nur innerhalb derselben Mühle vergleichbar.
+          💡 Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
         </p>
       )}
 
       {brews.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">Noch keine Brews für diese Auswahl.</p>
+        <p className="text-center text-slate-400 text-sm py-10">No brews for this selection.</p>
       ) : (
         <div className="md:grid md:grid-cols-5 md:gap-6 md:items-start">
           <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg p-4 mb-4 md:mb-0">
@@ -260,32 +260,32 @@ function BrewsAnalysis() {
               ))}
             </div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-              Mahlgrad → {metricLabel}
+              Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Brew{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
-            <ScatterPlot data={scatterData} xLabel="Mahlgrad" yLabel={metricLabel} />
+            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} />
           </div>
 
           <div className="md:col-span-2">
             {topStats ? (
               <div className="bg-white border border-slate-200 rounded-lg p-4">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-                  Top-Rezept ({topStats.count} Brew{topStats.count !== 1 ? 's' : ''} ≥ 8)
+                  Top Recipe ({topStats.count} Brew{topStats.count !== 1 ? 's' : ''} ≥ 8)
                 </p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Ø Bewertung</span>
+                    <span className="text-slate-400">Avg Rating</span>
                     <span className="font-bold text-green-600">{topStats.avgRating.toFixed(1)}</span>
                   </div>
                   {topStats.avgGrind != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Ø Mahlgrad</span>
+                      <span className="text-slate-400">Avg Grind</span>
                       <span className="font-semibold text-slate-800">{topStats.avgGrind.toFixed(1)}</span>
                     </div>
                   )}
                   {topStats.avgDose != null && topStats.avgWater != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Ø Verhältnis</span>
+                      <span className="text-slate-400">Avg Ratio</span>
                       <span className="font-semibold text-slate-800">
                         {topStats.avgDose.toFixed(1)} g / {topStats.avgWater.toFixed(0)} ml
                       </span>
@@ -293,13 +293,13 @@ function BrewsAnalysis() {
                   )}
                   {topStats.avgTemp != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Ø Temperatur</span>
+                      <span className="text-slate-400">Avg Temp</span>
                       <span className="font-semibold text-slate-800">{topStats.avgTemp.toFixed(1)}°C</span>
                     </div>
                   )}
                   {topStats.avgTime != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Ø Brühzeit</span>
+                      <span className="text-slate-400">Avg Brew Time</span>
                       <span className="font-semibold text-slate-800">{secondsToMMSS(Math.round(topStats.avgTime))}</span>
                     </div>
                   )}
@@ -307,7 +307,7 @@ function BrewsAnalysis() {
               </div>
             ) : (
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">
-                Noch keine Brews mit Bewertung ≥ 8.
+                No brews with Rating ≥ 8.
               </div>
             )}
           </div>
@@ -319,7 +319,7 @@ function BrewsAnalysis() {
 
 // ── Milch Tab ─────────────────────────────────────────────────────────────────
 
-function MilchAnalysis() {
+function MilkAnalysis() {
   const [coffeeId, setCoffeeId] = useState('')
   const { data: coffees = [] }  = useCoffees()
   const { data: shots = [] }    = useShots(coffeeId || undefined, undefined, 'milk')
@@ -337,30 +337,30 @@ function MilchAnalysis() {
     <div>
       <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white mb-4 focus:outline-none focus:border-orange-400">
-        <option value="">Alle Kaffees</option>
+        <option value="">All Coffees</option>
         {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select>
 
       {shots.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">Noch keine Milchgetränke.</p>
+        <p className="text-center text-slate-400 text-sm py-10">No milk drinks yet.</p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-orange-600">{shots.length}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Getränke total</p>
+              <p className="text-xs text-slate-500 mt-0.5">Drinks total</p>
             </div>
             <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-green-600">
                 {(shots.reduce((s, x) => s + x.rating, 0) / shots.length).toFixed(1)}
               </p>
-              <p className="text-xs text-slate-500 mt-0.5">Ø Bewertung</p>
+              <p className="text-xs text-slate-500 mt-0.5">Avg Rating</p>
             </div>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide p-3 border-b border-slate-100">
-              Nach Getränketyp
+              By Drink Type
             </p>
             {sorted.map(([type, { count, ratingSum }]) => (
               <div key={type} className="flex items-center justify-between px-4 py-3 border-b border-slate-100 last:border-0">
@@ -368,7 +368,7 @@ function MilchAnalysis() {
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-slate-400">{count}×</span>
                   <span className="text-sm font-semibold text-slate-800">
-                    Ø {(ratingSum / count).toFixed(1)}
+                    Avg {(ratingSum / count).toFixed(1)}
                   </span>
                 </div>
               </div>
@@ -385,7 +385,7 @@ function MilchAnalysis() {
 const TABS: { key: AnalysisTab; label: string }[] = [
   { key: 'espresso', label: '☕ Espresso' },
   { key: 'brews',    label: '🫖 Brews' },
-  { key: 'milch',    label: '🥛 Milch' },
+  { key: 'milk',     label: '🥛 Milk' },
 ]
 
 export function Analysis() {
@@ -393,7 +393,7 @@ export function Analysis() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-800 mb-4">📊 Analyse</h1>
+      <h1 className="text-xl font-bold text-slate-800 mb-4">📊 Analysis</h1>
 
       <div className="flex border-b border-slate-200 mb-5">
         {TABS.map(t => (
@@ -410,7 +410,7 @@ export function Analysis() {
 
       {tab === 'espresso' && <EspressoAnalysis />}
       {tab === 'brews'    && <BrewsAnalysis />}
-      {tab === 'milch'    && <MilchAnalysis />}
+      {tab === 'milk'     && <MilkAnalysis />}
     </div>
   )
 }
