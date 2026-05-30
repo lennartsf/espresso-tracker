@@ -10,9 +10,9 @@ import { secondsToMMSS, normalizeTimeInput, MMSSToSeconds } from '../utils/timeF
 import type { BrewWithCoffee } from '../hooks/useBrews'
 
 const RATING_INFO = {
-  rating:          { question: 'Wie gut schmeckt der Brew insgesamt?', low: 'kaum trinkbar',  high: 'perfekter Brew'   },
-  acidity_score:   { question: 'Wie ausgeprägt ist die Säure im Brew?', low: 'sehr mild',     high: 'stark & spritzig' },
-  bitterness_score:{ question: 'Wie stark ist die Bitterkeit im Brew?', low: 'kaum bitter',   high: 'sehr bitter'      },
+  rating:          { question: 'How good does the brew taste overall?', low: 'barely drinkable', high: 'perfect brew'    },
+  acidity_score:   { question: 'How pronounced is the acidity in the brew?', low: 'very mild',   high: 'bright & lively' },
+  bitterness_score:{ question: 'How strong is the bitterness in the brew?', low: 'barely bitter', high: 'very bitter'    },
 }
 
 function RatingField({
@@ -65,7 +65,7 @@ function RatingField({
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('de-DE', {
+  return new Date(iso).toLocaleDateString('en-GB', {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })
@@ -79,18 +79,18 @@ export function BrewDetail() {
   const deleteBrew = useDeleteBrew()
   const [editing, setEditing] = useState(false)
 
-  if (isLoading) return <p className="text-slate-400 text-sm text-center py-10">Laden...</p>
+  if (isLoading) return <p className="text-slate-400 text-sm text-center py-10">Loading...</p>
   if (error || !brew) return (
     <div className="text-center py-10">
-      <p className="text-slate-500 text-sm mb-3">Brew nicht gefunden.</p>
-      <button onClick={() => navigate('/brews')} className="text-orange-500 text-sm font-semibold">← Zurück</button>
+      <p className="text-slate-500 text-sm mb-3">Brew not found.</p>
+      <button onClick={() => navigate('/brews')} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
 
   if (editing) return <BrewEditForm brew={brew} onCancel={() => setEditing(false)} onSaved={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm('Brew wirklich löschen?')) return
+    if (!confirm('Delete this brew?')) return
     await deleteBrew.mutateAsync(brew!.id)
     navigate('/brews')
   }
@@ -108,16 +108,16 @@ export function BrewDetail() {
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
           <button onClick={handleDelete} disabled={deleteBrew.isPending} className="text-slate-300 hover:text-red-400 text-sm disabled:opacity-50">
-            {deleteBrew.isPending ? 'Löschen...' : 'Löschen'}
+            {deleteBrew.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>
 
       {/* Rating */}
       <div className="bg-orange-50 border border-orange-100 rounded-lg p-3 mb-3 flex justify-between items-center">
-        <span className="text-xs font-semibold text-slate-400 uppercase">Bewertung</span>
+        <span className="text-xs font-semibold text-slate-400 uppercase">Overall Rating</span>
         <span className={`text-2xl font-bold px-3 py-0.5 rounded-lg ${ratingColor(brew.rating)}`}>{brew.rating}</span>
       </div>
 
@@ -126,23 +126,23 @@ export function BrewDetail() {
         <div className="flex gap-2 mb-3">
           {brew.acidity_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Säure</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Acidity</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(brew.acidity_score)}`}>{brew.acidity_score}</p>
             </div>
           )}
           {brew.bitterness_score !== null && (
             <div className="flex-1 bg-white border border-slate-200 rounded-lg p-2 text-center">
-              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterkeit</p>
+              <p className="text-xs text-slate-400 uppercase font-semibold mb-0.5">Bitterness</p>
               <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingColor(brew.bitterness_score)}`}>{brew.bitterness_score}</p>
             </div>
           )}
         </div>
       )}
 
-      {/* Gerät */}
+      {/* Device */}
       {brew.brew_device_id && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3 flex justify-between items-center">
-          <p className="text-xs text-slate-400 uppercase font-semibold">Gerät</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold">Device</p>
           <p className="text-sm font-bold text-slate-800">
             {brewDevices.find(d => d.id === brew.brew_device_id)?.name ?? '—'}
           </p>
@@ -153,31 +153,31 @@ export function BrewDetail() {
       <div className="grid grid-cols-2 gap-2 mb-3">
         {brew.grind_setting !== null && (
           <div className="bg-white border border-slate-200 rounded-lg p-3">
-            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Mahlgrad</p>
+            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Grind Setting</p>
             <p className="text-base font-bold text-slate-800">{brew.grind_setting}</p>
           </div>
         )}
         {brew.dose_g !== null && (
           <div className="bg-white border border-slate-200 rounded-lg p-3">
-            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Kaffee</p>
+            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Coffee</p>
             <p className="text-base font-bold text-slate-800">{brew.dose_g} g</p>
           </div>
         )}
         {brew.water_ml !== null && (
           <div className="bg-white border border-slate-200 rounded-lg p-3">
-            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Wasser</p>
+            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Water</p>
             <p className="text-base font-bold text-slate-800">{brew.water_ml} ml</p>
           </div>
         )}
         {brew.temp_c !== null && (
           <div className="bg-white border border-slate-200 rounded-lg p-3">
-            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Temperatur</p>
+            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Temperature</p>
             <p className="text-base font-bold text-slate-800">{brew.temp_c}°C</p>
           </div>
         )}
         {brew.brew_time_s !== null && (
           <div className="bg-white border border-slate-200 rounded-lg p-3">
-            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brühzeit</p>
+            <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brew Time</p>
             <p className="text-base font-bold text-slate-800">{secondsToMMSS(brew.brew_time_s)}</p>
           </div>
         )}
@@ -186,7 +186,7 @@ export function BrewDetail() {
       {/* Method-specific */}
       {brew.brew_method === 'french_press' && brew.first_stir_s !== null && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">1. Umrühren</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">First Stir</p>
           <p className="text-sm font-bold text-slate-800">{secondsToMMSS(brew.first_stir_s)}</p>
         </div>
       )}
@@ -197,13 +197,13 @@ export function BrewDetail() {
           <div className="grid gap-1">
             {brew.bloom_ml !== null && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Menge</span>
+                <span className="text-slate-400">Amount</span>
                 <span className="text-slate-800">{brew.bloom_ml} ml</span>
               </div>
             )}
             {brew.bloom_time_s !== null && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Zeit</span>
+                <span className="text-slate-400">Time</span>
                 <span className="text-slate-800">{secondsToMMSS(brew.bloom_time_s)}</span>
               </div>
             )}
@@ -220,7 +220,7 @@ export function BrewDetail() {
       {/* Tasting notes */}
       {brew.tasting_notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Tasting Notes</p>
           <p className="text-sm text-slate-700 italic">„{brew.tasting_notes}"</p>
         </div>
       )}
@@ -265,13 +265,13 @@ function BrewEditForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!rating) { setError('Bitte den Brew bewerten.'); return }
+    if (!rating) { setError('Rating is required.'); return }
 
     const brewTimeS = MMSSToSeconds(brewTime)
     const firstStirS = firstStir ? MMSSToSeconds(firstStir) : null
 
     if (firstStirS !== null && brewTimeS !== null && firstStirS > brewTimeS) {
-      setError('1. Umrühren darf die Brühzeit nicht überschreiten.')
+      setError('First stir time cannot exceed brew time.')
       return
     }
 
@@ -298,7 +298,7 @@ function BrewEditForm({
       })
       onSaved()
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -306,11 +306,11 @@ function BrewEditForm({
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onCancel} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Brew bearbeiten</h1>
+        <h1 className="text-xl font-bold text-slate-800">Edit Brew</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
-        {/* Brühmethode */}
+        {/* Brew Method */}
         <div>
           <div className="flex items-center gap-2 mb-2">
             <button
@@ -322,7 +322,7 @@ function BrewEditForm({
             >
               i
             </button>
-            <label className="text-xs font-semibold text-slate-400 uppercase">Brühmethode</label>
+            <label className="text-xs font-semibold text-slate-400 uppercase">Brew Method</label>
           </div>
           {showMethodInfo && (
             <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
@@ -342,43 +342,43 @@ function BrewEditForm({
           </div>
         </div>
 
-        {/* Kaffee */}
+        {/* Coffee */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee *</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee *</label>
           <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
             {coffees.map(c => <option key={c.id} value={c.id}>{c.name}{c.roaster ? ` / ${c.roaster}` : ''}</option>)}
           </select>
         </div>
 
-        {/* Mühle */}
+        {/* Grinder */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mühle</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grinder</label>
           <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
-            <option value="">Mühle (optional)</option>
+            <option value="">Grinder (optional)</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>)}
           </select>
         </div>
 
-        {/* Mahlgrad + Dose */}
+        {/* Grind + Dose */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grind Setting</label>
             <input type="number" step="0.5" value={grindSetting} onChange={e => setGrindSetting(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee (g)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee (g)</label>
             <input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           </div>
         </div>
 
-        {/* Wasser + Temp */}
+        {/* Water + Temp */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Wasser (ml)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Water (ml)</label>
             <input type="number" step="10" value={waterMl} onChange={e => setWaterMl(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           </div>
@@ -389,9 +389,9 @@ function BrewEditForm({
           </div>
         </div>
 
-        {/* Brühzeit */}
+        {/* Brew Time */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brühzeit (MM:SS)</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brew Time (MM:SS)</label>
           <input type="text" value={brewTime} onChange={e => setBrewTime(e.target.value)}
             onBlur={e => setBrewTime(normalizeTimeInput(e.target.value))}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
@@ -401,7 +401,7 @@ function BrewEditForm({
         {brewMethod === 'french_press' && (
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
-              1. Umrühren (MM:SS) <span className="text-slate-300 normal-case font-normal">optional</span>
+              First Stir (MM:SS) <span className="text-slate-300 normal-case font-normal">optional</span>
             </label>
             <input type="text" value={firstStir} onChange={e => setFirstStir(e.target.value)}
               onBlur={e => setFirstStir(normalizeTimeInput(e.target.value))}
@@ -420,7 +420,7 @@ function BrewEditForm({
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Bloom-Zeit (MM:SS)</label>
+                <label className="block text-xs text-slate-500 mb-1">Bloom Time (MM:SS)</label>
                 <input type="text" value={bloomTime} onChange={e => setBloomTime(e.target.value)}
                   onBlur={e => setBloomTime(normalizeTimeInput(e.target.value))}
                   className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
@@ -440,23 +440,23 @@ function BrewEditForm({
           </div>
         )}
 
-        {/* Bewertung */}
+        {/* Ratings */}
         <div className="grid gap-3">
-          <RatingField label="Bewertung" required infoKey="rating" value={rating} onChange={setRating} />
-          <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
-          <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
+          <RatingField label="Flavor" required infoKey="rating" value={rating} onChange={setRating} />
+          <RatingField label="Acidity" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
+          <RatingField label="Bitterness" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
-        {/* Gerät */}
+        {/* Device */}
         {brewDevices.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Gerät</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Device</label>
             <select
               value={brewDeviceId}
               onChange={e => setBrewDeviceId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Kein Gerät</option>
+              <option value="">No device</option>
               {brewDevices.map(d => (
                 <option key={d.id} value={d.id}>{d.name}{d.brand ? ` / ${d.brand}` : ''}</option>
               ))}
@@ -464,9 +464,9 @@ function BrewEditForm({
           </div>
         )}
 
-        {/* Notizen */}
+        {/* Tasting Notes */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Notizen</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Tasting Notes</label>
           <textarea value={tastingNotes} onChange={e => setTastingNotes(e.target.value)} rows={2}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         </div>
@@ -475,7 +475,7 @@ function BrewEditForm({
 
         <button type="submit" disabled={updateBrew.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50">
-          {updateBrew.isPending ? 'Speichern...' : 'Änderungen speichern'}
+          {updateBrew.isPending ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>

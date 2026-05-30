@@ -7,7 +7,7 @@ import { BrewCard } from '../components/BrewCard'
 type MethodFilter = 'all' | 'french_press' | 'v60' | 'aeropress' | 'moka_pot'
 
 const METHOD_FILTER_LABELS: Record<MethodFilter, string> = {
-  all: 'Alle',
+  all: 'All',
   french_press: 'French Press',
   v60: 'V60',
   aeropress: 'AeroPress',
@@ -26,9 +26,9 @@ export function Brews() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">🫖 Brühen</h1>
+        <h1 className="text-xl font-bold text-slate-800">🫖 Brews</h1>
         <Link to="/brews/new" className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </Link>
       </div>
 
@@ -53,17 +53,17 @@ export function Brews() {
         onChange={e => setFilterCoffeeId(e.target.value)}
         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white mb-4 focus:outline-none focus:border-orange-400"
       >
-        <option value="">Alle Kaffees</option>
+        <option value="">All Coffees</option>
         {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select>
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
 
       <div className="grid md:grid-cols-2 gap-2">
         {brews.map(brew => <BrewCard key={brew.id} brew={brew} />)}
         {!isLoading && brews.length === 0 && (
           <p className="text-center text-slate-400 text-sm py-10 md:col-span-2">
-            Noch keine Brews. Füge deinen ersten hinzu!
+            No brews yet. Add your first!
           </p>
         )}
       </div>

@@ -8,9 +8,9 @@ import { BREW_METHODS, BREW_METHOD_INFO } from '../utils/brewMethods'
 import { normalizeTimeInput, MMSSToSeconds } from '../utils/timeFormat'
 
 const RATING_INFO = {
-  rating:          { question: 'Wie gut schmeckt der Brew insgesamt?', low: 'kaum trinkbar',  high: 'perfekter Brew'   },
-  acidity_score:   { question: 'Wie ausgeprägt ist die Säure im Brew?', low: 'sehr mild',     high: 'stark & spritzig' },
-  bitterness_score:{ question: 'Wie stark ist die Bitterkeit im Brew?', low: 'kaum bitter',   high: 'sehr bitter'      },
+  rating:          { question: 'How good does the brew taste overall?', low: 'barely drinkable', high: 'perfect brew'    },
+  acidity_score:   { question: 'How pronounced is the acidity in the brew?', low: 'very mild',   high: 'bright & lively' },
+  bitterness_score:{ question: 'How strong is the bitterness in the brew?', low: 'barely bitter', high: 'very bitter'    },
 }
 
 function RatingField({
@@ -104,14 +104,14 @@ export function NewBrew() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!coffeeId) { setError('Bitte einen Kaffee auswählen.'); return }
-    if (!rating) { setError('Bitte den Brew bewerten.'); return }
+    if (!coffeeId) { setError('Please select a coffee.'); return }
+    if (!rating) { setError('Rating is required.'); return }
 
     const brewTimeS = MMSSToSeconds(brewTime)
     const firstStirS = firstStir ? MMSSToSeconds(firstStir) : null
 
     if (firstStirS !== null && brewTimeS !== null && firstStirS > brewTimeS) {
-      setError('1. Umrühren darf die Brühzeit nicht überschreiten.')
+      setError('First stir time cannot exceed brew time.')
       return
     }
 
@@ -138,7 +138,7 @@ export function NewBrew() {
       })
       navigate('/brews')
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -146,7 +146,7 @@ export function NewBrew() {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={() => navigate(-1)} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Neuer Brew</h1>
+        <h1 className="text-xl font-bold text-slate-800">New Brew</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
@@ -162,7 +162,7 @@ export function NewBrew() {
             >
               i
             </button>
-            <label className="text-xs font-semibold text-slate-400 uppercase">Brühmethode</label>
+            <label className="text-xs font-semibold text-slate-400 uppercase">Brew Method</label>
           </div>
           {showMethodInfo && (
             <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
@@ -189,13 +189,13 @@ export function NewBrew() {
 
         {/* Kaffee */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee *</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee *</label>
           <select
             value={coffeeId}
             onChange={e => setCoffeeId(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
           >
-            <option value="">Kaffee wählen...</option>
+            <option value="">Select coffee...</option>
             {coffees.map(c => (
               <option key={c.id} value={c.id}>{c.name}{c.roaster ? ` / ${c.roaster}` : ''}</option>
             ))}
@@ -205,13 +205,13 @@ export function NewBrew() {
         {/* Mühle */}
         {grinders.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mühle</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grinder</label>
             <select
               value={grinderId}
               onChange={e => setGrinderId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Mühle (optional)</option>
+              <option value="">Grinder (optional)</option>
               {grinders.map(g => (
                 <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
               ))}
@@ -222,13 +222,13 @@ export function NewBrew() {
         {/* Gerät */}
         {brewDevices.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Gerät</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Device</label>
             <select
               value={brewDeviceId}
               onChange={e => setBrewDeviceId(e.target.value)}
               className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Kein Gerät</option>
+              <option value="">No device</option>
               {brewDevices.map(d => (
                 <option key={d.id} value={d.id}>{d.name}{d.brand ? ` / ${d.brand}` : ''}</option>
               ))}
@@ -239,7 +239,7 @@ export function NewBrew() {
         {/* Mahlgrad + Kaffee g */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Mahlgrad</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grind Setting</label>
             <input
               type="number" step="0.5" value={grindSetting}
               onChange={e => setGrindSetting(e.target.value)}
@@ -248,7 +248,7 @@ export function NewBrew() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Kaffee (g)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee (g)</label>
             <input
               type="number" step="0.1" value={doseG}
               onChange={e => setDoseG(e.target.value)}
@@ -261,7 +261,7 @@ export function NewBrew() {
         {/* Wasser + Temp */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Wasser (ml)</label>
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Water (ml)</label>
             <input
               type="number" step="10" value={waterMl}
               onChange={e => setWaterMl(e.target.value)}
@@ -282,7 +282,7 @@ export function NewBrew() {
 
         {/* Brühzeit */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brühzeit (MM:SS)</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brew Time (MM:SS)</label>
           <input
             type="text" value={brewTime}
             onChange={e => setBrewTime(e.target.value)}
@@ -296,7 +296,7 @@ export function NewBrew() {
         {brewMethod === 'french_press' && (
           <div>
             <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
-              1. Umrühren (MM:SS) <span className="text-slate-300 normal-case font-normal">optional</span>
+              First Stir (MM:SS) <span className="text-slate-300 normal-case font-normal">optional</span>
             </label>
             <input
               type="text" value={firstStir}
@@ -323,7 +323,7 @@ export function NewBrew() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Bloom-Zeit (MM:SS)</label>
+                <label className="block text-xs text-slate-500 mb-1">Bloom Time (MM:SS)</label>
                 <input
                   type="text" value={bloomTime}
                   onChange={e => setBloomTime(e.target.value)}
@@ -352,19 +352,19 @@ export function NewBrew() {
 
         {/* Bewertung */}
         <div className="grid gap-3">
-          <RatingField label="Bewertung" required infoKey="rating" value={rating} onChange={setRating} />
-          <RatingField label="Säure" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
-          <RatingField label="Bitterkeit" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
+          <RatingField label="Flavor" required infoKey="rating" value={rating} onChange={setRating} />
+          <RatingField label="Acidity" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
+          <RatingField label="Bitterness" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
 
         {/* Notizen */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Notizen</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Tasting Notes</label>
           <textarea
             value={tastingNotes}
             onChange={e => setTastingNotes(e.target.value)}
             rows={2}
-            placeholder="Fruchtig, nussig..."
+            placeholder="Fruity, nutty..."
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400"
           />
         </div>
@@ -376,7 +376,7 @@ export function NewBrew() {
           disabled={createBrew.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {createBrew.isPending ? 'Speichern...' : 'Brew speichern'}
+          {createBrew.isPending ? 'Saving...' : 'Save Brew'}
         </button>
       </form>
     </div>
