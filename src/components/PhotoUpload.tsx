@@ -17,7 +17,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 5 * 1024 * 1024) {
-      setError('Datei zu groß (max 5 MB)')
+      setError('File too large (max 5 MB)')
       return
     }
     setError('')
@@ -34,14 +34,14 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
       .upload(filename, file, { upsert: true })
 
     if (uploadError) {
-      setError('Upload fehlgeschlagen')
+      setError('Upload failed')
       setUploading(false)
       return
     }
 
     const { data } = supabase.storage.from(bucket).getPublicUrl(filename)
     if (!data?.publicUrl) {
-      setError('Upload fehlgeschlagen')
+      setError('Upload failed')
       setUploading(false)
       return
     }
@@ -56,7 +56,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
     const filename = value.split('/').pop()!
     const { error } = await supabase.storage.from(bucket).remove([filename])
     if (error) {
-      setError('Foto konnte nicht entfernt werden.')
+      setError('Could not remove photo.')
       return
     }
     onChange(null)
@@ -94,7 +94,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
           <button
             type="button"
             onClick={handleRemove}
-            aria-label="Foto entfernen"
+            aria-label="Remove photo"
             className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity leading-none"
           >
             ×

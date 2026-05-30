@@ -13,10 +13,10 @@ type Tab = 'grinders' | 'machines' | 'baskets' | 'brew_devices'
 type View = 'list' | 'detail' | 'new'
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: 'grinders',    label: 'Mühlen' },
-  { key: 'machines',    label: 'Maschinen' },
-  { key: 'baskets',     label: 'Siebe' },
-  { key: 'brew_devices', label: 'Geräte' },
+  { key: 'grinders',    label: 'Grinders' },
+  { key: 'machines',    label: 'Machines' },
+  { key: 'baskets',     label: 'Baskets' },
+  { key: 'brew_devices', label: 'Devices' },
 ]
 
 // ── DefaultSetter ─────────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ function DefaultSetter({ itemId, field }: {
         onClick={() => setOpen(v => !v)}
         className="text-[10px] text-slate-400 hover:text-orange-500 font-medium transition-colors"
       >
-        Standard für {open ? '▲' : '▼'}
+        Default for {open ? '▲' : '▼'}
       </button>
       {open && (
         <div className="flex flex-wrap gap-1 mt-1.5">
@@ -87,7 +87,7 @@ export function Equipment() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-800 mb-4">⚙️ Ausrüstung</h1>
+      <h1 className="text-xl font-bold text-slate-800 mb-4">⚙️ Equipment</h1>
 
       <div className="flex border-b border-slate-200 mb-5">
         {TABS.map(t => (
@@ -141,18 +141,18 @@ function GrinderList({ onSelect, onNew }: { onSelect: (g: Grinder) => void; onNe
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <p className="text-sm text-slate-500">{grinders.length} Mühle{grinders.length !== 1 ? 'n' : ''}</p>
+        <p className="text-sm text-slate-500">{grinders.length} Grinder{grinders.length !== 1 ? 's' : ''}</p>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {grinders.map(g => (
           <div key={g.id} className="bg-white border border-slate-200 rounded-lg p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
-                aria-label="Favorit"
+                aria-label="Favorite"
                 onClick={() => updateGrinder.mutate({ id: g.id, is_favorite: !g.is_favorite })}
                 className={`text-xl ${g.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
               >
@@ -168,7 +168,7 @@ function GrinderList({ onSelect, onNew }: { onSelect: (g: Grinder) => void; onNe
           </div>
         ))}
         {!isLoading && grinders.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Noch keine Mühlen. Füge deine erste hinzu!</p>
+          <p className="text-center text-slate-400 text-sm py-10">No grinders yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -184,13 +184,13 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
   if (editing) return <GrinderForm grinder={grinder} onBack={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm(`"${grinder.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${grinder.name}"?`)) return
     setDeleteError('')
     try {
       await deleteGrinder.mutateAsync(grinder.id)
       onDelete()
     } catch {
-      setDeleteError('Löschen fehlgeschlagen.')
+      setDeleteError('Delete failed.')
     }
   }
 
@@ -201,7 +201,7 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
           <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
           <h2 className="text-xl font-bold text-slate-800">{grinder.name}</h2>
           <button
-            aria-label="Favorit"
+            aria-label="Favorite"
             onClick={() => updateGrinder.mutate({ id: grinder.id, is_favorite: !grinder.is_favorite })}
             className={`text-2xl ${grinder.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
           >
@@ -209,30 +209,30 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
           </button>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
       {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {grinder.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-slate-800">{grinder.brand}</p>
         </div>
       )}
       {grinder.grinder_type && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Mahlscheibentyp</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Burr Type</p>
           <p className="text-sm text-slate-800">{grinderTypeLabel(grinder.grinder_type)}</p>
         </div>
       )}
       {(grinder.burr_size_mm !== null || grinder.motor_watt !== null) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Spezifikationen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Specs</p>
           <div className="grid gap-1">
             {grinder.burr_size_mm !== null && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Mahlscheibe</span>
+                <span className="text-slate-400">Burr Size</span>
                 <span className="text-slate-800">{grinder.burr_size_mm} mm</span>
               </div>
             )}
@@ -248,21 +248,21 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
       {(grinder.stepless || grinder.has_hopper) && (
         <div className="flex gap-2 mb-3">
           {grinder.stepless && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Stufenlos</span>
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Stepless</span>
           )}
           {grinder.has_hopper && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Behälter</span>
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-medium">Hopper</span>
           )}
         </div>
       )}
       {grinder.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-slate-800">{grinder.notes}</p>
         </div>
       )}
       {!grinder.brand && !grinder.grinder_type && grinder.burr_size_mm === null && grinder.motor_watt === null && !grinder.stepless && !grinder.has_hopper && !grinder.notes && (
-        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
+        <p className="text-sm text-slate-400 text-center py-8">No details yet. Click "Edit" to add them.</p>
       )}
     </div>
   )
@@ -284,7 +284,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
     const payload = {
       name: name.trim(),
       brand: brand.trim() || null,
@@ -304,7 +304,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
       }
       onBack()
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -314,19 +314,19 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h2 className="text-xl font-bold text-slate-800">{grinder ? 'Mühle bearbeiten' : 'Neue Mühle'}</h2>
+        <h2 className="text-xl font-bold text-slate-800">{grinder ? 'Edit Grinder' : 'New Grinder'}</h2>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
-        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
+        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <select
           value={grinderType}
           onChange={e => setGrinderType(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
         >
-          <option value="">Mahlscheibentyp (optional)</option>
+          <option value="">Burr type (optional)</option>
           {GRINDER_TYPES.map(gt => (
             <option key={gt.value} value={gt.value}>{gt.label}</option>
           ))}
@@ -336,7 +336,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
             <input
               type="number" step="0.5" value={burrSizeMm}
               onChange={e => setBurrSizeMm(e.target.value)}
-              placeholder="Mahlscheibe"
+              placeholder="Burr size"
               className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
             <span className="text-sm text-slate-400">mm</span>
@@ -354,19 +354,19 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
         <div className="flex gap-6">
           <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
             <input type="checkbox" checked={stepless} onChange={e => setStepless(e.target.checked)} className="w-4 h-4 accent-orange-500" />
-            Stufenlos
+            Stepless
           </label>
           <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
             <input type="checkbox" checked={hasHopper} onChange={e => setHasHopper(e.target.checked)} className="w-4 h-4 accent-orange-500" />
-            Behälter
+            Hopper
           </label>
         </div>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notizen" rows={2}
+        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50">
-          {isPending ? 'Speichern...' : grinder ? 'Änderungen speichern' : 'Mühle speichern'}
+          {isPending ? 'Saving...' : grinder ? 'Save Changes' : 'Save Grinder'}
         </button>
       </form>
     </div>
@@ -401,18 +401,18 @@ function MachineList({ onSelect, onNew }: { onSelect: (m: Machine) => void; onNe
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <p className="text-sm text-slate-500">{machines.length} Maschine{machines.length !== 1 ? 'n' : ''}</p>
+        <p className="text-sm text-slate-500">{machines.length} Machine{machines.length !== 1 ? 's' : ''}</p>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {machines.map(m => (
           <div key={m.id} className="bg-white border border-slate-200 rounded-lg p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
-                aria-label="Favorit"
+                aria-label="Favorite"
                 onClick={() => updateMachine.mutate({ id: m.id, is_favorite: !m.is_favorite })}
                 className={`text-xl ${m.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
               >
@@ -428,7 +428,7 @@ function MachineList({ onSelect, onNew }: { onSelect: (m: Machine) => void; onNe
           </div>
         ))}
         {!isLoading && machines.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Noch keine Maschinen. Füge deine erste hinzu!</p>
+          <p className="text-center text-slate-400 text-sm py-10">No machines yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -444,13 +444,13 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
   if (editing) return <MachineForm machine={machine} onBack={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm(`"${machine.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${machine.name}"?`)) return
     setDeleteError('')
     try {
       await deleteMachine.mutateAsync(machine.id)
       onDelete()
     } catch {
-      setDeleteError('Löschen fehlgeschlagen.')
+      setDeleteError('Delete failed.')
     }
   }
 
@@ -461,7 +461,7 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
           <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
           <h2 className="text-xl font-bold text-slate-800">{machine.name}</h2>
           <button
-            aria-label="Favorit"
+            aria-label="Favorite"
             onClick={() => updateMachine.mutate({ id: machine.id, is_favorite: !machine.is_favorite })}
             className={`text-2xl ${machine.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
           >
@@ -469,36 +469,36 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
           </button>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
       {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {machine.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-slate-800">{machine.brand}</p>
         </div>
       )}
       {machine.funktionsweise && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Funktionsweise</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Boiler Type</p>
           <p className="text-sm text-slate-800">{funktionsweiseLabel(machine.funktionsweise)}</p>
         </div>
       )}
       {(machine.brew_group_type || machine.brew_group_size_mm !== null) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Brühgruppe</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Group Head</p>
           <div className="grid gap-1">
             {machine.brew_group_type && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Typ</span>
+                <span className="text-slate-400">Type</span>
                 <span className="text-slate-800">{machine.brew_group_type}</span>
               </div>
             )}
             {machine.brew_group_size_mm !== null && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Durchmesser</span>
+                <span className="text-slate-400">Diameter</span>
                 <span className="text-slate-800">{machine.brew_group_size_mm} mm</span>
               </div>
             )}
@@ -507,12 +507,12 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
       )}
       {machine.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-slate-800">{machine.notes}</p>
         </div>
       )}
       {!machine.brand && !machine.funktionsweise && !machine.brew_group_type && machine.brew_group_size_mm === null && !machine.notes && (
-        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
+        <p className="text-sm text-slate-400 text-center py-8">No details yet. Click "Edit" to add them.</p>
       )}
     </div>
   )
@@ -532,7 +532,7 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
     const payload = {
       name: name.trim(),
       brand: brand.trim() || null,
@@ -550,7 +550,7 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
       }
       onBack()
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -560,19 +560,19 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h2 className="text-xl font-bold text-slate-800">{machine ? 'Maschine bearbeiten' : 'Neue Maschine'}</h2>
+        <h2 className="text-xl font-bold text-slate-800">{machine ? 'Edit Machine' : 'New Machine'}</h2>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
-        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
+        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <select
           value={funktionsweise}
           onChange={e => setFunktionsweise(e.target.value)}
           className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
         >
-          <option value="">Funktionsweise (optional)</option>
+          <option value="">Boiler type (optional)</option>
           {FUNKTIONSWEISE_TYPES.map(ft => (
             <option key={ft.value} value={ft.value}>{ft.label}</option>
           ))}
@@ -580,24 +580,24 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
         <input
           value={brewGroupType}
           onChange={e => setBrewGroupType(e.target.value)}
-          placeholder="Brühgruppe (z.B. E61)"
+          placeholder="Group head (e.g. E61)"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
         />
         <div className="flex items-center gap-2">
           <input
             type="number" step="0.5" value={brewGroupSizeMm}
             onChange={e => setBrewGroupSizeMm(e.target.value)}
-            placeholder="Brühgruppen-Ø"
+            placeholder="Group head Ø"
             className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
           />
           <span className="text-sm text-slate-400">mm</span>
         </div>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notizen" rows={2}
+        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50">
-          {isPending ? 'Speichern...' : machine ? 'Änderungen speichern' : 'Maschine speichern'}
+          {isPending ? 'Saving...' : machine ? 'Save Changes' : 'Save Machine'}
         </button>
       </form>
     </div>
@@ -632,18 +632,18 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <p className="text-sm text-slate-500">{baskets.length} Sieb{baskets.length !== 1 ? 'e' : ''}</p>
+        <p className="text-sm text-slate-500">{baskets.length} Basket{baskets.length !== 1 ? 's' : ''}</p>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {baskets.map(b => (
           <div key={b.id} className="bg-white border border-slate-200 rounded-lg p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
-                aria-label="Favorit"
+                aria-label="Favorite"
                 onClick={() => updateBasket.mutate({ id: b.id, is_favorite: !b.is_favorite })}
                 className={`text-xl ${b.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
               >
@@ -663,7 +663,7 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
           </div>
         ))}
         {!isLoading && baskets.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Noch keine Siebe. Füge dein erstes hinzu!</p>
+          <p className="text-center text-slate-400 text-sm py-10">No baskets yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -679,13 +679,13 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
   if (editing) return <BasketForm basket={basket} onBack={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm(`"${basket.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${basket.name}"?`)) return
     setDeleteError('')
     try {
       await deleteBasket.mutateAsync(basket.id)
       onDelete()
     } catch {
-      setDeleteError('Löschen fehlgeschlagen.')
+      setDeleteError('Delete failed.')
     }
   }
 
@@ -696,7 +696,7 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
           <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
           <h2 className="text-xl font-bold text-slate-800">{basket.name}</h2>
           <button
-            aria-label="Favorit"
+            aria-label="Favorite"
             onClick={() => updateBasket.mutate({ id: basket.id, is_favorite: !basket.is_favorite })}
             className={`text-2xl ${basket.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
           >
@@ -704,37 +704,37 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
           </button>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
       {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {basket.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-slate-800">{basket.brand}</p>
         </div>
       )}
       {basket.diameter_mm !== null && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Durchmesser</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Diameter</p>
           <p className="text-sm text-slate-800">{basket.diameter_mm} mm</p>
         </div>
       )}
       {basket.size_g !== null && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Nenndosis</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Rated Dose</p>
           <p className="text-sm text-slate-800">{basket.size_g} g</p>
         </div>
       )}
       {basket.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-slate-800">{basket.notes}</p>
         </div>
       )}
       {!basket.brand && basket.diameter_mm === null && basket.size_g === null && !basket.notes && (
-        <p className="text-sm text-slate-400 text-center py-8">Noch keine Details. Klicke „Bearbeiten" um sie hinzuzufügen.</p>
+        <p className="text-sm text-slate-400 text-center py-8">No details yet. Click "Edit" to add them.</p>
       )}
     </div>
   )
@@ -753,7 +753,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
     const payload = {
       name: name.trim(),
       brand: brand.trim() || null,
@@ -770,7 +770,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
       }
       onBack()
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -780,29 +780,29 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h2 className="text-xl font-bold text-slate-800">{basket ? 'Sieb bearbeiten' : 'Neues Sieb'}</h2>
+        <h2 className="text-xl font-bold text-slate-800">{basket ? 'Edit Basket' : 'New Basket'}</h2>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
-        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Marke"
+        <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
         <div className="flex items-center gap-2">
-          <input type="number" step="1" value={diameterMm} onChange={e => setDiameterMm(e.target.value)} placeholder="Durchmesser"
+          <input type="number" step="1" value={diameterMm} onChange={e => setDiameterMm(e.target.value)} placeholder="Diameter"
             className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           <span className="text-sm text-slate-400">mm</span>
         </div>
         <div className="flex items-center gap-2">
-          <input type="number" step="0.5" value={sizeG} onChange={e => setSizeG(e.target.value)} placeholder="Nenndosis"
+          <input type="number" step="0.5" value={sizeG} onChange={e => setSizeG(e.target.value)} placeholder="Rated dose"
             className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400" />
           <span className="text-sm text-slate-400">g</span>
         </div>
-        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notizen" rows={2}
+        <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400" />
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50">
-          {isPending ? 'Speichern...' : basket ? 'Änderungen speichern' : 'Sieb speichern'}
+          {isPending ? 'Saving...' : basket ? 'Save Changes' : 'Save Basket'}
         </button>
       </form>
     </div>
@@ -837,18 +837,18 @@ function BrewDeviceList({ onSelect, onNew }: { onSelect: (d: BrewDevice) => void
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <p className="text-sm text-slate-500">{devices.length} Gerät{devices.length !== 1 ? 'e' : ''}</p>
+        <p className="text-sm text-slate-500">{devices.length} Device{devices.length !== 1 ? 's' : ''}</p>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {devices.map(d => (
           <div key={d.id} className="bg-white border border-slate-200 rounded-lg p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
-                aria-label="Favorit"
+                aria-label="Favorite"
                 onClick={() => updateDevice.mutate({ id: d.id, is_favorite: !d.is_favorite })}
                 className={`text-xl ${d.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
               >
@@ -868,7 +868,7 @@ function BrewDeviceList({ onSelect, onNew }: { onSelect: (d: BrewDevice) => void
           </div>
         ))}
         {!isLoading && devices.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Noch keine Geräte. Füge dein erstes hinzu!</p>
+          <p className="text-center text-slate-400 text-sm py-10">No devices yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -884,13 +884,13 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
   if (editing) return <BrewDeviceForm device={device} onBack={() => setEditing(false)} />
 
   async function handleDelete() {
-    if (!confirm(`"${device.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${device.name}"?`)) return
     setDeleteError('')
     try {
       await deleteDevice.mutateAsync(device.id)
       onDelete()
     } catch {
-      setDeleteError('Löschen fehlgeschlagen.')
+      setDeleteError('Delete failed.')
     }
   }
 
@@ -901,7 +901,7 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
           <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
           <h2 className="text-xl font-bold text-slate-800">{device.name}</h2>
           <button
-            aria-label="Favorit"
+            aria-label="Favorite"
             onClick={() => updateDevice.mutate({ id: device.id, is_favorite: !device.is_favorite })}
             className={`text-2xl ${device.is_favorite ? 'text-amber-400' : 'text-slate-200 hover:text-amber-300'}`}
           >
@@ -909,30 +909,30 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
           </button>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
       {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {device.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-slate-800">{device.brand}</p>
         </div>
       )}
       {device.device_type && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Typ</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Type</p>
           <p className="text-sm text-slate-800">{deviceTypeLabel(device.device_type)}</p>
         </div>
       )}
       <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-        <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Standard für</p>
+        <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Default for</p>
         <DefaultSetter itemId={device.id} field="brew_device_id" />
       </div>
       {device.notes && (
         <div className="bg-white border border-slate-200 rounded-lg p-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notizen</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-slate-800">{device.notes}</p>
         </div>
       )}
@@ -952,7 +952,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
     const payload: NewBrewDevice = {
       name: name.trim(),
       brand: brand.trim() || null,
@@ -968,7 +968,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
       }
       onBack()
     } catch {
-      setError('Fehler beim Speichern.')
+      setError('Error saving.')
     }
   }
 
@@ -978,7 +978,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h2 className="text-xl font-bold text-slate-800">{device ? 'Gerät bearbeiten' : 'Neues Gerät'}</h2>
+        <h2 className="text-xl font-bold text-slate-800">{device ? 'Edit Device' : 'New Device'}</h2>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div>
@@ -990,7 +990,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Marke</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brand</label>
           <input
             value={brand} onChange={e => setBrand(e.target.value)}
             placeholder="Hario"
@@ -998,17 +998,17 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Typ</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Type</label>
           <select
             value={deviceType} onChange={e => setDeviceType(e.target.value)}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
           >
-            <option value="">Typ wählen...</option>
+            <option value="">Select type...</option>
             {DEVICE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Notizen</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Notes</label>
           <textarea
             value={notes} onChange={e => setNotes(e.target.value)} rows={2}
             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400"
@@ -1017,7 +1017,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50">
-          {isPending ? 'Speichern...' : (device ? 'Änderungen speichern' : 'Gerät hinzufügen')}
+          {isPending ? 'Saving...' : (device ? 'Save Changes' : 'Add Device')}
         </button>
       </form>
     </div>

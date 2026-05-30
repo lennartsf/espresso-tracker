@@ -32,9 +32,9 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">📍 Röstereien</h1>
+        <h1 className="text-xl font-bold text-slate-800">📍 Roasters</h1>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
 
@@ -44,7 +44,7 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
         </div>
       )}
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
 
       <div className="grid gap-2">
         {roasters.map(r => (
@@ -73,7 +73,7 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
           </button>
         ))}
         {!isLoading && roasters.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">Noch keine Röstereien. Füge deine erste hinzu!</p>
+          <p className="text-center text-slate-400 text-sm py-10">No roasters yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -92,7 +92,7 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
 
 
   async function handleDelete() {
-    if (!confirm(`"${roaster.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${roaster.name}"?`)) return
     await deleteRoaster.mutateAsync(roaster.id)
     onDelete()
   }
@@ -105,8 +105,8 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
           <h1 className="text-xl font-bold text-slate-800">{roaster.name}</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Bearbeiten</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
+          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
       <div className="bg-white border border-slate-200 rounded-lg p-4 grid gap-2">
         {roaster.address && (
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Adresse</span>
+            <span className="text-slate-400">Address</span>
             <span className="text-slate-800 text-right max-w-[200px]">{roaster.address}</span>
           </div>
         )}
@@ -137,17 +137,17 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
           </div>
         )}
         {!roaster.address && !roaster.website && (
-          <p className="text-slate-400 text-sm">Keine weiteren Infos hinterlegt.</p>
+          <p className="text-slate-400 text-sm">No additional info entered.</p>
         )}
       </div>
 
       <div className="mt-3">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-          Kaffees dieser Rösterei
+          Coffees by this Roaster
         </p>
         {coffees.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-4 bg-white border border-slate-200 rounded-lg">
-            Noch kein Kaffee dieser Rösterei eingetragen.
+            No coffees from this roaster yet.
           </p>
         ) : (
           <div className="grid gap-2">
@@ -179,7 +179,7 @@ function RoasterCoffeeCard({ coffee }: { coffee: Coffee }) {
       </div>
       {coffee.roast_level !== null && (
         <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium whitespace-nowrap">
-          Röstgrad {coffee.roast_level}
+          Roast Level {coffee.roast_level}
         </span>
       )}
     </div>
@@ -228,7 +228,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
     const payload = {
       name: name.trim(),
       address: address.trim() || null,
@@ -253,7 +253,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
       {!compact && (
         <div className="flex items-center gap-3 mb-6">
           <button type="button" onClick={() => onBack()} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">{isEdit ? 'Rösterei bearbeiten' : 'Neue Rösterei'}</h1>
+          <h1 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Roaster' : 'New Roaster'}</h1>
         </div>
       )}
 
@@ -271,14 +271,14 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
               autoFocus
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="z.B. Five Elephant"
+              placeholder="e.g. Five Elephant"
               className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Adresse</label>
+          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Address</label>
           <div className="relative">
             <div className="flex gap-2">
               <input
@@ -286,7 +286,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
                 onChange={e => { setQuery(e.target.value); setLat(null); setLng(null) }}
                 onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                placeholder="Straße, Stadt eingeben…"
+                placeholder="Street, city..."
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
               />
               {searching && <span className="self-center text-xs text-slate-400 pr-1">…</span>}
@@ -307,7 +307,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
               </div>
             )}
           </div>
-          {lat !== null && <p className="text-green-600 text-xs mt-1">✓ Standort gefunden</p>}
+          {lat !== null && <p className="text-green-600 text-xs mt-1">✓ Location found</p>}
         </div>
 
         {lat !== null && lng !== null && !compact && (
@@ -341,7 +341,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
           disabled={isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {isPending ? 'Speichern...' : isEdit ? 'Änderungen speichern' : 'Rösterei speichern'}
+          {isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Save Roaster'}
         </button>
       </form>
     </div>

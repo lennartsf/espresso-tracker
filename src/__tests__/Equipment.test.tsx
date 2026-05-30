@@ -49,44 +49,44 @@ function renderEquipment() {
   )
 }
 
-test('zeigt Mühlen-Tab standardmäßig', () => {
+test('shows Grinders tab by default', () => {
   renderEquipment()
   expect(screen.getByText('Niche Zero')).toBeInTheDocument()
 })
 
-test('zeigt Geräte-Tab wenn angeklickt', async () => {
+test('shows Devices tab when clicked', async () => {
   renderEquipment()
   const user = userEvent.setup()
-  await user.click(screen.getByText('Geräte'))
-  expect(screen.getByText(/Noch keine Geräte/)).toBeInTheDocument()
+  await user.click(screen.getByText('Devices'))
+  expect(screen.getByText(/No devices yet/)).toBeInTheDocument()
 })
 
-test('wechselt zu Maschinen-Tab', async () => {
+test('switches to Machines tab', async () => {
   renderEquipment()
-  await userEvent.click(screen.getByRole('button', { name: 'Maschinen' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Machines' }))
   expect(screen.getByText('Rancilio Silvia')).toBeInTheDocument()
 })
 
-test('wechselt zu Siebe-Tab', async () => {
+test('switches to Baskets tab', async () => {
   renderEquipment()
-  await userEvent.click(screen.getByRole('button', { name: 'Siebe' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Baskets' }))
   expect(screen.getByText('VST 18g')).toBeInTheDocument()
 })
 
-test('zeigt Neu-Formular nach Klick auf + Neu', async () => {
+test('shows new form after clicking + New', async () => {
   renderEquipment()
-  await userEvent.click(screen.getByRole('button', { name: '+ Neu' }))
+  await userEvent.click(screen.getByRole('button', { name: '+ New' }))
   expect(screen.getByPlaceholderText('Name *')).toBeInTheDocument()
 })
 
-test('zeigt Favorit-Stern in der Liste', () => {
+test('shows favorite star in list', () => {
   renderEquipment()
-  const favoriteButtons = screen.getAllByRole('button', { name: 'Favorit' })
+  const favoriteButtons = screen.getAllByRole('button', { name: 'Favorite' })
   expect(favoriteButtons.length).toBeGreaterThan(0)
 })
 
-test('zeigt Detail-Ansicht nach Klick auf Item-Name', async () => {
+test('shows detail view after clicking item name', async () => {
   renderEquipment()
   await userEvent.click(screen.getByText('Niche Zero'))
-  expect(screen.getByRole('button', { name: 'Bearbeiten' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument()
 })

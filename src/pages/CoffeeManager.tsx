@@ -43,13 +43,13 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">☕ Kaffees</h1>
+        <h1 className="text-xl font-bold text-slate-800">☕ Coffees</h1>
         <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
-          + Neu
+          + New
         </button>
       </div>
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Laden...</p>}
+      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
 
       <div className="grid gap-2">
         {coffees.map(c => (
@@ -76,7 +76,7 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             <div className="flex items-center gap-2">
               {c.roast_level && (
                 <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium">
-                  Röstgrad {c.roast_level}
+                  Roast Level {c.roast_level}
                 </span>
               )}
               <span className="text-slate-300 text-lg">›</span>
@@ -85,7 +85,7 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
         ))}
         {!isLoading && coffees.length === 0 && (
           <p className="text-center text-slate-400 text-sm py-10">
-            Noch keine Kaffees. Füge deinen ersten hinzu!
+            No coffees yet. Add your first!
           </p>
         )}
       </div>
@@ -117,7 +117,7 @@ function CoffeeDetailView({
   const displayDates = showAll ? roastDates : roastDates.slice(0, 2)
 
   async function handleDeleteCoffee() {
-    if (!confirm(`"${coffee.name}" wirklich löschen?`)) return
+    if (!confirm(`Delete "${coffee.name}"?`)) return
     await deleteCoffee.mutateAsync(coffee.id)
     onDelete()
   }
@@ -131,7 +131,7 @@ function CoffeeDetailView({
   }
 
   function formatDate(d: string) {
-    return new Date(d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
   }
 
   return (
@@ -143,24 +143,24 @@ function CoffeeDetailView({
         </div>
         <div className="flex gap-3">
           <button onClick={onEdit} className="text-orange-500 text-sm font-semibold">
-            Bearbeiten
+            Edit
           </button>
           <button onClick={handleDeleteCoffee} className="text-slate-300 hover:text-red-400 text-sm">
-            Löschen
+            Delete
           </button>
         </div>
       </div>
 
       {coffee.roaster && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Rösterei</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Roaster</p>
           <p className="text-sm text-slate-800">{coffee.roaster}</p>
         </div>
       )}
 
       {(coffee.arabica_pct !== null || coffee.robusta_pct !== null) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Bohnenart</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Bean Type</p>
           <div className="flex gap-3">
             {coffee.arabica_pct !== null && (
               <span className="text-sm text-slate-700 bg-green-50 border border-green-200 rounded px-2 py-1">
@@ -178,7 +178,7 @@ function CoffeeDetailView({
 
       {coffee.roast_level !== null && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Röstgrad</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Roast Level</p>
           <div className="flex gap-1">
             {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
               <div
@@ -192,18 +192,18 @@ function CoffeeDetailView({
             ))}
           </div>
           <div className="flex justify-between text-xs text-slate-300 mt-1">
-            <span>hell</span><span>dunkel</span>
+            <span>light</span><span>dark</span>
           </div>
         </div>
       )}
 
       {(coffee.origin_country || coffee.origin_region || coffee.altitude_m) && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Rohkaffee</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Origin</p>
           <div className="grid gap-1">
             {coffee.origin_country && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Land</span>
+                <span className="text-slate-400">Country</span>
                 <span className="text-slate-800">{coffee.origin_country}</span>
               </div>
             )}
@@ -215,7 +215,7 @@ function CoffeeDetailView({
             )}
             {coffee.altitude_m && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Anbauhöhe</span>
+                <span className="text-slate-400">Altitude</span>
                 <span className="text-slate-800">{coffee.altitude_m} m</span>
               </div>
             )}
@@ -225,9 +225,9 @@ function CoffeeDetailView({
 
       <div className="bg-white border border-slate-200 rounded-lg p-3">
         <div className="flex justify-between items-center mb-2">
-          <p className="text-xs text-slate-400 uppercase font-semibold">Röstdaten</p>
+          <p className="text-xs text-slate-400 uppercase font-semibold">Roast Dates</p>
           <button onClick={() => setShowAddDate(v => !v)} className="text-xs text-orange-500 font-semibold">
-            {showAddDate ? 'Abbrechen' : '+ Hinzufügen'}
+            {showAddDate ? 'Cancel' : '+ Add'}
           </button>
         </div>
 
@@ -250,7 +250,7 @@ function CoffeeDetailView({
         )}
 
         {roastDates.length === 0 && !showAddDate && (
-          <p className="text-slate-400 text-sm">Noch keine Röstdaten eingetragen.</p>
+          <p className="text-slate-400 text-sm">No roast dates yet.</p>
         )}
 
         <div className="grid gap-2">
@@ -258,7 +258,7 @@ function CoffeeDetailView({
             <div key={rd.id} className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-slate-800">{formatDate(rd.roast_date)}</span>
-                {i === 0 && <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-medium">Aktuell</span>}
+                {i === 0 && <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-medium">Current</span>}
               </div>
               <button
                 onClick={() => deleteRoastDate.mutate({ id: rd.id, coffeeId: coffee.id })}
@@ -272,7 +272,7 @@ function CoffeeDetailView({
 
         {roastDates.length > 2 && (
           <button onClick={() => setShowAll(v => !v)} className="text-xs text-slate-400 mt-2 hover:text-slate-600">
-            {showAll ? 'Weniger anzeigen' : `${roastDates.length - 2} weitere anzeigen`}
+            {showAll ? 'Show less' : `Show ${roastDates.length - 2} more`}
           </button>
         )}
       </div>
@@ -299,7 +299,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
 
     let arabica: number | null = null
     let robusta: number | null = null
@@ -335,7 +335,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Kaffee bearbeiten</h1>
+        <h1 className="text-xl font-bold text-slate-800">Edit Coffee</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
@@ -359,16 +359,16 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
             onChange={e => setRoasterId(e.target.value)}
             className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
           >
-            <option value="">Keine Rösterei</option>
+            <option value="">No roaster</option>
             {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
           {roasters.length === 0 && (
-            <p className="text-xs text-slate-400 mt-1">Noch keine Röstereien — im 📍 Röstereien-Tab anlegen.</p>
+            <p className="text-xs text-slate-400 mt-1">No roasters yet — add one in the 📍 Roasters tab.</p>
           )}
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bohnenart</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bean Type</p>
           <div className="flex gap-4 mb-2">
             <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
               <input type="checkbox" checked={hasArabica} onChange={e => setHasArabica(e.target.checked)} className="w-4 h-4 accent-orange-500" />
@@ -402,35 +402,35 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Röstgrad</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Roast Level</p>
           <RatingInput value={roastLevel} onChange={setRoastLevel} />
           <div className="flex justify-between text-xs text-slate-300 mt-1 px-0.5">
-            <span>hell</span><span>dunkel</span>
+            <span>light</span><span>dark</span>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Rohkaffee</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Origin</p>
           <div className="grid gap-3">
             <input
               value={originCountry}
               onChange={e => setOriginCountry(e.target.value)}
-              placeholder="Herkunft (Land)"
+              placeholder="Country"
               className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
             <input
               value={originRegion}
               onChange={e => setOriginRegion(e.target.value)}
-              placeholder="Herkunft (Region)"
+              placeholder="Region"
               className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
             <div className="flex items-center gap-2">
               <input
                 type="number" value={altitudeM} onChange={e => setAltitudeM(e.target.value)}
-                placeholder="Anbauhöhe"
+                placeholder="Altitude"
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
               />
-              <span className="text-sm text-slate-400">m ü.M.</span>
+              <span className="text-sm text-slate-400">m</span>
             </div>
           </div>
         </div>
@@ -442,7 +442,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
           disabled={updateCoffee.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {updateCoffee.isPending ? 'Speichern...' : 'Änderungen speichern'}
+          {updateCoffee.isPending ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>
@@ -469,7 +469,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setError('Name ist erforderlich.'); return }
+    if (!name.trim()) { setError('Name is required.'); return }
 
     let arabica: number | null = null
     let robusta: number | null = null
@@ -507,7 +507,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
     <div>
       <div className="flex items-center gap-3 mb-6">
         <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Neuer Kaffee</h1>
+        <h1 className="text-xl font-bold text-slate-800">New Coffee</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
@@ -533,7 +533,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
               onChange={e => setRoasterId(e.target.value)}
               className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
             >
-              <option value="">Keine Rösterei</option>
+              <option value="">No roaster</option>
               {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
             <button
@@ -541,12 +541,12 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
               onClick={() => setShowNewRoaster(v => !v)}
               className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50 whitespace-nowrap"
             >
-              {showNewRoaster ? 'Abbrechen' : '+ Neu'}
+              {showNewRoaster ? 'Cancel' : '+ New'}
             </button>
           </div>
           {showNewRoaster && (
             <div className="mt-2 border border-orange-200 rounded-lg p-3 bg-orange-50">
-              <p className="text-xs font-semibold text-orange-600 uppercase mb-2">Neue Rösterei</p>
+              <p className="text-xs font-semibold text-orange-600 uppercase mb-2">New Roaster</p>
               <RoasterForm
                 compact
                 onBack={(created?: Roaster) => {
@@ -559,7 +559,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bohnenart</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bean Type</p>
           <div className="flex gap-4 mb-2">
             <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
               <input
@@ -615,27 +615,27 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Röstgrad</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Roast Level</p>
           <RatingInput value={roastLevel} onChange={setRoastLevel} />
           <div className="flex justify-between text-xs text-slate-300 mt-1 px-0.5">
-            <span>hell</span>
-            <span>dunkel</span>
+            <span>light</span>
+            <span>dark</span>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Rohkaffee</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Origin</p>
           <div className="grid gap-3">
             <input
               value={originCountry}
               onChange={e => setOriginCountry(e.target.value)}
-              placeholder="Herkunft (Land)"
+              placeholder="Country"
               className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
             <input
               value={originRegion}
               onChange={e => setOriginRegion(e.target.value)}
-              placeholder="Herkunft (Region)"
+              placeholder="Region"
               className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
             <div className="flex items-center gap-2">
@@ -643,10 +643,10 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
                 type="number"
                 value={altitudeM}
                 onChange={e => setAltitudeM(e.target.value)}
-                placeholder="Anbauhöhe"
+                placeholder="Altitude"
                 className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
               />
-              <span className="text-sm text-slate-400">m ü.M.</span>
+              <span className="text-sm text-slate-400">m</span>
             </div>
           </div>
         </div>
@@ -658,7 +658,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
           disabled={createCoffee.isPending}
           className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
         >
-          {createCoffee.isPending ? 'Speichern...' : 'Kaffee speichern'}
+          {createCoffee.isPending ? 'Saving...' : 'Save Coffee'}
         </button>
       </form>
     </div>
