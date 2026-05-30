@@ -27,6 +27,8 @@ const mockBrew: BrewWithCoffee = {
   created_at: '2026-05-30T10:00:00Z',
   coffees: { name: 'Ethiopia' },
   grinders: null,
+  brew_device_id: null,
+  brew_devices: null,
 }
 
 vi.mock('../lib/supabase', () => ({

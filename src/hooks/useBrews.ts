@@ -5,6 +5,7 @@ import type { Brew, NewBrew } from '../types'
 export type BrewWithCoffee = Brew & {
   coffees: { name: string } | null
   grinders: { name: string } | null
+  brew_devices: { name: string } | null
 }
 
 export function useBrews(coffeeId?: string, brewMethod?: string) {
@@ -13,7 +14,7 @@ export function useBrews(coffeeId?: string, brewMethod?: string) {
     queryFn: async () => {
       let query = supabase
         .from('brews')
-        .select('*, coffees(name), grinders(name)')
+        .select('*, coffees(name), grinders(name), brew_devices(name)')
         .order('brewed_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (brewMethod) query = query.eq('brew_method', brewMethod)
@@ -30,7 +31,7 @@ export function useBrew(id: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('brews')
-        .select('*, coffees(name), grinders(name)')
+        .select('*, coffees(name), grinders(name), brew_devices(name)')
         .eq('id', id)
         .single()
       if (error) throw error
