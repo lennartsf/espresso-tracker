@@ -363,7 +363,7 @@ export function NewShot() {
                 <select
                   value={grinderId}
                   onChange={e => setGrinderId(e.target.value)}
-                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
                   <option value="">Mühle (optional)</option>
                   {grinders.map(g => (
@@ -375,7 +375,7 @@ export function NewShot() {
                 <select
                   value={machineId}
                   onChange={e => setMachineId(e.target.value)}
-                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
                   <option value="">Maschine (optional)</option>
                   {machines.map(m => (
@@ -387,7 +387,7 @@ export function NewShot() {
                 <select
                   value={basketId}
                   onChange={e => setBasketId(e.target.value)}
-                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
                 >
                   <option value="">Sieb (optional)</option>
                   {baskets.map(b => (

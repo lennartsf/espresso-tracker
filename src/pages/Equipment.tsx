@@ -106,6 +106,7 @@ function GrinderList({ onSelect, onNew }: { onSelect: (g: Grinder) => void; onNe
 
 function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack: () => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const deleteGrinder = useDeleteGrinder()
   const updateGrinder = useUpdateGrinder()
 
@@ -113,11 +114,12 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
 
   async function handleDelete() {
     if (!confirm(`"${grinder.name}" wirklich löschen?`)) return
+    setDeleteError('')
     try {
       await deleteGrinder.mutateAsync(grinder.id)
       onDelete()
     } catch {
-      // deletion failed silently — mutation's own error state handles retry
+      setDeleteError('Löschen fehlgeschlagen.')
     }
   }
 
@@ -140,6 +142,7 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
           <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
         </div>
       </div>
+      {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {grinder.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
@@ -267,6 +270,7 @@ function MachineList({ onSelect, onNew }: { onSelect: (m: Machine) => void; onNe
 
 function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack: () => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const deleteMachine = useDeleteMachine()
   const updateMachine = useUpdateMachine()
 
@@ -274,11 +278,12 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
 
   async function handleDelete() {
     if (!confirm(`"${machine.name}" wirklich löschen?`)) return
+    setDeleteError('')
     try {
       await deleteMachine.mutateAsync(machine.id)
       onDelete()
     } catch {
-      // deletion failed silently — mutation's own error state handles retry
+      setDeleteError('Löschen fehlgeschlagen.')
     }
   }
 
@@ -301,6 +306,7 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
           <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
         </div>
       </div>
+      {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {machine.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
@@ -432,6 +438,7 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
 
 function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: () => void; onDelete: () => void }) {
   const [editing, setEditing] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const deleteBasket = useDeleteBasket()
   const updateBasket = useUpdateBasket()
 
@@ -439,11 +446,12 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
 
   async function handleDelete() {
     if (!confirm(`"${basket.name}" wirklich löschen?`)) return
+    setDeleteError('')
     try {
       await deleteBasket.mutateAsync(basket.id)
       onDelete()
     } catch {
-      // deletion failed silently — mutation's own error state handles retry
+      setDeleteError('Löschen fehlgeschlagen.')
     }
   }
 
@@ -466,6 +474,7 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
           <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Löschen</button>
         </div>
       </div>
+      {deleteError && <p className="text-red-500 text-sm mb-3">{deleteError}</p>}
       {basket.brand && (
         <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
           <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Marke</p>
@@ -493,7 +502,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
   const updateBasket = useUpdateBasket()
   const [name, setName] = useState(basket?.name ?? '')
   const [brand, setBrand] = useState(basket?.brand ?? '')
-  const [sizeG, setSizeG] = useState(basket?.size_g ? String(basket.size_g) : '')
+  const [sizeG, setSizeG] = useState(basket?.size_g != null ? String(basket.size_g) : '')
   const [notes, setNotes] = useState(basket?.notes ?? '')
   const [error, setError] = useState('')
 
