@@ -72,6 +72,11 @@ export interface Grinder {
   name: string
   brand: string | null
   notes: string | null
+  grinder_type: string | null
+  burr_size_mm: number | null
+  motor_watt: number | null
+  stepless: boolean
+  has_hopper: boolean
   is_favorite: boolean
   created_at: string
 }
@@ -81,6 +86,9 @@ export interface Machine {
   name: string
   brand: string | null
   notes: string | null
+  funktionsweise: string | null
+  brew_group_type: string | null
+  brew_group_size_mm: number | null
   is_favorite: boolean
   created_at: string
 }

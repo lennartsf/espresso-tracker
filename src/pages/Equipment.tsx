@@ -171,7 +171,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
     e.preventDefault()
     setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
-    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, is_favorite: grinder?.is_favorite ?? false }
+    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, grinder_type: null, burr_size_mm: null, motor_watt: null, stepless: false, has_hopper: false, is_favorite: grinder?.is_favorite ?? false }
     try {
       if (grinder) {
         await updateGrinder.mutateAsync({ id: grinder.id, ...payload })
@@ -335,7 +335,7 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
     e.preventDefault()
     setError('')
     if (!name.trim()) { setError('Name ist erforderlich.'); return }
-    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, is_favorite: machine?.is_favorite ?? false }
+    const payload = { name: name.trim(), brand: brand.trim() || null, notes: notes.trim() || null, funktionsweise: null, brew_group_type: null, brew_group_size_mm: null, is_favorite: machine?.is_favorite ?? false }
     try {
       if (machine) {
         await updateMachine.mutateAsync({ id: machine.id, ...payload })
