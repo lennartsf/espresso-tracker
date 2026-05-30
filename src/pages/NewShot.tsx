@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
@@ -105,23 +105,21 @@ export function NewShot() {
   const { data: machines = [] } = useMachines()
   const { data: baskets = [] } = useBaskets()
   const recentDates = roastDates.slice(0, 2)
-  const { data: defaults = [] } = useEquipmentDefaults()
+  const { data: defaults = [], isLoading: defaultsLoading } = useEquipmentDefaults()
+  const defaultsApplied = useRef(false)
 
   useEffect(() => {
+    if (defaultsApplied.current) return
+    if (defaultsLoading) return
     const d = defaults.find(d => d.method === 'espresso')
-    if (!grinderId) {
-      const id = d?.grinder_id ?? grinders.find(g => g.is_favorite)?.id
-      if (id) setGrinderId(id)
-    }
-    if (!machineId) {
-      const id = d?.machine_id ?? machines.find(m => m.is_favorite)?.id
-      if (id) setMachineId(id)
-    }
-    if (!basketId) {
-      const id = d?.basket_id ?? baskets.find(b => b.is_favorite)?.id
-      if (id) setBasketId(id)
-    }
-  }, [defaults, grinders, machines, baskets])
+    const targetGrinder = d?.grinder_id ?? grinders.find(g => g.is_favorite)?.id
+    const targetMachine = d?.machine_id ?? machines.find(m => m.is_favorite)?.id
+    const targetBasket  = d?.basket_id  ?? baskets.find(b => b.is_favorite)?.id
+    if (targetGrinder) setGrinderId(targetGrinder)
+    if (targetMachine) setMachineId(targetMachine)
+    if (targetBasket)  setBasketId(targetBasket)
+    defaultsApplied.current = true
+  }, [defaults, defaultsLoading, grinders, machines, baskets])
 
   // Auto-calculate brew ratio
   const doseNum = parseFloat(doseG)

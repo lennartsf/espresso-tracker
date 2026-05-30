@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCoffees } from '../hooks/useCoffees'
 import { useGrinders, useBrewDevices, useEquipmentDefaults } from '../hooks/useEquipment'
@@ -67,7 +67,7 @@ export function NewBrew() {
   const { data: coffees = [] } = useCoffees()
   const { data: grinders = [] } = useGrinders()
   const { data: brewDevices = [] } = useBrewDevices()
-  const { data: defaults = [] } = useEquipmentDefaults()
+  const { data: defaults = [], isLoading: defaultsLoading } = useEquipmentDefaults()
   const createBrew = useCreateBrew()
 
   const [brewMethod, setBrewMethod] = useState('french_press')
@@ -77,12 +77,15 @@ export function NewBrew() {
   const [brewDeviceId, setBrewDeviceId] = useState('')
   const [grindSetting, setGrindSetting] = useState('')
 
+  const lastAppliedMethod = useRef<string | null>(null)
   useEffect(() => {
+    if (defaultsLoading) return
+    if (lastAppliedMethod.current === brewMethod) return
     const d = defaults.find(d => d.method === brewMethod)
-    if (d?.grinder_id) setGrinderId(d.grinder_id)
-    if (d?.brew_device_id) setBrewDeviceId(d.brew_device_id)
-    else setBrewDeviceId('')
-  }, [defaults, brewMethod])
+    setGrinderId(d?.grinder_id ?? '')
+    setBrewDeviceId(d?.brew_device_id ?? '')
+    lastAppliedMethod.current = brewMethod
+  }, [defaults, defaultsLoading, brewMethod])
   const [doseG, setDoseG] = useState('')
   const [waterMl, setWaterMl] = useState('')
   const [tempC, setTempC] = useState('')
