@@ -2,8 +2,8 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { vi } from 'vitest'
 import type { ReactNode } from 'react'
-import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
-import type { Grinder, Machine, Basket } from '../types'
+import { useGrinders, useMachines, useBaskets, useBrewDevices, useEquipmentDefaults } from '../hooks/useEquipment'
+import type { Grinder, Machine, Basket, BrewDevice, EquipmentDefault } from '../types'
 
 const mockGrinder: Grinder = {
   id: 'g1', name: 'Niche Zero', brand: 'Niche',
@@ -19,17 +19,30 @@ const mockBasket: Basket = {
   id: 'b1', name: 'VST 18g', brand: 'VST', diameter_mm: 58, size_g: 18,
   notes: null, is_favorite: false, created_at: '2026-01-01T00:00:00Z',
 }
+const mockDevice: BrewDevice = {
+  id: 'd1', name: 'Hario V60 02', brand: 'Hario',
+  device_type: 'v60', notes: null, is_favorite: false,
+  created_at: '2026-01-01T00:00:00Z',
+}
+const mockDefault: EquipmentDefault = {
+  method: 'espresso', grinder_id: 'g1',
+  machine_id: null, basket_id: null, brew_device_id: null,
+}
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
     from: (table: string) => ({
       select: () => ({
         order: () => Promise.resolve({
-          data: table === 'grinders' ? [mockGrinder]
-               : table === 'machines' ? [mockMachine]
+          data: table === 'grinders'            ? [mockGrinder]
+               : table === 'machines'           ? [mockMachine]
+               : table === 'brew_devices'       ? [mockDevice]
                : [mockBasket],
           error: null,
         }),
+        // equipment_defaults has no .order()
+        then: (resolve: (v: { data: EquipmentDefault[]; error: null }) => void) =>
+          resolve({ data: [mockDefault], error: null }),
       }),
     }),
   },
@@ -62,4 +75,18 @@ test('useBaskets gibt Siebe zurück', async () => {
   await waitFor(() => expect(result.current.data).toBeDefined())
   expect(result.current.data![0].name).toBe('VST 18g')
   expect(result.current.data![0].size_g).toBe(18)
+})
+
+test('useBrewDevices gibt Geräte zurück', async () => {
+  const { result } = renderHook(() => useBrewDevices(), { wrapper })
+  await waitFor(() => expect(result.current.data).toBeDefined())
+  expect(result.current.data).toHaveLength(1)
+  expect(result.current.data![0].name).toBe('Hario V60 02')
+})
+
+test('useEquipmentDefaults gibt Defaults zurück', async () => {
+  const { result } = renderHook(() => useEquipmentDefaults(), { wrapper })
+  await waitFor(() => expect(result.current.data).toBeDefined())
+  expect(result.current.data![0].method).toBe('espresso')
+  expect(result.current.data![0].grinder_id).toBe('g1')
 })

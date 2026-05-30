@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import type { Grinder, NewGrinder, Machine, NewMachine, Basket, NewBasket } from '../types'
+import type { Grinder, NewGrinder, Machine, NewMachine, Basket, NewBasket, BrewDevice, NewBrewDevice, EquipmentDefault } from '../types'
 
 // ── Grinders ──────────────────────────────────────────────────────────────────
 
@@ -143,5 +143,83 @@ export function useDeleteBasket() {
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['baskets'] }),
+  })
+}
+
+// ── Brew Devices ──────────────────────────────────────────────────────────────
+
+export function useBrewDevices() {
+  return useQuery({
+    queryKey: ['brew_devices'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('brew_devices').select('*').order('name')
+      if (error) throw error
+      return data as BrewDevice[]
+    },
+  })
+}
+
+export function useCreateBrewDevice() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (d: NewBrewDevice) => {
+      const { data, error } = await supabase.from('brew_devices').insert(d).select().single()
+      if (error) throw error
+      return data as BrewDevice
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['brew_devices'] }),
+  })
+}
+
+export function useUpdateBrewDevice() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<NewBrewDevice> & { id: string }) => {
+      const { data, error } = await supabase.from('brew_devices').update(updates).eq('id', id).select().single()
+      if (error) throw error
+      return data as BrewDevice
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['brew_devices'] }),
+  })
+}
+
+export function useDeleteBrewDevice() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('brew_devices').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['brew_devices'] }),
+  })
+}
+
+// ── Equipment Defaults ────────────────────────────────────────────────────────
+
+export function useEquipmentDefaults() {
+  return useQuery({
+    queryKey: ['equipment_defaults'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('equipment_defaults').select('*')
+      if (error) throw error
+      return data as EquipmentDefault[]
+    },
+  })
+}
+
+export function useSetEquipmentDefault() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ method, field, id }: {
+      method: string
+      field: 'grinder_id' | 'machine_id' | 'basket_id' | 'brew_device_id'
+      id: string | null
+    }) => {
+      const { error } = await supabase
+        .from('equipment_defaults')
+        .upsert({ method, [field]: id }, { onConflict: 'method' })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['equipment_defaults'] }),
   })
 }
