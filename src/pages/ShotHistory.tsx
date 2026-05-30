@@ -4,10 +4,23 @@ import { useCoffees } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
 
+type DrinkFilter = 'all' | 'espresso' | 'milk'
+
+const DRINK_FILTER_LABELS: Record<DrinkFilter, string> = {
+  all: 'Alle',
+  espresso: 'Espresso',
+  milk: 'Milchgetränke',
+}
+
 export function ShotHistory() {
   const [filterCoffeeId, setFilterCoffeeId] = useState('')
+  const [drinkFilter, setDrinkFilter] = useState<DrinkFilter>('all')
   const { data: coffees = [] } = useCoffees()
-  const { data: shots = [], isLoading } = useShots(filterCoffeeId || undefined)
+  const { data: shots = [], isLoading } = useShots(
+    filterCoffeeId || undefined,
+    undefined,
+    drinkFilter === 'all' ? undefined : drinkFilter,
+  )
 
   return (
     <div>
@@ -19,6 +32,22 @@ export function ShotHistory() {
         >
           + Neu
         </Link>
+      </div>
+
+      <div className="flex border-b border-slate-200 mb-4">
+        {(['all', 'espresso', 'milk'] as const).map(f => (
+          <button
+            key={f}
+            onClick={() => setDrinkFilter(f)}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              drinkFilter === f
+                ? 'text-orange-600 border-b-2 border-orange-500 -mb-px'
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            {DRINK_FILTER_LABELS[f]}
+          </button>
+        ))}
       </div>
 
       <select
