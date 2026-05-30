@@ -107,3 +107,25 @@ export interface Basket {
 export type NewGrinder = Omit<Grinder, 'id' | 'created_at'>
 export type NewMachine = Omit<Machine, 'id' | 'created_at'>
 export type NewBasket = Omit<Basket, 'id' | 'created_at'>
+
+export interface Brew {
+  id: string
+  coffee_id: string
+  grinder_id: string | null
+  brew_method: string
+  grind_setting: number | null
+  dose_g: number | null
+  water_ml: number | null
+  temp_c: number | null
+  brew_time_s: number | null
+  rating: number
+  tasting_notes: string | null
+  bloom_ml: number | null
+  bloom_time_s: number | null
+  inverted: boolean
+  first_stir_s: number | null
+  brewed_at: string
+  created_at: string
+}
+
+export type NewBrew = Omit<Brew, 'id' | 'created_at'>
