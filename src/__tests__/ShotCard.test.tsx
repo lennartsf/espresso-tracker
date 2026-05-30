@@ -61,7 +61,7 @@ test('zeigt Cappuccino-Badge für cappuccino shots', () => {
 
 test('zeigt Milchsorte + ml in der Unterzeile bei Milchgetränken', () => {
   renderCard({ ...baseShot, drink_type: 'cappuccino', milk_type: 'hafer', milk_ml: 120 })
-  expect(screen.getByText(/Hafermilch/)).toBeInTheDocument()
+  expect(screen.getByText(/Oat Milk/)).toBeInTheDocument()
   expect(screen.getByText(/120 ml/)).toBeInTheDocument()
 })
 

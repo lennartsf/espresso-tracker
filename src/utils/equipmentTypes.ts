@@ -1,12 +1,12 @@
 export const GRINDER_TYPES = [
-  { value: 'flat',    label: 'Flachscheibe' },
-  { value: 'conical', label: 'Kegelscheibe' },
+  { value: 'flat',    label: 'Flat Burr' },
+  { value: 'conical', label: 'Conical Burr' },
 ] as const
 
 export const FUNKTIONSWEISE_TYPES = [
-  { value: 'einkreiser',  label: 'Einkreiser' },
-  { value: 'zweikreiser', label: 'Zweikreiser' },
-  { value: 'dualboiler',  label: 'Dualboiler' },
+  { value: 'einkreiser',  label: 'Single Boiler' },
+  { value: 'zweikreiser', label: 'Heat Exchanger' },
+  { value: 'dualboiler',  label: 'Dual Boiler' },
   { value: 'thermoblock', label: 'Thermoblock' },
 ] as const
 
@@ -24,7 +24,7 @@ export const DEVICE_TYPES = [
   { value: 'aeropress',    label: 'AeroPress' },
   { value: 'moka_pot',     label: 'Moka Pot' },
   { value: 'chemex',       label: 'Chemex' },
-  { value: 'other',        label: 'Sonstiges' },
+  { value: 'other',        label: 'Other' },
 ] as const
 
 export function deviceTypeLabel(value: string): string {

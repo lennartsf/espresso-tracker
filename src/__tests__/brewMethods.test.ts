@@ -1,25 +1,25 @@
 import { BREW_METHODS, brewMethodLabel } from '../utils/brewMethods'
 
-test('BREW_METHODS enthält 4 Einträge', () => {
+test('BREW_METHODS has 4 entries', () => {
   expect(BREW_METHODS).toHaveLength(4)
 })
 
-test('brewMethodLabel gibt French Press zurück', () => {
+test('brewMethodLabel returns French Press', () => {
   expect(brewMethodLabel('french_press')).toBe('French Press')
 })
 
-test('brewMethodLabel gibt V60 zurück', () => {
+test('brewMethodLabel returns V60', () => {
   expect(brewMethodLabel('v60')).toBe('V60')
 })
 
-test('brewMethodLabel gibt AeroPress zurück', () => {
+test('brewMethodLabel returns AeroPress', () => {
   expect(brewMethodLabel('aeropress')).toBe('AeroPress')
 })
 
-test('brewMethodLabel gibt Moka Pot zurück', () => {
+test('brewMethodLabel returns Moka Pot', () => {
   expect(brewMethodLabel('moka_pot')).toBe('Moka Pot')
 })
 
-test('brewMethodLabel Fallback für unbekannten Wert', () => {
+test('brewMethodLabel fallback for unknown value', () => {
   expect(brewMethodLabel('unknown')).toBe('unknown')
 })

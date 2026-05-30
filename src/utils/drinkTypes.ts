@@ -8,13 +8,13 @@ export const DRINK_TYPES = [
 ] as const
 
 export const MILK_TYPES = [
-  { value: 'vollmilch_38', label: 'Vollmilch 3,8%' },
-  { value: 'vollmilch_35', label: 'Vollmilch 3,5%' },
-  { value: 'fettarm_15',   label: 'Fettarme Milch 1,5%' },
-  { value: 'hafer',        label: 'Hafermilch' },
-  { value: 'mandel',       label: 'Mandelmilch' },
-  { value: 'kokos',        label: 'Kokosmilch' },
-  { value: 'soja',         label: 'Sojamilch' },
+  { value: 'vollmilch_38', label: 'Whole Milk 3.8%' },
+  { value: 'vollmilch_35', label: 'Whole Milk 3.5%' },
+  { value: 'fettarm_15',   label: 'Semi-Skimmed 1.5%' },
+  { value: 'hafer',        label: 'Oat Milk' },
+  { value: 'mandel',       label: 'Almond Milk' },
+  { value: 'kokos',        label: 'Coconut Milk' },
+  { value: 'soja',         label: 'Soy Milk' },
 ] as const
 
 export function drinkTypeLabel(value: string): string {

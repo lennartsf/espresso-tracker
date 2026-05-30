@@ -138,7 +138,7 @@ test('zeigt Getränketyp-Badge für Cappuccino', () => {
   } as any)
   renderDetail()
   expect(screen.getByText('Cappuccino')).toBeInTheDocument()
-  expect(screen.getByText('Hafermilch')).toBeInTheDocument()
+  expect(screen.getByText('Oat Milk')).toBeInTheDocument()
   expect(screen.getByText('120 ml')).toBeInTheDocument()
 })
 

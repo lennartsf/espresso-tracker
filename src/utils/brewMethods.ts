@@ -6,10 +6,10 @@ export const BREW_METHODS = [
 ] as const
 
 export const BREW_METHOD_INFO: Record<string, string> = {
-  french_press: 'Grob gemahlener Kaffee zieht ~4 min in heißem Wasser — dann Stempel drücken. Optional: nach 1 min einmal umrühren.',
-  v60:          'Pour-Over-Filter: Wasser in kreisenden Bewegungen gießen. Bloom (30–45 s) lässt CO₂ entweichen und verbessert die Extraktion.',
-  aeropress:    'Schnelles Brühen unter sanftem Druck — kurze Brühzeit (1–2 min), wenig Bitterkeit. Inverted: Kaffee zieht länger bevor gepresst wird.',
-  moka_pot:     'Espresso-ähnlicher Kaffee durch Dampfdruck im Herdkännchen. Kein Druck einstellen — Hitze bestimmt die Extraktion.',
+  french_press: 'Coarsely ground coffee steeps for ~4 min in hot water — then press the plunger. Optional: stir once after 1 min.',
+  v60:          'Pour-over filter: pour water in circular motions. Bloom (30–45 s) lets CO₂ escape and improves extraction.',
+  aeropress:    'Quick brew under gentle pressure — short brew time (1–2 min), low bitterness. Inverted: coffee steeps longer before pressing.',
+  moka_pot:     'Espresso-style coffee via steam pressure on the stovetop. No pressure adjustment — heat controls extraction.',
 }
 
 export function brewMethodLabel(value: string): string {

@@ -4,58 +4,58 @@ import {
   DEVICE_TYPES, deviceTypeLabel,
 } from '../utils/equipmentTypes'
 
-test('GRINDER_TYPES enthält 2 Einträge', () => {
+test('GRINDER_TYPES has 2 entries', () => {
   expect(GRINDER_TYPES).toHaveLength(2)
 })
 
-test('FUNKTIONSWEISE_TYPES enthält 4 Einträge', () => {
+test('FUNKTIONSWEISE_TYPES has 4 entries', () => {
   expect(FUNKTIONSWEISE_TYPES).toHaveLength(4)
 })
 
-test('grinderTypeLabel gibt Flachscheibe zurück', () => {
-  expect(grinderTypeLabel('flat')).toBe('Flachscheibe')
+test('grinderTypeLabel returns Flat Burr', () => {
+  expect(grinderTypeLabel('flat')).toBe('Flat Burr')
 })
 
-test('grinderTypeLabel gibt Kegelscheibe zurück', () => {
-  expect(grinderTypeLabel('conical')).toBe('Kegelscheibe')
+test('grinderTypeLabel returns Conical Burr', () => {
+  expect(grinderTypeLabel('conical')).toBe('Conical Burr')
 })
 
-test('grinderTypeLabel Fallback für unbekannten Wert', () => {
+test('grinderTypeLabel fallback for unknown value', () => {
   expect(grinderTypeLabel('unknown')).toBe('unknown')
 })
 
-test('funktionsweiseLabel gibt Einkreiser zurück', () => {
-  expect(funktionsweiseLabel('einkreiser')).toBe('Einkreiser')
+test('funktionsweiseLabel returns Single Boiler', () => {
+  expect(funktionsweiseLabel('einkreiser')).toBe('Single Boiler')
 })
 
-test('funktionsweiseLabel gibt Dualboiler zurück', () => {
-  expect(funktionsweiseLabel('dualboiler')).toBe('Dualboiler')
+test('funktionsweiseLabel returns Dual Boiler', () => {
+  expect(funktionsweiseLabel('dualboiler')).toBe('Dual Boiler')
 })
 
-test('funktionsweiseLabel gibt Zweikreiser zurück', () => {
-  expect(funktionsweiseLabel('zweikreiser')).toBe('Zweikreiser')
+test('funktionsweiseLabel returns Heat Exchanger', () => {
+  expect(funktionsweiseLabel('zweikreiser')).toBe('Heat Exchanger')
 })
 
-test('funktionsweiseLabel gibt Thermoblock zurück', () => {
+test('funktionsweiseLabel returns Thermoblock', () => {
   expect(funktionsweiseLabel('thermoblock')).toBe('Thermoblock')
 })
 
-test('funktionsweiseLabel Fallback für unbekannten Wert', () => {
+test('funktionsweiseLabel fallback for unknown value', () => {
   expect(funktionsweiseLabel('unknown')).toBe('unknown')
 })
 
-test('DEVICE_TYPES hat 6 Einträge', () => {
+test('DEVICE_TYPES has 6 entries', () => {
   expect(DEVICE_TYPES).toHaveLength(6)
 })
 
-test('deviceTypeLabel gibt French Press zurück', () => {
+test('deviceTypeLabel returns French Press', () => {
   expect(deviceTypeLabel('french_press')).toBe('French Press')
 })
 
-test('deviceTypeLabel gibt V60 zurück', () => {
+test('deviceTypeLabel returns V60', () => {
   expect(deviceTypeLabel('v60')).toBe('V60')
 })
 
-test('deviceTypeLabel Fallback für unbekannten Wert', () => {
+test('deviceTypeLabel fallback for unknown value', () => {
   expect(deviceTypeLabel('unknown')).toBe('unknown')
 })
