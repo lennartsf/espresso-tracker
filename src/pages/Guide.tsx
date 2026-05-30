@@ -5,7 +5,7 @@ export function Guide() {
   return (
     <div>
       <h1 className="text-xl font-bold text-slate-800 mb-1">📖 Guide</h1>
-      <p className="text-sm text-slate-500 mb-6">Anleitungen & Troubleshooting</p>
+      <p className="text-sm text-slate-500 mb-6">Guides & Troubleshooting</p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {GUIDES.map(guide => (
           <Link

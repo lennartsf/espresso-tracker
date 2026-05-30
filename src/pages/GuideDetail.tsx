@@ -34,7 +34,7 @@ export function GuideDetail() {
 
       {/* Quick chips */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4">
-        <p className="text-xs uppercase tracking-wide text-slate-400 mb-3">Häufige Probleme</p>
+        <p className="text-xs uppercase tracking-wide text-slate-400 mb-3">Common Problems</p>
         <div className="flex flex-wrap gap-2">
           {guide.quickProblems.map(qp => (
             <button
@@ -50,7 +50,7 @@ export function GuideDetail() {
 
       {/* Steps */}
       <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4">
-        <h2 className="text-sm font-semibold text-slate-700 mb-3">📋 Schritt-für-Schritt</h2>
+        <h2 className="text-sm font-semibold text-slate-700 mb-3">📋 Step by Step</h2>
         <div className="flex flex-col gap-3">
           {guide.steps.map((step, i) => (
             <div key={i} className="flex gap-3">
@@ -87,7 +87,7 @@ export function GuideDetail() {
             {openId === item.id && (
               <div className="px-4 pb-4 pt-1 bg-slate-50">
                 <p className="text-xs text-slate-500 mb-2">
-                  <strong>Ursache:</strong> {item.cause}
+                  <strong>Cause:</strong> {item.cause}
                 </p>
                 <ul className="text-xs text-slate-600 list-disc pl-4 space-y-1">
                   {item.solutions.map((s, j) => (
