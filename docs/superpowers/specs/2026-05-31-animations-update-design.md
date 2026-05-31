@@ -23,10 +23,13 @@ Each animation must teach **what the user should do**, through the motion itself
 
 ## Technical Approach (all three)
 
-- **Phase-driven React state.** A `phase` index (or active-tab key) drives both the SVG state and the caption. Single source of truth.
-- **Refs over `getElementById`.** Use `useRef` on SVG nodes; never query the DOM by id. Avoids the v3 cast-to-`unknown` hacks and stale-node bugs.
-- **AnimeJS v3 (^3.2.2)** for tweens (numeric attrs: `y`, `height`, `r`, `opacity`, `cx`, `cy`, transforms). Pin v3 API (`anime.stagger` ok). **No `anime.path()`** — it is the fragile piece that broke V60 + Latte. Motion that previously needed a path is expressed as discrete tweens of plain attributes/transforms.
-- **Cleanup.** Pause/cancel any running timeline on unmount and at the start of `replay()` to prevent overlapping runs.
+**Library: Framer Motion** (replaces AnimeJS for these three components). Chosen because it is declarative and React-native — no DOM querying, no refs-casting hacks, and it solves the exact things that broke before. AnimeJS stays installed only for the untouched BoilerAnimation.
+
+- **Add dependency** `framer-motion` (works with React 18; the `motion` package is the same lib if preferred). Do **not** remove `animejs` — Boiler still uses it.
+- **Declarative `motion.*` SVG elements.** Animate plain attrs/props: `motion.rect animate={{ height, y }}` (water level, foam), `motion.circle animate={{ cx, cy, r }}` (spiral dot, blobs), transforms for whirlpool rotation and pitcher height. No `getElementById`, no `useRef` SVG queries.
+- **SVG path-draw via `pathLength`.** The latte heart trace uses `motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}` — robust replacement for the broken `anime.path()`.
+- **Phase-driven state = single source of truth.** A `phase` index (or active-tab key) drives the `animate` targets, the captions, and the chip highlight. Sequencing via `useAnimate` (async timeline) or variants with `delayChildren`/`staggerChildren`.
+- **Clean restart.** `replay()` resets phase to start; Framer Motion interrupts/retargets in-flight animations automatically (no overlapping manual timelines to cancel).
 - **Consistent shell.** Light card (`bg-slate-50 rounded-xl border border-slate-200`), phase chips/tabs, orange `↺ Replay` where applicable — matching BoilerAnimation.
 
 ## 1. V60 — Split Top + Side
@@ -40,7 +43,7 @@ Each animation must teach **what the user should do**, through the motion itself
 
 **Top view** — circle (dripper seen from above).
 - A moving dot (kettle) traces a **spiral inside→outside** during each pour.
-- Spiral expressed as a sequence of attribute tweens of the dot's `cx`/`cy` (precomputed points), **not** `anime.path()`.
+- Spiral via `motion.circle` animating through a keyframe array of precomputed `cx`/`cy` points (optionally a faint `motion.path` spiral guide drawn with `pathLength`).
 
 **Playback:** synced timeline — Bloom → Pour 1 → Pour 2 → Pour 3 → Drain. Per phase: time marker (`0:00`, `1:00`, …), ml counter, and a caption. Phase chips highlight as the timeline advances. `↺ Replay`.
 
@@ -74,7 +77,7 @@ Separation: wand, milk, foam layer, whirlpool, and depth marker each clearly dis
 
 **Side view (scene look):** cup seen from the side with handle + visible crema surface; a tilted milk pitcher (jug with spout) above it; milk stream connecting. **Pitcher height** changes per phase — this is the lesson.
 
-**Top view:** cup surface from above. White spot appears → grows to a circle → a line pulls through center → heart point. Expressed as tweens of a white shape's size/position + a "pull-through" shape (scale/translate), **not** `anime.path()`.
+**Top view:** cup surface from above. White spot appears → grows to a circle → a line pulls through center → heart point. White blob via `motion.circle` (size/position); the pull-through outline drawn with `motion.path` + `pathLength` for a clean trace.
 
 **Playback:** synced 3-phase timeline + `↺ Replay`:
 | Phase | Pitcher | Caption |
@@ -95,9 +98,10 @@ Separation: wand, milk, foam layer, whirlpool, and depth marker each clearly dis
 - `src/components/animations/MilkAnimation.tsx` — rewrite
 - `src/components/animations/LatteHeartAnimation.tsx` — rewrite
 - `src/utils/animationContent.ts` — update descriptions/tags if wording changes (e.g. milk tabs Ziehen/Rollen)
+- `package.json` — add `framer-motion` (keep `animejs` for Boiler)
 - No DB / Supabase changes.
 
 ## Testing
 
 - Unit/render tests per component: renders without crashing, phase state advances, replay resets cleanly, tabs switch (milk). Follow existing test patterns in the repo.
-- Manual: load each `/animate/:id`, verify no overlapping shapes, phases readable, replay works, no console errors from AnimeJS.
+- Manual: load each `/animate/:id`, verify no overlapping shapes, phases readable, replay works, no console errors.
