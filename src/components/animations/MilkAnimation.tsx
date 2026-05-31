@@ -64,19 +64,38 @@ export function MilkAnimation() {
               <clipPath id="milk-vessel">
                 <path d="M52 60 C44 64 44 110 53 121 C57 127 66 128 76 128 L124 128 C134 128 143 127 147 121 C156 110 156 64 148 60 Z" />
               </clipPath>
+              <linearGradient id="milk-steel" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#aab3bf" /><stop offset="0.5" stopColor="#eef2f6" /><stop offset="1" stopColor="#9aa4b1" />
+              </linearGradient>
+              <linearGradient id="milk-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#fffdf0" /><stop offset="1" stopColor="#f0e7bc" />
+              </linearGradient>
+              <linearGradient id="milk-foam" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#eeeee4" />
+              </linearGradient>
+              <filter id="milk-shadow" x="-30%" y="-25%" width="160%" height="150%">
+                <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.16" />
+              </filter>
             </defs>
             <g transform={`translate(0 ${py.toFixed(1)})`}>
-              <g clipPath="url(#milk-vessel)">
-                <rect x="46" y={SY} width="108" height={130 - SY} fill="#fef9c3" />
-                <rect x="46" y={SY} width="108" height={fh.toFixed(1)} fill="white" opacity="0.95" />
+              {/* steel pitcher body */}
+              <g filter="url(#milk-shadow)">
+                <path d="M52 58 C44 62 44 110 53 122 C57 128 66 130 76 130 L124 130 C134 130 143 128 147 122 C156 110 156 62 148 58 Z" fill="url(#milk-steel)" stroke="#9aa4b1" strokeWidth="1.5" />
               </g>
-              {/* vessel outline + spout (left) + handle (right) */}
-              <path d="M52 58 C44 62 44 110 53 122 C57 128 66 130 76 130 L124 130 C134 130 143 128 147 122 C156 110 156 62 148 58" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
-              <path d="M52 58 C44 52 36 52 32 58 C38 56 45 57 52 62" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
-              <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
+              {/* milk + foam */}
+              <g clipPath="url(#milk-vessel)">
+                <rect x="46" y={SY} width="108" height={130 - SY} fill="url(#milk-fill)" />
+                <rect x="46" y={SY} width="108" height={fh.toFixed(1)} fill="url(#milk-foam)" />
+              </g>
+              {/* rim highlight + spout (left) + handle (right) */}
+              <ellipse cx="100" cy="58" rx="48" ry="4" fill="none" stroke="#eef2f6" strokeWidth="2" />
+              <path d="M52 58 C44 52 36 52 32 58 C38 56 45 57 52 62" fill="none" stroke="#b9c2cd" strokeWidth="2.5" />
+              <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="url(#milk-steel)" strokeWidth="4" />
+              <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="#9aa4b1" strokeWidth="1" />
             </g>
             {/* fixed steam wand sitting in the spout (no tip marker) */}
-            <line x1="56" y1="6" x2="62" y2="68" stroke="#94a3b8" strokeWidth="6" strokeLinecap="round" />
+            <line x1="56" y1="6" x2="62" y2="68" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
+            <line x1="56" y1="6" x2="62" y2="68" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
             <text x="100" y="146" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher moves, wand fixed</text>
           </svg>
         </div>
@@ -84,16 +103,26 @@ export function MilkAnimation() {
         {/* TOP VIEW — whirlpool, lance off-centre (left) */}
         <div className="flex-1">
           <svg viewBox="0 0 120 132" className="w-full">
-            <circle cx="60" cy="60" r="48" fill="#fef9c3" stroke="#e2d8a8" strokeWidth="2" />
-            <circle cx="60" cy="60" r="46" fill="none" stroke="white" strokeWidth="3" opacity="0.7" />
+            <defs>
+              <radialGradient id="milk-top" cx="0.42" cy="0.4" r="0.72">
+                <stop offset="0" stopColor="#fffdf0" /><stop offset="1" stopColor="#ece2b8" />
+              </radialGradient>
+              <filter id="milk-disc-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.14" />
+              </filter>
+            </defs>
+            <g filter="url(#milk-disc-shadow)">
+              <circle cx="60" cy="60" r="48" fill="url(#milk-top)" stroke="#e2d8a8" strokeWidth="2" />
+            </g>
+            <circle cx="60" cy="60" r="46" fill="none" stroke="white" strokeWidth="3" opacity="0.6" />
             {spinning && (
               <g transform={`rotate(${angle.toFixed(1)} 60 60)`} opacity={vortexOpacity}>
-                <path d={SPIN_PATH} fill="none" stroke="#eab308" strokeWidth="1.7" strokeLinecap="round" />
+                <path d={SPIN_PATH} fill="none" stroke="#d99e1f" strokeWidth="1.7" strokeLinecap="round" />
               </g>
             )}
-            <ellipse cx="60" cy="60" rx={spinning ? 9 : 4} ry={spinning ? 6 : 3} fill="#eab308" opacity="0.35" />
+            <ellipse cx="60" cy="60" rx={spinning ? 9 : 4} ry={spinning ? 6 : 3} fill="#caa12e" opacity="0.35" />
             {/* lance position — off-centre, left, between centre and rim */}
-            <circle cx="34" cy="60" r="4" fill="#64748b" />
+            <circle cx="34" cy="60" r="4.5" fill="#8b94a1" stroke="#64748b" strokeWidth="1" />
             <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — vortex, tip off-centre</text>
           </svg>
         </div>
