@@ -208,11 +208,12 @@ src/
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
+- [x] **Animate** (`/animate`): 4 SVG+AnimeJS explainers — Boiler Types, V60 Pour Pattern, Milk Steaming (4 drinks), Latte Art Heart
 
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation
 - [ ] Multi-User via Supabase Auth
-- [ ] **Animations** — dedicated `/animate` page, AnimeJS + SVG illustrated style:
+- [x] **Animations** — dedicated `/animate` page, AnimeJS + SVG illustrated style:
   - Boiler types (Single Boiler, Heat Exchanger, Dual Boiler, Thermoblock) — animated water flow diagrams
   - V60 — pouring pattern with time markers (Bloom 0:00, Pour 1–3, Drain)
   - Milk steaming — pitcher cross-section, foam volume per drink (Cappuccino 1/3, Flat White microfoam, Cortado minimal, Latte Macchiato medium)
