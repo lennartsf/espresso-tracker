@@ -11,7 +11,7 @@ describe('MilkAnimation', () => {
     expect(screen.getByText('Roll')).toBeInTheDocument()
     expect(screen.getByText('Done')).toBeInTheDocument()
     // playback starts on mount (button reads "Steaming…"); run it to the end
-    act(() => { vi.advanceTimersByTime(6600) })
+    act(() => { vi.advanceTimersByTime(7200) })
     expect(screen.getByRole('button', { name: /replay/i })).toBeInTheDocument()
   })
 
@@ -23,7 +23,7 @@ describe('MilkAnimation', () => {
 
   test('shows the roll caption with whirlpool when that phase is reached', () => {
     render(<MilkAnimation />)
-    act(() => { vi.advanceTimersByTime(2200) })
+    act(() => { vi.advanceTimersByTime(2400) })
     expect(screen.getByText(/whirlpool/i)).toBeInTheDocument()
   })
 
