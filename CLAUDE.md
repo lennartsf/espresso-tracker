@@ -18,7 +18,7 @@ npm run dev
 src/
   pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary, Animate, AnimateDetail
   components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
-  components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation
+  components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation, usePhaseTimeline (hook)
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
@@ -209,7 +209,7 @@ src/
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
-- [x] **Animate** (`/animate`): 4 SVG+AnimeJS explainers — Boiler Types, V60 Pour Pattern, Milk Steaming (4 drinks), Latte Art Heart
+- [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types (AnimeJS), V60 Pour Pattern, Milk Steaming, Latte Art Heart (**Framer Motion**, rebuilt 2026-05-31)
 
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation
@@ -236,7 +236,8 @@ src/
 - `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
 - `guideContent.ts`: GUIDES (Guide[]), Typen QuickProblem, TroubleshootingItem, Step, Guide
 - `glossaryContent.ts`: GLOSSARY (GlossaryTerm[]), Interface GlossaryTerm { term, definition, category }; 46 Begriffe alphabetisch sortiert
-- `animationContent.ts`: ANIMATIONS (AnimationMeta[]), Interface AnimationMeta { id, title, icon, description, tags }; 4 Einträge (boiler, v60, milk, latte-heart)
-- AnimeJS v3 (^3.2.2) — nicht v4, API unterscheidet sich stark; `anime.setDashoffset`, `anime.stagger`, `anime.path()` sind v3-spezifisch
-- SVG-Elemente aus `document.getElementById` haben Typ `HTMLElement` — bei Cast auf SVGCircleElement etc. erst `as unknown` casten
+- `animationContent.ts`: ANIMATIONS (AnimationMeta[]), Interface AnimationMeta { id, title, icon, description, tags }; 4 Einträge (boiler, v60, milk, latte-heart). Tags: V60 5 Phasen (Bloom…Drain), Milk (Stretch/Roll/Microfoam), Latte (Mix in/Float/Pull through). **id + title NICHT ändern** — AnimateDetail/animationContent Tests hängen dran.
+- **Animationen-Tech (Stand 2026-05-31):** V60/Milk/Latte = **Framer Motion** (deklarativ, `motion.*` SVG, `pathLength` fürs Pfad-Zeichnen, `usePhaseTimeline` für getimtes Playback). Kein `getElementById`, kein `anime.path()` mehr (das war fragil). V60+Latte nutzen `usePhaseTimeline` (auto-play on mount, ↺ Replay); Milk nutzt Phasen-Tabs (Stretch/Roll).
+- `usePhaseTimeline(count, stepMs)`: phase -1 (idle) → 0..count-1 → playing=false; `replay()` startet neu. Tests via fake timers (`vi.advanceTimersByTime`).
+- BoilerAnimation nutzt weiterhin **AnimeJS v3 (^3.2.2)** — nicht v4, API unterscheidet sich stark; `anime.setDashoffset`, `anime.stagger`, `anime.path()` v3-spezifisch. `animejs` bleibt nur deswegen Dependency.
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
