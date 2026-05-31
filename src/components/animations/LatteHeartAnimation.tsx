@@ -72,22 +72,42 @@ export function LatteHeartAnimation() {
               <clipPath id="latte-bowl">
                 <path d="M58 94 Q58 138 120 138 Q182 138 182 94 Z" />
               </clipPath>
+              <linearGradient id="latte-cup" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#dde3ea" />
+              </linearGradient>
+              <linearGradient id="latte-coffee" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#8a5a34" /><stop offset="1" stopColor="#572f15" />
+              </linearGradient>
+              <linearGradient id="latte-jug" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#fbfcfe" /><stop offset="0.5" stopColor="#dbe2ea" /><stop offset="1" stopColor="#b6c1ce" />
+              </linearGradient>
+              <filter id="latte-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.18" />
+              </filter>
             </defs>
             <g transform={`rotate(${td.toFixed(1)} 120 138)`}>
-              {/* coffee fill */}
-              <rect x="56" y={ly.toFixed(1)} width="128" height={(BOWL_BOTTOM - ly).toFixed(1)} fill="#6f4322" clipPath="url(#latte-bowl)" />
-              <ellipse cx="120" cy={ly.toFixed(1)} rx={(58 * (BOWL_BOTTOM - ly) / 44).toFixed(1)} ry="5" fill="#7c4a26" clipPath="url(#latte-bowl)" />
-              {/* cup */}
-              <path d="M56 94 Q56 140 120 140 Q184 140 184 94" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
-              <ellipse cx="120" cy="94" rx="64" ry="11" fill="none" stroke="#cbd5e1" strokeWidth="2.5" />
-              <path d="M184 104 Q210 104 210 118 Q210 132 184 128" fill="none" stroke="#cbd5e1" strokeWidth="3" />
+              {/* ceramic cup body */}
+              <g filter="url(#latte-shadow)">
+                <path d="M56 94 Q56 140 120 140 Q184 140 184 94 Z" fill="url(#latte-cup)" stroke="#cbd5e1" strokeWidth="2" />
+              </g>
+              {/* coffee */}
+              <rect x="56" y={ly.toFixed(1)} width="128" height={(BOWL_BOTTOM - ly).toFixed(1)} fill="url(#latte-coffee)" clipPath="url(#latte-bowl)" />
+              <ellipse cx="120" cy={ly.toFixed(1)} rx={(58 * (BOWL_BOTTOM - ly) / 44).toFixed(1)} ry="5" fill="#9a6536" clipPath="url(#latte-bowl)" />
+              {/* rim lip */}
+              <ellipse cx="120" cy="94" rx="64" ry="11" fill="none" stroke="#eef2f6" strokeWidth="3" />
+              <ellipse cx="120" cy="94" rx="64" ry="11" fill="none" stroke="#cbd5e1" strokeWidth="1" />
+              {/* handle */}
+              <path d="M184 104 Q212 104 212 118 Q212 134 184 128" fill="none" stroke="url(#latte-cup)" strokeWidth="5" />
+              <path d="M184 104 Q212 104 212 118 Q212 134 184 128" fill="none" stroke="#cbd5e1" strokeWidth="1.2" />
             </g>
             {/* milk stream */}
             {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2="120" y2={(ly - 2).toFixed(1)} stroke="white" strokeWidth="4" strokeLinecap="round" />}
             {/* pitcher — tilted pouring jug, spout tip placed at `tip` (spout below handle) */}
             <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(1.05)`}>
-              <path d={POUR_JUG_HANDLE} fill="none" stroke="#94a3b8" strokeWidth="2" />
-              <path d={POUR_JUG_BODY} fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
+              <g filter="url(#latte-shadow)">
+                <path d={POUR_JUG_HANDLE} fill="none" stroke="#9aa6b2" strokeWidth="2" />
+                <path d={POUR_JUG_BODY} fill="url(#latte-jug)" stroke="#9aa6b2" strokeWidth="1.3" />
+              </g>
             </g>
             <text x="120" y="156" textAnchor="middle" fontSize="9" fill="#64748b">Side — fill, height & tilt</text>
           </svg>
@@ -96,12 +116,23 @@ export function LatteHeartAnimation() {
         {/* TOP — the pattern forms */}
         <div className="flex-1">
           <svg viewBox="0 0 120 132" className="w-full">
-            <circle cx="60" cy="60" r="50" fill="#6f4322" />
-            <circle cx="60" cy="60" r="47" fill="#7c4a26" />
-            <g transform="translate(60 58) scale(1.65) translate(-60 -58)">
+            <defs>
+              <radialGradient id="latte-crema" cx="0.42" cy="0.38" r="0.72">
+                <stop offset="0" stopColor="#90602f" /><stop offset="1" stopColor="#5a3417" />
+              </radialGradient>
+              <linearGradient id="latte-foam" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#fdf6e6" /><stop offset="1" stopColor="#ecdcbd" />
+              </linearGradient>
+              <filter id="latte-foam-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#3a2410" floodOpacity="0.35" />
+              </filter>
+            </defs>
+            <circle cx="60" cy="60" r="50" fill="#43280f" />
+            <circle cx="60" cy="60" r="47" fill="url(#latte-crema)" />
+            <g transform="translate(60 58) scale(1.65) translate(-60 -58)" filter="url(#latte-foam-shadow)">
               {phase < 2
-                ? blobR > 0 && <circle cx="60" cy="60" r={blobR.toFixed(1)} fill="#f4ecd8" />
-                : <path d={pathFrom(lerpArr(DISC, HEART, morph))} fill="#f4ecd8" />}
+                ? blobR > 0 && <circle cx="60" cy="60" r={blobR.toFixed(1)} fill="url(#latte-foam)" />
+                : <path d={pathFrom(lerpArr(DISC, HEART, morph))} fill="url(#latte-foam)" />}
               {phase === 2 && <circle cx="60" cy={pourY.toFixed(1)} r="3" fill="#fffaf0" stroke="#d4a373" strokeWidth="0.5" />}
             </g>
             <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — heart forms</text>
