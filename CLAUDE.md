@@ -209,7 +209,7 @@ src/
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
-- [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types (AnimeJS), V60 Pour Pattern, Milk Steaming, Latte Art Heart (rebuilt 2026-05-31)
+- [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types, V60 Pour Pattern, Milk Steaming, Latte Art Heart (alle self-computed-geometry-Engine, gradient/shadow-Stil, gleich große Side/Top-Views; rebuilt 2026-05-31)
 
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation
@@ -242,5 +242,6 @@ src/
 - `pitcherShape.ts`: `JUG_BODY/JUG_HANDLE` (aufrecht, Milch-Querschnitt) + `POUR_JUG_BODY/POUR_JUG_HANDLE` (gekippte Gieß-Form, Ausguss = tiefster Punkt, Henkel oben). Latte Herz-Morph: `DISC`/`HEART` Punkt-Arrays gleicher Pfad-Struktur (M + 4 Cubics) → `lerpArr` morpht ohne Größensprung.
 - **Animationen sind technik-akkurat aus Briefs gebaut** (Latte/V60/Milch nach James-Hoffmann-Technik). Vorlage: `docs/animation-brief-template.md`; ausgefüllt: `docs/animation-brief-milk.md`. Für neue/geänderte Animationen: Brief + Referenz-Stills → bauen.
 - **Self-Review-Workflow (wichtig):** NICHT blind Koordinaten raten. `npm run shoot [ids]` (`scripts/shoot.mjs`, Playwright + sharp, dev-deps) screenshottet `/animate/:id` über Phasen und stitcht zu *einer* Montage `screenshots/{id}-montage.png`. Ablauf: bauen → shoot → **Montage lesen (ein Bild)** → gegen Brief/Stills selbst kritisieren → fixen → erst dann dem User die Montage zeigen. `SHOTS`-Frame-Zeiten in shoot.mjs decken bis ~11,5 s ab (längste Animation V60). `screenshots/` ist gitignored.
-- BoilerAnimation nutzt weiterhin **AnimeJS v3 (^3.2.2)** — nicht v4, API unterscheidet sich stark; `anime.setDashoffset`, `anime.stagger`, `anime.path()` v3-spezifisch. `animejs` bleibt nur deswegen Dependency.
+- **Alle 4 Animationen** (inkl. Boiler) nutzen jetzt die self-computed-Engine — `animejs` wurde entfernt (war nur für Boiler). Boiler zeichnet die Flow-Linien per `useRamp` + `pathLength="1"`/`strokeDasharray="1 1"`/`strokeDashoffset={1-p}` (kein `getTotalLength`, kein Lib).
+- **Gemeinsamer Stil:** helle Karte (`bg-slate-50 … border`), SVG-Verläufe (`linearGradient`/`radialGradient`) + weicher Schatten (`feDropShadow`), Keramik/Edelstahl-Optik. Side/Top-Views teilen denselben viewBox (240×168) → gleich groß nebeneinander; Top-Inhalt via `translate/scale`-Wrapper zentriert (Animationslogik bleibt in 0..120-Koordinaten).
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
