@@ -1,18 +1,18 @@
 import { usePhaseTimeline } from './usePhaseTimeline'
 import { useRamp, lerp, lerpArr } from './animationEngine'
+import { JUG_BODY, JUG_HANDLE, JUG_SPOUT } from './pitcherShape'
 
 type Phase = { chip: string; caption: string }
 
 const STEP = 2200
 
 const PHASES: Phase[] = [
-  { chip: '1. Mix in',       caption: 'Pour from a height with a thin stream to mix the milk into the crema' },
-  { chip: '2. Float',        caption: 'Lower the pitcher close to the surface — a white circle floats up and grows' },
-  { chip: '3. Pull through', caption: 'Lift and draw forward through the center — the pour point drags the circle into a heart' },
+  { chip: '1. Mix in',       caption: 'Pour from a height, centred over the cup, to mix the milk into the crema' },
+  { chip: '2. Float',        caption: 'Drop the pitcher right down to the rim — pour steadily so a white circle floats up' },
+  { chip: '3. Pull through', caption: 'Lift slightly and draw across to the far rim — the pour point drags the circle into a heart' },
 ]
 
-// Top-view shapes: same anchor structure (M + 4 cubics) so they morph cleanly.
-// Anchors map top->top, left->left, bottom->bottom(point), right->right.
+// Top-view shapes: identical anchor structure (M + 4 cubics) so they morph cleanly.
 const DISC  = [60, 36, 49, 36, 38, 47, 38, 58, 38, 69, 49, 80, 60, 80, 71, 80, 82, 69, 82, 58, 82, 47, 71, 36, 60, 36]
 const HEART = [60, 48, 56, 34, 40, 38, 38, 52, 38, 66, 52, 74, 60, 82, 68, 74, 82, 66, 82, 52, 82, 38, 64, 34, 60, 48]
 
@@ -21,12 +21,14 @@ function pathFrom(pts: number[]) {
   return `M${n(0)} ${n(1)} C${n(2)} ${n(3)} ${n(4)} ${n(5)} ${n(6)} ${n(7)} C${n(8)} ${n(9)} ${n(10)} ${n(11)} ${n(12)} ${n(13)} C${n(14)} ${n(15)} ${n(16)} ${n(17)} ${n(18)} ${n(19)} C${n(20)} ${n(21)} ${n(22)} ${n(23)} ${n(24)} ${n(25)} Z`
 }
 
-// side-view pitcher offset (translate) per phase
-function pitcher(phase: number, p: number) {
-  if (phase < 0) return { x: 0, y: -8 }
-  if (phase === 0) return { x: 0, y: -8 }                          // held high
-  if (phase === 1) return { x: 0, y: lerp(-8, 30, p) }             // lowered close to surface
-  return { x: lerp(0, -52, p), y: lerp(30, 12, p) }                // lift + draw forward
+// spout-tip position in the side view (cup centred at x=120, rim y=100, rims x≈80/160)
+function spoutTip(phase: number, p: number) {
+  if (phase <= 0) return { x: 120, y: 50 }                 // centred, held high
+  if (phase === 1) {
+    const k = Math.min(1, p / 0.3)                          // snap down to the rim, then hold
+    return { x: lerp(120, 150, k), y: lerp(50, 92, k) }
+  }
+  return { x: lerp(150, 90, p), y: lerp(92, 85, p) }        // lift + draw across to the far rim
 }
 
 export function LatteHeartAnimation() {
@@ -34,13 +36,14 @@ export function LatteHeartAnimation() {
   const p = useRamp(phase, STEP)
   const active = phase >= 0 ? PHASES[phase] : null
 
-  const pos = pitcher(phase, p)
-  const streaming = phase === 0 || phase === 1 || (phase === 2 && p < 0.6)
+  const tip = spoutTip(phase, p)
+  const streaming = phase === 0 || phase === 1 || (phase === 2 && p < 0.55)
+  const surfX = Math.min(158, Math.max(82, tip.x))
 
   // top view
   const blobR = phase < 0 ? 0 : phase === 0 ? lerp(2, 6, p) : phase === 1 ? lerp(6, 24, p) : 0
   const morph = phase === 2 ? p : 0
-  const pourY = phase === 2 ? lerp(36, 80, p) : 0 // pour point dragging down through the disc
+  const pourY = phase === 2 ? lerp(36, 80, p) : 0
 
   return (
     <div>
@@ -48,22 +51,19 @@ export function LatteHeartAnimation() {
         {/* SIDE — scene */}
         <div className="flex-1">
           <svg viewBox="0 0 240 150" className="w-full">
-            {/* pitcher group — height + lateral pull via translate */}
-            <g transform={`translate(${pos.x.toFixed(1)} ${pos.y.toFixed(1)})`}>
-              <g transform="translate(116 12) rotate(30)">
-                <path d="M0 0 L36 0 L33 28 Q33 32 28 32 L5 32 Q0 32 0 28 Z" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
-                <path d="M36 5 L46 2 L43 9 L34 11 Z" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" />
-                <path d="M0 7 Q-10 10 -8 20" fill="none" stroke="#94a3b8" strokeWidth="2" />
-              </g>
+            {/* milk stream from the spout tip into the cup */}
+            {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2={surfX.toFixed(1)} y2="99" stroke="white" strokeWidth="4" strokeLinecap="round" />}
+            {/* pitcher — flowing jug, tilted, spout tip placed at `tip` */}
+            <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) rotate(26) scale(1.15) translate(${-JUG_SPOUT.x} ${-JUG_SPOUT.y})`}>
+              <path d={JUG_HANDLE} fill="none" stroke="#94a3b8" strokeWidth="2" />
+              <path d={JUG_BODY} fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
             </g>
-            {/* milk stream from the spout down to the cup */}
-            {streaming && <line x1={150 + pos.x} y1={48 + pos.y} x2="120" y2="98" stroke="white" strokeWidth="4" strokeLinecap="round" />}
             {/* cup */}
             <path d="M78 100 Q78 142 120 142 Q162 142 162 100 Z" fill="white" stroke="#cbd5e1" strokeWidth="2" />
             <ellipse cx="120" cy="100" rx="42" ry="11" fill="#78350f" stroke="#cbd5e1" strokeWidth="2" />
             <ellipse cx="120" cy="100" rx="30" ry="7" fill="#c9a66b" />
             <path d="M162 110 Q188 110 188 122 Q188 134 162 130" fill="none" stroke="#cbd5e1" strokeWidth="3" />
-            <text x="120" y="148" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher height</text>
+            <text x="120" y="148" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher height & path</text>
           </svg>
         </div>
 
@@ -75,7 +75,6 @@ export function LatteHeartAnimation() {
             {phase < 2
               ? blobR > 0 && <circle cx="60" cy="60" r={blobR.toFixed(1)} fill="white" />
               : <path d={pathFrom(lerpArr(DISC, HEART, morph))} fill="white" />}
-            {/* pour point dragging through (the pitcher tip seen from above) */}
             {phase === 2 && <circle cx="60" cy={pourY.toFixed(1)} r="3.5" fill="#f1f5f9" stroke="#d4a373" strokeWidth="0.6" />}
             <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — heart forms</text>
           </svg>

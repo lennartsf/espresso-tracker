@@ -38,8 +38,9 @@ function waterY(phase: number, p: number) {
 }
 
 // kettle position in the top view (spiral inside -> outside over the phase)
+// fewer turns -> the circular motion reads slower / calmer
 function spiral(p: number) {
-  const ang = p * Math.PI * 4.5
+  const ang = p * Math.PI * 2.6
   const r = 4 + p * 36
   return { x: 60 + Math.cos(ang) * r, y: 60 + Math.sin(ang) * r }
 }
