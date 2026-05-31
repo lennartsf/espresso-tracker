@@ -1,6 +1,6 @@
 import { usePhaseTimeline } from './usePhaseTimeline'
 import { useRamp, lerp, lerpArr } from './animationEngine'
-import { JUG_BODY, JUG_HANDLE, JUG_SPOUT } from './pitcherShape'
+import { POUR_JUG_BODY, POUR_JUG_HANDLE } from './pitcherShape'
 
 type Phase = { chip: string; caption: string }
 
@@ -37,11 +37,13 @@ function tilt(phase: number, p: number) {
   if (phase === 1) return lerp(3, 0, p)
   return 0
 }
-// pitcher spout-tip position (side view)
+// pitcher spout-tip position (side view) — mirrors the top-view motion:
+// circular mix-in, drop to one edge for float, then drawn across to the far edge.
 function spoutTip(phase: number, p: number, ly: number) {
-  if (phase <= 0) return { x: 120, y: 40 }              // high, centred
-  if (phase === 1) return { x: 120, y: lerp(40, ly - 10, p) } // ease straight down onto the surface
-  return { x: 120, y: lerp(ly - 10, 54, p) }            // lift straight back up (the draw is shown top-down)
+  if (phase < 0) return { x: 120, y: 42 }
+  if (phase === 0) return { x: 120 + 16 * Math.sin(p * Math.PI * 5), y: 42 + 4 * Math.cos(p * Math.PI * 5) } // circling, high
+  if (phase === 1) return { x: lerp(120, 152, p), y: lerp(42, ly - 9, p) }  // drop onto the surface near the right edge
+  return { x: lerp(152, 92, p), y: lerp(ly - 9, 60, p) }                     // draw across to the far edge, lifting
 }
 
 export function LatteHeartAnimation() {
@@ -82,10 +84,10 @@ export function LatteHeartAnimation() {
             </g>
             {/* milk stream */}
             {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2="120" y2={(ly - 2).toFixed(1)} stroke="white" strokeWidth="4" strokeLinecap="round" />}
-            {/* pitcher — flowing jug, tilted, mirrored so it pours away */}
-            <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(-1 1) rotate(26) scale(1.0) translate(${-JUG_SPOUT.x} ${-JUG_SPOUT.y})`}>
-              <path d={JUG_HANDLE} fill="none" stroke="#94a3b8" strokeWidth="2" />
-              <path d={JUG_BODY} fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
+            {/* pitcher — tilted pouring jug, spout tip placed at `tip` (spout below handle) */}
+            <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(1.05)`}>
+              <path d={POUR_JUG_HANDLE} fill="none" stroke="#94a3b8" strokeWidth="2" />
+              <path d={POUR_JUG_BODY} fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
             </g>
             <text x="120" y="156" textAnchor="middle" fontSize="9" fill="#64748b">Side — fill, height & tilt</text>
           </svg>

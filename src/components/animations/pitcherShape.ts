@@ -13,3 +13,15 @@ export const JUG_BODY =
 export const JUG_HANDLE = 'M15 -9 C29 -9 29 11 15 12'
 
 export const JUG_SPOUT = { x: -27, y: -20 }
+
+// Tilted POURING pitcher — spout tip at the origin (the lowest point, where
+// milk leaves), body and handle up-and-back. Used for latte art so the spout
+// is always below the handle.
+export const POUR_JUG_BODY =
+  'M0 0 ' +              // spout tip (pour point, lowest)
+  'L6 -9 ' +             // front lip
+  'C16 -15 34 -17 42 -13 ' + // top rim rising to the back
+  'C48 -4 48 14 40 22 ' +    // back/right wall down
+  'C30 28 14 28 8 20 ' +     // bottom
+  'C4 14 1 6 0 0 Z'          // front wall back to the spout
+export const POUR_JUG_HANDLE = 'M44 -7 C58 -7 58 17 44 19'
