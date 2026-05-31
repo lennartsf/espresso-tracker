@@ -11,6 +11,7 @@ const navItems = [
   { to: '/equipment', label: 'Equipment', icon: '⚙️' },
   { to: '/guide',     label: 'Guide',     icon: '📖' },
   { to: '/glossary',  label: 'Glossary',  icon: '📚' },
+  { to: '/animate',   label: 'Animate',   icon: '🎬' },
 ]
 
 const primaryNav = navItems.slice(0, 4)

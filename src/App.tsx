@@ -15,6 +15,8 @@ import { BrewDetail } from './pages/BrewDetail'
 import { Guide } from './pages/Guide'
 import { GuideDetail } from './pages/GuideDetail'
 import { Glossary } from './pages/Glossary'
+import { Animate } from './pages/Animate'
+import { AnimateDetail } from './pages/AnimateDetail'
 
 const queryClient = new QueryClient()
 
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="guide" element={<Guide />} />
             <Route path="guide/:id" element={<GuideDetail />} />
             <Route path="glossary" element={<Glossary />} />
+            <Route path="animate" element={<Animate />} />
+            <Route path="animate/:id" element={<AnimateDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
