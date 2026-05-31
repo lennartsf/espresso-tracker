@@ -39,9 +39,9 @@ function tilt(phase: number, p: number) {
 }
 // pitcher spout-tip position (side view)
 function spoutTip(phase: number, p: number, ly: number) {
-  if (phase <= 0) return { x: 120, y: 40 }                        // high, centred
-  if (phase === 1) return { x: 120, y: lerp(40, ly - 10, Math.min(1, p / 0.3)) } // drop onto the surface
-  return { x: lerp(120, 150, p), y: lerp(ly - 10, 58, p) }        // lift + draw forward
+  if (phase <= 0) return { x: 120, y: 40 }              // high, centred
+  if (phase === 1) return { x: 120, y: lerp(40, ly - 10, p) } // ease straight down onto the surface
+  return { x: 120, y: lerp(ly - 10, 54, p) }            // lift straight back up (the draw is shown top-down)
 }
 
 export function LatteHeartAnimation() {
@@ -57,7 +57,8 @@ export function LatteHeartAnimation() {
   // top view
   const blobR = phase < 0 ? 0 : phase === 0 ? 0 : phase === 1 ? lerp(3, 23, p) : 0
   const morph = phase === 2 ? p : 0
-  const pourY = phase === 2 ? lerp(70, 28, p) : 0 // pour point drags away; heart point trails toward the drinker
+  // pour point draws the same way the heart forms: from the top down to the point
+  const pourY = phase === 2 ? lerp(34, 80, p) : 0
 
   return (
     <div>
