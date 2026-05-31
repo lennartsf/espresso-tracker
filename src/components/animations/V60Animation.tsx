@@ -67,7 +67,6 @@ export function V60Animation() {
           <svg viewBox="0 0 240 140" className="w-full">
             {/* water (semi-transparent blue, cone-shaped) */}
             {hasWater && <polygon points={waterPts} fill="#3b82f6" fillOpacity="0.35" />}
-            {hasWater && <line x1={leftX(ws)} y1={ws} x2={rightX(ws)} y2={ws} stroke="#3b82f6" strokeWidth="1.5" opacity="0.6" />}
             {/* coffee bed at the point */}
             <polygon points={`${leftX(BED_TOP)},${BED_TOP} ${rightX(BED_TOP)},${BED_TOP} ${APEX_X},${APEX_Y}`} fill="#6b3f1d" />
             {/* cone outline + ridges */}

@@ -1,16 +1,15 @@
-// Flowing milk-pitcher silhouette in a local frame. The spout is part of the
-// body outline (not a bolted-on triangle). Spout tip sits at JUG_SPOUT.
-// Origin (0,0) is roughly the jug's center.
+// Flowing milk-pitcher silhouette in a local frame (origin ≈ centre).
+// Upright, spout integrated at the top-left. Tip at JUG_SPOUT.
+// For latte the whole group is tilted/mirrored; for milk it is drawn upright.
 export const JUG_BODY =
-  'M-20 -16 ' +
-  'C-26 -19 -29 -16 -25 -10 ' +   // spout flares out from the top-left rim
-  'C-22 -4 -21 8 -20 14 ' +       // front (left) wall down
-  'C-19 21 -13 23 -5 23 ' +       // bottom-left curve
-  'L7 23 ' +                       // base
-  'C15 23 19 20 19 12 ' +          // bottom-right curve
-  'C20 0 20 -10 19 -16 ' +         // back (right) wall up
-  'C18 -21 -12 -22 -20 -16 Z'      // top rim back into the spout
+  'M15 -18 ' +
+  'C18 -7 18 8 14 16 ' +     // right wall down (slight belly)
+  'C12 22 -12 22 -14 16 ' +  // rounded base
+  'C-18 8 -18 -7 -15 -17 ' + // left wall up toward the spout
+  'C-21 -19 -26 -21 -27 -20 ' + // spout flares out (top-left)
+  'C-25 -16 -20 -15 -14 -15 ' + // spout underside back to the rim
+  'C-6 -16 8 -17 15 -18 Z'   // top rim across to the start
 
-export const JUG_HANDLE = 'M19 -8 C33 -8 33 14 19 15'
+export const JUG_HANDLE = 'M15 -9 C29 -9 29 11 15 12'
 
-export const JUG_SPOUT = { x: -27, y: -14 }
+export const JUG_SPOUT = { x: -27, y: -20 }

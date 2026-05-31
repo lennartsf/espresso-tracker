@@ -23,12 +23,12 @@ function pathFrom(pts: number[]) {
 
 // spout-tip position in the side view (cup centred at x=120, rim y=100, rims x≈80/160)
 function spoutTip(phase: number, p: number) {
-  if (phase <= 0) return { x: 120, y: 50 }                 // centred, held high
+  if (phase <= 0) return { x: 120, y: 48 }                 // centred, held high
   if (phase === 1) {
-    const k = Math.min(1, p / 0.3)                          // snap down to the rim, then hold
-    return { x: lerp(120, 150, k), y: lerp(50, 92, k) }
+    const k = Math.min(1, p / 0.3)                          // snap down to the near rim, then hold
+    return { x: lerp(120, 92, k), y: lerp(48, 90, k) }
   }
-  return { x: lerp(150, 90, p), y: lerp(92, 85, p) }        // lift + draw across to the far rim
+  return { x: lerp(92, 150, p), y: lerp(90, 82, p) }        // lift + draw across, pouring away
 }
 
 export function LatteHeartAnimation() {
@@ -43,7 +43,8 @@ export function LatteHeartAnimation() {
   // top view
   const blobR = phase < 0 ? 0 : phase === 0 ? lerp(2, 6, p) : phase === 1 ? lerp(6, 24, p) : 0
   const morph = phase === 2 ? p : 0
-  const pourY = phase === 2 ? lerp(36, 80, p) : 0
+  // pour point drags AWAY (near -> far); the heart point trails toward the drinker
+  const pourY = phase === 2 ? lerp(76, 30, p) : 0
 
   return (
     <div>
@@ -54,7 +55,7 @@ export function LatteHeartAnimation() {
             {/* milk stream from the spout tip into the cup */}
             {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2={surfX.toFixed(1)} y2="99" stroke="white" strokeWidth="4" strokeLinecap="round" />}
             {/* pitcher — flowing jug, tilted, spout tip placed at `tip` */}
-            <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) rotate(26) scale(1.15) translate(${-JUG_SPOUT.x} ${-JUG_SPOUT.y})`}>
+            <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(-1 1) rotate(26) scale(1.15) translate(${-JUG_SPOUT.x} ${-JUG_SPOUT.y})`}>
               <path d={JUG_HANDLE} fill="none" stroke="#94a3b8" strokeWidth="2" />
               <path d={JUG_BODY} fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
             </g>
