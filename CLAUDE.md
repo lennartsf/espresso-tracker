@@ -16,12 +16,13 @@ npm run dev
 ## Projektstruktur
 ```
 src/
-  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary
+  pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary, Animate, AnimateDetail
   components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
+  components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
-  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts, glossaryContent.ts
+  utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts, glossaryContent.ts, animationContent.ts
 ```
 
 ## Datenbank-Schema (aktuell)
@@ -235,4 +236,7 @@ src/
 - `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
 - `guideContent.ts`: GUIDES (Guide[]), Typen QuickProblem, TroubleshootingItem, Step, Guide
 - `glossaryContent.ts`: GLOSSARY (GlossaryTerm[]), Interface GlossaryTerm { term, definition, category }; 46 Begriffe alphabetisch sortiert
+- `animationContent.ts`: ANIMATIONS (AnimationMeta[]), Interface AnimationMeta { id, title, icon, description, tags }; 4 Einträge (boiler, v60, milk, latte-heart)
+- AnimeJS v3 (^3.2.2) — nicht v4, API unterscheidet sich stark; `anime.setDashoffset`, `anime.stagger`, `anime.path()` sind v3-spezifisch
+- SVG-Elemente aus `document.getElementById` haben Typ `HTMLElement` — bei Cast auf SVGCircleElement etc. erst `as unknown` casten
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
