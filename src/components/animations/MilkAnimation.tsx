@@ -38,8 +38,8 @@ const SPIN_PATH = (() => {
 function pitcherY(phase: number, p: number) {
   if (phase <= 0) return 2
   if (phase === 1) return lerp(2, 8, p)    // stretch: lower slightly -> tip to the surface
-  if (phase === 2) return lerp(8, -4, p)   // roll: raise -> tip deeper
-  return lerp(-4, 26, p)                    // finish: take the jug away
+  if (phase === 2) return lerp(8, -4, Math.min(1, p / 0.18))   // roll: quick raise right after stretch, then hold
+  return lerp(-4, 26, p)                                         // finish: take the jug away
 }
 function foamH(phase: number, p: number) {
   if (phase === 1) return lerp(3, 26, p)
