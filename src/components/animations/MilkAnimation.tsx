@@ -10,7 +10,7 @@ const DUR = [700, 2600, 4200, 1000]
 const PHASES: Phase[] = [
   { label: 'Purge',   mode: 'purge',   caption: 'Purge the wand, then set the tip just below the surface, in the spout' },
   { label: 'Stretch', mode: 'stretch', caption: 'Tip at the surface — fold in air with a soft "slurp" until the volume grows ~25%' },
-  { label: 'Roll',    mode: 'roll',    caption: 'Lower the pitcher into the roll — the whirlpool whisks the bubbles into microfoam' },
+  { label: 'Roll',    mode: 'roll',    caption: 'Raise the pitcher slightly so the tip runs deeper — the whirlpool whisks the bubbles into microfoam' },
   { label: 'Finish',  mode: 'finish',  caption: 'Steam off — rest, tap and swirl until it shines like wet paint' },
 ]
 
@@ -29,12 +29,17 @@ const SPIN_PATH = (() => {
   return d
 })()
 
-// only the PITCHER moves (the wand is fixed); it lowers, faster for roll
+// Only the PITCHER moves; the wand tip is fixed at y=66. Pitcher y shifts the
+// milk surface (= 60 + py), so the tip sits at different depths:
+//   purge  py 2  -> surface 62, tip just below
+//   stretch py 2->8 -> surface rises to 68, tip ends just AT/above the surface (air)
+//   roll   py 8->-4 -> pitcher RAISES, surface 56, tip runs deeper
+//   finish py -4->26 -> jug taken away, tip lifts clear
 function pitcherY(phase: number, p: number) {
-  if (phase <= 0) return 0
-  if (phase === 1) return lerp(0, 4, p)                       // stretch: lower slowly
-  if (phase === 2) return lerp(4, 10, Math.min(1, p / 0.4))   // roll: drop faster, then hold
-  return lerp(10, 30, p)                                       // finish: take the jug away
+  if (phase <= 0) return 2
+  if (phase === 1) return lerp(2, 8, p)    // stretch: lower slightly -> tip to the surface
+  if (phase === 2) return lerp(8, -4, p)   // roll: raise -> tip deeper
+  return lerp(-4, 26, p)                    // finish: take the jug away
 }
 function foamH(phase: number, p: number) {
   if (phase === 1) return lerp(3, 26, p)
@@ -95,8 +100,8 @@ export function MilkAnimation() {
               <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="#9aa4b1" strokeWidth="1" />
             </g>
             {/* steam wand — fixed in the spout (only the pitcher moves) */}
-            <line x1="56" y1="6" x2="62" y2="72" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
-            <line x1="56" y1="6" x2="62" y2="72" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+            <line x1="56" y1="6" x2="62" y2="66" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
+            <line x1="56" y1="6" x2="62" y2="66" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
             <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Side — only the pitcher moves</text>
           </svg>
         </div>
