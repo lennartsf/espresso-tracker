@@ -10,7 +10,7 @@ const DUR = [700, 2600, 4200, 1000]
 const PHASES: Phase[] = [
   { label: 'Purge',   mode: 'purge',   caption: 'Purge the wand, then set the tip just below the surface, in the spout' },
   { label: 'Stretch', mode: 'stretch', caption: 'Tip at the surface — fold in air with a soft "slurp" until the volume grows ~25%' },
-  { label: 'Roll',    mode: 'roll',    caption: 'Lift slightly to bury the tip — the whirlpool whisks the bubbles into microfoam' },
+  { label: 'Roll',    mode: 'roll',    caption: 'Lower the pitcher into the roll — the whirlpool whisks the bubbles into microfoam' },
   { label: 'Finish',  mode: 'finish',  caption: 'Steam off — rest, tap and swirl until it shines like wet paint' },
 ]
 
@@ -29,19 +29,12 @@ const SPIN_PATH = (() => {
   return d
 })()
 
-// the PITCHER lowers; for roll it drops faster and the wand plunges deeper
+// only the PITCHER moves (the wand is fixed); it lowers, faster for roll
 function pitcherY(phase: number, p: number) {
   if (phase <= 0) return 0
-  if (phase === 1) return lerp(0, 5, p)                       // stretch: lower slowly
-  if (phase === 2) return lerp(5, 18, Math.min(1, p / 0.4))   // roll: drop faster, then hold
-  return lerp(18, 30, p)                                       // finish: take the jug away
-}
-// wand-tip screen y — at the surface for stretch, plunges deeper for roll
-function wandTipY(phase: number, p: number) {
-  const surface = SY + pitcherY(phase, p)
-  if (phase === 2) return surface + lerp(2, 18, Math.min(1, p / 0.4))
-  if (phase === 3) return surface - 14
-  return surface + 2
+  if (phase === 1) return lerp(0, 4, p)                       // stretch: lower slowly
+  if (phase === 2) return lerp(4, 10, Math.min(1, p / 0.4))   // roll: drop faster, then hold
+  return lerp(10, 30, p)                                       // finish: take the jug away
 }
 function foamH(phase: number, p: number) {
   if (phase === 1) return lerp(3, 26, p)
@@ -60,7 +53,6 @@ export function MilkAnimation() {
   const angle = useSpin(spinning, spinSpeed)
   const py = pitcherY(phase, p)
   const fh = foamH(phase, p)
-  const wandTip = wandTipY(phase, p)
   const vortexOpacity = mode === 'roll' ? lerp(0.55, 0.9, p) : mode === 'stretch' ? lerp(0.15, 0.5, p) : 0
 
   return (
@@ -102,16 +94,16 @@ export function MilkAnimation() {
               <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="url(#milk-steel)" strokeWidth="4" />
               <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="#9aa4b1" strokeWidth="1" />
             </g>
-            {/* steam wand in the spout — plunges deeper for roll */}
-            <line x1="56" y1="6" x2="62" y2={wandTip.toFixed(1)} stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
-            <line x1="56" y1="6" x2="62" y2={wandTip.toFixed(1)} stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher lowers, tip plunges</text>
+            {/* steam wand — fixed in the spout (only the pitcher moves) */}
+            <line x1="56" y1="6" x2="62" y2="72" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
+            <line x1="56" y1="6" x2="62" y2="72" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Side — only the pitcher moves</text>
           </svg>
         </div>
 
         {/* TOP VIEW — whirlpool, lance off-centre (left) */}
         <div className="flex-1">
-          <svg viewBox="0 0 120 132" className="w-full">
+          <svg viewBox="0 0 200 174" className="w-full">
             <defs>
               <radialGradient id="milk-top" cx="0.42" cy="0.4" r="0.72">
                 <stop offset="0" stopColor="#fffdf0" /><stop offset="1" stopColor="#ece2b8" />
@@ -120,19 +112,21 @@ export function MilkAnimation() {
                 <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.14" />
               </filter>
             </defs>
-            <g filter="url(#milk-disc-shadow)">
-              <circle cx="60" cy="60" r="48" fill="url(#milk-top)" stroke="#e2d8a8" strokeWidth="2" />
-            </g>
-            <circle cx="60" cy="60" r="46" fill="none" stroke="white" strokeWidth="3" opacity="0.6" />
-            {spinning && (
-              <g transform={`rotate(${angle.toFixed(1)} 60 60)`} opacity={vortexOpacity}>
-                <path d={SPIN_PATH} fill="none" stroke="#d99e1f" strokeWidth="1.7" strokeLinecap="round" />
+            <g transform="translate(100 82) scale(1.3) translate(-60 -60)">
+              <g filter="url(#milk-disc-shadow)">
+                <circle cx="60" cy="60" r="48" fill="url(#milk-top)" stroke="#e2d8a8" strokeWidth="2" />
               </g>
-            )}
-            <ellipse cx="60" cy="60" rx={spinning ? 9 : 4} ry={spinning ? 6 : 3} fill="#caa12e" opacity="0.35" />
-            {/* lance position — off-centre, left, between centre and rim */}
-            <circle cx="34" cy="60" r="4.5" fill="#8b94a1" stroke="#64748b" strokeWidth="1" />
-            <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — vortex, tip off-centre</text>
+              <circle cx="60" cy="60" r="46" fill="none" stroke="white" strokeWidth="3" opacity="0.6" />
+              {spinning && (
+                <g transform={`rotate(${angle.toFixed(1)} 60 60)`} opacity={vortexOpacity}>
+                  <path d={SPIN_PATH} fill="none" stroke="#d99e1f" strokeWidth="1.7" strokeLinecap="round" />
+                </g>
+              )}
+              <ellipse cx="60" cy="60" rx={spinning ? 9 : 4} ry={spinning ? 6 : 3} fill="#caa12e" opacity="0.35" />
+              {/* lance position — off-centre, left, between centre and rim */}
+              <circle cx="34" cy="60" r="4.5" fill="#8b94a1" stroke="#64748b" strokeWidth="1" />
+            </g>
+            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Top — vortex, tip off-centre</text>
           </svg>
         </div>
       </div>
