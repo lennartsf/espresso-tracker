@@ -49,7 +49,7 @@ export function V60Animation() {
   const p = useRamp(phase, DUR[Math.max(0, phase)] ?? 1000)
   const active = phase >= 0 ? PHASES[phase] : null
   const mode = active?.mode
-  const swirling = mode === 'bloom' || mode === 'drain'
+  const swirling = mode === 'bloom'
   const angle = useSpin(swirling, 200)
 
   const ws = waterY(phase, p)
