@@ -63,7 +63,33 @@ export function V60Animation() {
       <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cone ▼ */}
         <div className="flex-1">
-          <svg viewBox="0 0 240 140" className="w-full">
+          <svg viewBox="0 0 240 152" className="w-full">
+            <defs>
+              <linearGradient id="v60-cone" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#fdba74" /><stop offset="1" stopColor="#e8740c" />
+              </linearGradient>
+              <linearGradient id="v60-paper" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#fffdf8" /><stop offset="1" stopColor="#fbe6c8" />
+              </linearGradient>
+              <linearGradient id="v60-water" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#8fcaf6" /><stop offset="1" stopColor="#2f7fd6" />
+              </linearGradient>
+              <linearGradient id="v60-bed" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#8a5a32" /><stop offset="1" stopColor="#4a2a13" />
+              </linearGradient>
+              <linearGradient id="v60-glass" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#dfe8f0" /><stop offset="0.5" stopColor="#f7fbff" /><stop offset="1" stopColor="#d3deea" />
+              </linearGradient>
+              <filter id="v60-shadow" x="-25%" y="-25%" width="150%" height="160%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2.2" floodColor="#0f172a" floodOpacity="0.16" />
+              </filter>
+            </defs>
+
+            {/* carafe catching the brew */}
+            <g filter="url(#v60-shadow)">
+              <path d="M98 124 Q90 124 90 134 L94 146 Q96 151 105 151 L135 151 Q144 151 146 146 L150 134 Q150 124 142 124 Z" fill="url(#v60-glass)" stroke="#cbd5e1" strokeWidth="1.5" />
+            </g>
+
             {/* steam wisps (heat retained between pulses) */}
             {mode === 'pour' && (
               <g stroke="#cbd5e1" strokeWidth="1.5" fill="none" opacity="0.5" strokeLinecap="round">
@@ -71,21 +97,32 @@ export function V60Animation() {
                 <path d="M136 70 q4 -6 0 -12 q-4 -6 0 -12" />
               </g>
             )}
-            {hasWater && <polygon points={waterPts} fill="#3b82f6" fillOpacity="0.32" />}
+
+            {/* dripper cone + filter paper */}
+            <g filter="url(#v60-shadow)">
+              <polygon points="42,20 198,20 120,120" fill="url(#v60-cone)" />
+            </g>
+            <polygon points="49,24 191,24 120,115" fill="url(#v60-paper)" />
+            {/* ribs (subtle, on the cone) */}
+            <line x1="84" y1="24" x2="116" y2="112" stroke="#f0a35a" strokeWidth="0.8" opacity="0.45" />
+            <line x1="156" y1="24" x2="124" y2="112" stroke="#f0a35a" strokeWidth="0.8" opacity="0.45" />
+
+            {/* water */}
+            {hasWater && <polygon points={waterPts} fill="url(#v60-water)" fillOpacity="0.82" />}
             {/* CO2 bubbles during bloom */}
             {mode === 'bloom' && [108, 120, 132].map((x, i) => (
-              <circle key={i} cx={x} cy={(90 - p * 26 - i * 4).toFixed(1)} r={(2 - i * 0.3).toFixed(1)} fill="#cbd5e1" opacity={(0.7 * (1 - p)).toFixed(2)} />
+              <circle key={i} cx={x} cy={(90 - p * 26 - i * 4).toFixed(1)} r={(2 - i * 0.3).toFixed(1)} fill="#e2e8f0" opacity={(0.7 * (1 - p)).toFixed(2)} />
             ))}
             {/* coffee bed at the point */}
-            <polygon points={`${leftX(BED_TOP)},${BED_TOP} ${rightX(BED_TOP)},${BED_TOP} ${APEX_X},${APEX_Y}`} fill="#6b3f1d" />
-            {/* cone outline + ribs */}
-            <polygon points="42,20 198,20 120,120" fill="none" stroke="#f97316" strokeWidth="2.5" />
-            <line x1="120" y1="22" x2="120" y2="118" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
-            <line x1="78" y1="22" x2="114" y2="114" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
-            <line x1="162" y1="22" x2="126" y2="114" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
+            <polygon points={`${leftX(BED_TOP)},${BED_TOP} ${rightX(BED_TOP)},${BED_TOP} ${APEX_X},${APEX_Y}`} fill="url(#v60-bed)" />
+
+            {/* rim mouth + thin outline */}
+            <ellipse cx="120" cy="20" rx="78" ry="8" fill="none" stroke="#e8740c" strokeWidth="2" />
+            <polygon points="42,20 198,20 120,120" fill="none" stroke="#c75e00" strokeWidth="1.5" />
+
             {/* pour stream */}
-            {pouring && <line x1="120" y1="20" x2="120" y2={ws.toFixed(1)} stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" />}
-            <text x="120" y="134" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
+            {pouring && <line x1="120" y1="20" x2="120" y2={ws.toFixed(1)} stroke="url(#v60-water)" strokeWidth="4" strokeLinecap="round" />}
+            <text x="120" y="146" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
           </svg>
         </div>
 
