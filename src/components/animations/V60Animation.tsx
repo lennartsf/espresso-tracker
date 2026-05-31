@@ -63,7 +63,7 @@ export function V60Animation() {
       <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cone ▼ */}
         <div className="flex-1">
-          <svg viewBox="0 0 240 152" className="w-full">
+          <svg viewBox="0 0 240 168" className="w-full">
             <defs>
               <linearGradient id="v60-cone" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stopColor="#fdba74" /><stop offset="1" stopColor="#e8740c" />
@@ -122,7 +122,7 @@ export function V60Animation() {
 
             {/* pour stream */}
             {pouring && <line x1="120" y1="20" x2="120" y2={ws.toFixed(1)} stroke="url(#v60-water)" strokeWidth="4" strokeLinecap="round" />}
-            <text x="120" y="146" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
           </svg>
         </div>
 

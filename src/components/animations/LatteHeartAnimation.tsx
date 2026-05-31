@@ -67,7 +67,7 @@ export function LatteHeartAnimation() {
       <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
         {/* SIDE — cup fills & tilts upright, pitcher height changes */}
         <div className="flex-1">
-          <svg viewBox="0 0 240 160" className="w-full">
+          <svg viewBox="0 0 240 168" className="w-full">
             <defs>
               <clipPath id="latte-bowl">
                 <path d="M58 94 Q58 138 120 138 Q182 138 182 94 Z" />
@@ -109,7 +109,7 @@ export function LatteHeartAnimation() {
                 <path d={POUR_JUG_BODY} fill="url(#latte-jug)" stroke="#9aa6b2" strokeWidth="1.3" />
               </g>
             </g>
-            <text x="120" y="156" textAnchor="middle" fontSize="9" fill="#64748b">Side — fill, height & tilt</text>
+            <text x="120" y="164" textAnchor="middle" fontSize="9" fill="#64748b">Side — fill, height & tilt</text>
           </svg>
         </div>
 

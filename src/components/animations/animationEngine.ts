@@ -26,22 +26,26 @@ export function useRamp(key: unknown, durationMs: number) {
 }
 
 // Continuously increasing angle (deg) while `active` — for rotating a vortex.
+// `degPerSec` may change every render (e.g. ramping up) without restarting the
+// loop: it is read through a ref, so the rAF effect only depends on `active`.
 export function useSpin(active: boolean, degPerSec = 220) {
   const [angle, setAngle] = useState(0)
   const acc = useRef(0)
+  const speed = useRef(degPerSec)
+  speed.current = degPerSec
   useEffect(() => {
     if (!active || typeof requestAnimationFrame === 'undefined') return
     let raf = 0
     let last = 0
     const tick = (now: number) => {
       if (!last) last = now
-      acc.current = (acc.current + (degPerSec * (now - last)) / 1000) % 360
+      acc.current = (acc.current + (speed.current * (now - last)) / 1000) % 360
       last = now
       setAngle(acc.current)
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [active, degPerSec])
+  }, [active])
   return angle
 }

@@ -29,13 +29,19 @@ const SPIN_PATH = (() => {
   return d
 })()
 
-// the PITCHER moves vertically (wand stays fixed); tilt is set once and held
+// the PITCHER lowers; for roll it drops faster and the wand plunges deeper
 function pitcherY(phase: number, p: number) {
-  if (phase < 0) return 0
-  if (phase === 0) return 0
-  if (phase === 1) return lerp(0, 8, p)   // lower: rising volume keeps tip at the surface
-  if (phase === 2) return lerp(8, -6, p)  // lift: tip runs deeper, slurping stops
-  return lerp(-6, 28, p)                    // lift the jug away
+  if (phase <= 0) return 0
+  if (phase === 1) return lerp(0, 5, p)                       // stretch: lower slowly
+  if (phase === 2) return lerp(5, 18, Math.min(1, p / 0.4))   // roll: drop faster, then hold
+  return lerp(18, 30, p)                                       // finish: take the jug away
+}
+// wand-tip screen y — at the surface for stretch, plunges deeper for roll
+function wandTipY(phase: number, p: number) {
+  const surface = SY + pitcherY(phase, p)
+  if (phase === 2) return surface + lerp(2, 18, Math.min(1, p / 0.4))
+  if (phase === 3) return surface - 14
+  return surface + 2
 }
 function foamH(phase: number, p: number) {
   if (phase === 1) return lerp(3, 26, p)
@@ -49,17 +55,20 @@ export function MilkAnimation() {
   const active = phase >= 0 ? PHASES[phase] : null
   const mode = active?.mode
   const spinning = mode === 'stretch' || mode === 'roll'
-  const angle = useSpin(spinning, mode === 'roll' ? 340 : 190)
+  // vortex builds up: slow at first, faster while rolling
+  const spinSpeed = mode === 'roll' ? lerp(170, 410, p) : mode === 'stretch' ? lerp(45, 150, p) : 0
+  const angle = useSpin(spinning, spinSpeed)
   const py = pitcherY(phase, p)
   const fh = foamH(phase, p)
-  const vortexOpacity = mode === 'roll' ? 0.85 : mode === 'stretch' ? 0.5 : 0
+  const wandTip = wandTipY(phase, p)
+  const vortexOpacity = mode === 'roll' ? lerp(0.55, 0.9, p) : mode === 'stretch' ? lerp(0.15, 0.5, p) : 0
 
   return (
     <div>
       <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cross-section: pitcher moves, wand fixed in the spout */}
         <div className="flex-1">
-          <svg viewBox="0 0 200 150" className="w-full">
+          <svg viewBox="0 0 200 174" className="w-full">
             <defs>
               <clipPath id="milk-vessel">
                 <path d="M52 60 C44 64 44 110 53 121 C57 127 66 128 76 128 L124 128 C134 128 143 127 147 121 C156 110 156 64 148 60 Z" />
@@ -93,10 +102,10 @@ export function MilkAnimation() {
               <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="url(#milk-steel)" strokeWidth="4" />
               <path d="M148 66 C166 66 166 96 148 98" fill="none" stroke="#9aa4b1" strokeWidth="1" />
             </g>
-            {/* fixed steam wand sitting in the spout (no tip marker) */}
-            <line x1="56" y1="6" x2="62" y2="68" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
-            <line x1="56" y1="6" x2="62" y2="68" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-            <text x="100" y="146" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher moves, wand fixed</text>
+            {/* steam wand in the spout — plunges deeper for roll */}
+            <line x1="56" y1="6" x2="62" y2={wandTip.toFixed(1)} stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
+            <line x1="56" y1="6" x2="62" y2={wandTip.toFixed(1)} stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Side — pitcher lowers, tip plunges</text>
           </svg>
         </div>
 
