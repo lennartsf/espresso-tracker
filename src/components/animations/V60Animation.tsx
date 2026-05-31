@@ -128,28 +128,30 @@ export function V60Animation() {
 
         {/* TOP VIEW — pour pattern + swirl */}
         <div className="flex-1">
-          <svg viewBox="0 0 120 132" className="w-full">
-            <circle cx="60" cy="60" r="52" fill="#fed7aa" stroke="#f97316" strokeWidth="2.5" />
-            <circle cx="60" cy="60" r="44" fill="#fef3c7" />
-            {[...Array(12)].map((_, i) => {
-              const a = (i / 12) * Math.PI * 2
-              return (
-                <line key={i} x1={60 + Math.cos(a) * 14} y1={60 + Math.sin(a) * 14}
-                  x2={60 + Math.cos(a) * 44} y2={60 + Math.sin(a) * 44}
-                  stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
-              )
-            })}
-            {/* bed seen from above */}
-            <circle cx="60" cy="60" r="15" fill="#9a6a45" opacity="0.6" />
-            {/* swirl indicator (bloom + drawdown) */}
-            {swirling && (
-              <g transform={`rotate(${angle.toFixed(1)} 60 60)`} opacity="0.8">
-                <path d="M60 30 A30 30 0 0 1 88 52" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
-                <path d="M60 90 A30 30 0 0 1 32 68" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
-              </g>
-            )}
-            {dot && <circle cx={dot.x.toFixed(1)} cy={dot.y.toFixed(1)} r="4" fill="#1e293b" />}
-            <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — pour & swirl</text>
+          <svg viewBox="0 0 240 168" className="w-full">
+            <g transform="translate(120 80) scale(1.4) translate(-60 -60)">
+              <circle cx="60" cy="60" r="52" fill="#fed7aa" stroke="#f97316" strokeWidth="2.5" />
+              <circle cx="60" cy="60" r="44" fill="#fef3c7" />
+              {[...Array(12)].map((_, i) => {
+                const a = (i / 12) * Math.PI * 2
+                return (
+                  <line key={i} x1={60 + Math.cos(a) * 14} y1={60 + Math.sin(a) * 14}
+                    x2={60 + Math.cos(a) * 44} y2={60 + Math.sin(a) * 44}
+                    stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
+                )
+              })}
+              {/* bed seen from above */}
+              <circle cx="60" cy="60" r="15" fill="#9a6a45" opacity="0.6" />
+              {/* swirl indicator (bloom + drawdown) */}
+              {swirling && (
+                <g transform={`rotate(${angle.toFixed(1)} 60 60)`} opacity="0.8">
+                  <path d="M60 30 A30 30 0 0 1 88 52" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+                  <path d="M60 90 A30 30 0 0 1 32 68" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+                </g>
+              )}
+              {dot && <circle cx={dot.x.toFixed(1)} cy={dot.y.toFixed(1)} r="4" fill="#1e293b" />}
+            </g>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Top — pour & swirl</text>
           </svg>
         </div>
       </div>

@@ -115,7 +115,7 @@ export function LatteHeartAnimation() {
 
         {/* TOP — the pattern forms */}
         <div className="flex-1">
-          <svg viewBox="0 0 120 132" className="w-full">
+          <svg viewBox="0 0 240 168" className="w-full">
             <defs>
               <radialGradient id="latte-crema" cx="0.42" cy="0.38" r="0.72">
                 <stop offset="0" stopColor="#90602f" /><stop offset="1" stopColor="#5a3417" />
@@ -127,15 +127,17 @@ export function LatteHeartAnimation() {
                 <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#3a2410" floodOpacity="0.35" />
               </filter>
             </defs>
-            <circle cx="60" cy="60" r="50" fill="#43280f" />
-            <circle cx="60" cy="60" r="47" fill="url(#latte-crema)" />
-            <g transform="translate(60 58) scale(1.65) translate(-60 -58)" filter="url(#latte-foam-shadow)">
-              {phase < 2
-                ? blobR > 0 && <circle cx="60" cy="60" r={blobR.toFixed(1)} fill="url(#latte-foam)" />
-                : <path d={pathFrom(lerpArr(DISC, HEART, morph))} fill="url(#latte-foam)" />}
-              {phase === 2 && <circle cx="60" cy={pourY.toFixed(1)} r="3" fill="#fffaf0" stroke="#d4a373" strokeWidth="0.5" />}
+            <g transform="translate(120 80) scale(1.4) translate(-60 -60)">
+              <circle cx="60" cy="60" r="50" fill="#43280f" />
+              <circle cx="60" cy="60" r="47" fill="url(#latte-crema)" />
+              <g transform="translate(60 58) scale(1.65) translate(-60 -58)" filter="url(#latte-foam-shadow)">
+                {phase < 2
+                  ? blobR > 0 && <circle cx="60" cy="60" r={blobR.toFixed(1)} fill="url(#latte-foam)" />
+                  : <path d={pathFrom(lerpArr(DISC, HEART, morph))} fill="url(#latte-foam)" />}
+                {phase === 2 && <circle cx="60" cy={pourY.toFixed(1)} r="3" fill="#fffaf0" stroke="#d4a373" strokeWidth="0.5" />}
+              </g>
             </g>
-            <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — heart forms</text>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Top — heart forms</text>
           </svg>
         </div>
       </div>
