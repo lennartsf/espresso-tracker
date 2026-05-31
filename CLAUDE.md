@@ -218,6 +218,7 @@ src/
   - Milk steaming — pitcher cross-section, foam volume per drink (Cappuccino 1/3, Flat White microfoam, Cortado minimal, Latte Macchiato medium)
   - Latte art Heart — animated pitcher path; Tulip + Rosetta deferred
   - Spec: docs/superpowers/specs/2026-05-30-animations-design.md
+  - Plan: docs/superpowers/plans/2026-05-30-animations.md
 
 ## Wichtige Hinweise
 - Nach jeder Supabase-Migration immer fragen ob User die SQL bereits ausgeführt hat
