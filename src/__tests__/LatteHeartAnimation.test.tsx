@@ -11,7 +11,7 @@ describe('LatteHeartAnimation', () => {
     expect(screen.getByText(/float/i)).toBeInTheDocument()
     expect(screen.getByText(/pull through/i)).toBeInTheDocument()
     // playback starts on mount (button reads "Pouring…"); run it to the end
-    act(() => { vi.advanceTimersByTime(5400) })
+    act(() => { vi.advanceTimersByTime(6000) })
     expect(screen.getByRole('button', { name: /replay/i })).toBeInTheDocument()
   })
 

@@ -1,17 +1,29 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import { MilkAnimation } from '../components/animations/MilkAnimation'
 
 describe('MilkAnimation', () => {
-  test('renders both phase tabs and starts on Stretch', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  test('renders the three phase chips and a replay button', () => {
     render(<MilkAnimation />)
-    expect(screen.getByRole('button', { name: /stretch/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /roll/i })).toBeInTheDocument()
+    expect(screen.getByText('Stretch')).toBeInTheDocument()
+    expect(screen.getByText('Roll')).toBeInTheDocument()
+    expect(screen.getByText('Done')).toBeInTheDocument()
+    // playback starts on mount (button reads "Steaming…"); run it to the end
+    act(() => { vi.advanceTimersByTime(6600) })
+    expect(screen.getByRole('button', { name: /replay/i })).toBeInTheDocument()
+  })
+
+  test('shows the stretch caption once playback starts', () => {
+    render(<MilkAnimation />)
+    act(() => { vi.advanceTimersByTime(0) })
     expect(screen.getByText(/just below the surface/i)).toBeInTheDocument()
   })
 
-  test('switches caption when Roll tab is clicked', () => {
+  test('shows the roll caption with whirlpool when that phase is reached', () => {
     render(<MilkAnimation />)
-    fireEvent.click(screen.getByRole('button', { name: /roll/i }))
+    act(() => { vi.advanceTimersByTime(2200) })
     expect(screen.getByText(/whirlpool/i)).toBeInTheDocument()
   })
 

@@ -11,7 +11,7 @@ describe('V60Animation', () => {
     expect(screen.getByText('Pour 1')).toBeInTheDocument()
     expect(screen.getByText('Drain')).toBeInTheDocument()
     // playback starts on mount (button reads "Pouring…"); run it to the end
-    act(() => { vi.advanceTimersByTime(7500) })
+    act(() => { vi.advanceTimersByTime(9000) })
     expect(screen.getByRole('button', { name: /replay/i })).toBeInTheDocument()
   })
 

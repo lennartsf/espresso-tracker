@@ -1,73 +1,104 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { useAnimate } from 'framer-motion'
 import { usePhaseTimeline } from './usePhaseTimeline'
+
+type Mode = 'bloom' | 'pour' | 'drain'
 
 type Phase = {
   label: string
   time: string
   ml: string
   caption: string
-  // side view: y of water surface (bed top = 98, so height = 98 - y)
-  waterY: number
+  mode: Mode
+  // side view: water-surface y keyframes (bed top = 96; pour in, then settle/drain)
+  water: number[]
+  stream: boolean
 }
 
+const BED_TOP = 96
+
 const PHASES: Phase[] = [
-  { label: 'Bloom',  time: '0:00', ml: '45 ml',  caption: 'Evenly saturate the grounds, let it bloom ~30 s', waterY: 82 },
-  { label: 'Pour 1', time: '0:30', ml: '+60 ml', caption: 'Spiral slowly from the center outward',          waterY: 58 },
-  { label: 'Pour 2', time: '1:15', ml: '+60 ml', caption: 'Stay near the center, avoid the edges',          waterY: 48 },
-  { label: 'Pour 3', time: '1:45', ml: '+60 ml', caption: 'Final pour, level the coffee bed',               waterY: 40 },
-  { label: 'Drain',  time: '2:30', ml: '—',      caption: 'Let it draw down — about 3:00 total',            waterY: 98 },
+  { label: 'Bloom',  time: '0:00', ml: '45 ml',  caption: 'Evenly saturate the grounds, let it bloom ~30 s', mode: 'bloom', water: [96, 89, 92], stream: true },
+  { label: 'Pour 1', time: '0:30', ml: '+60 ml', caption: 'Spiral slowly from the center outward',          mode: 'pour',  water: [92, 60, 68], stream: true },
+  { label: 'Pour 2', time: '1:15', ml: '+60 ml', caption: 'Stay near the center, avoid the edges',          mode: 'pour',  water: [68, 50, 58], stream: true },
+  { label: 'Pour 3', time: '1:45', ml: '+60 ml', caption: 'Final pour, level the coffee bed',               mode: 'pour',  water: [58, 42, 50], stream: true },
+  { label: 'Drain',  time: '2:30', ml: '—',      caption: 'Let it draw down — about 3:00 total',            mode: 'drain', water: [50, 96], stream: false },
 ]
 
-const BED_TOP = 98
-
 // Precomputed spiral (top view, center 60,60) — kettle path during a pour.
-const SPIRAL = Array.from({ length: 24 }, (_, i) => {
-  const t = i / 23
-  const ang = t * Math.PI * 4
-  const r = 6 + t * 34
+const SPIRAL = Array.from({ length: 28 }, (_, i) => {
+  const t = i / 27
+  const ang = t * Math.PI * 4.5
+  const r = 5 + t * 35
   return { x: +(60 + Math.cos(ang) * r).toFixed(1), y: +(60 + Math.sin(ang) * r).toFixed(1) }
 })
 const SPIRAL_X = SPIRAL.map((p) => p.x)
 const SPIRAL_Y = SPIRAL.map((p) => p.y)
 
+function timesFor(n: number) {
+  if (n === 3) return [0, 0.45, 1]
+  if (n === 2) return [0, 1]
+  return [0]
+}
+
 export function V60Animation() {
-  const { phase, playing, replay } = usePhaseTimeline(PHASES.length, 1500)
+  const { phase, playing, replay } = usePhaseTimeline(PHASES.length, 1800)
+  const [scope, animate] = useAnimate()
+  const waterRef = useRef<SVGRectElement>(null)
+  const streamRef = useRef<SVGLineElement>(null)
+  const dotRef = useRef<SVGCircleElement>(null)
+
+  useEffect(() => {
+    if (!waterRef.current || !streamRef.current || !dotRef.current) return
+
+    if (phase < 0) {
+      animate(waterRef.current, { y: BED_TOP, height: 0 }, { duration: 0 })
+      animate(streamRef.current, { opacity: 0 }, { duration: 0 })
+      animate(dotRef.current, { opacity: 0, cx: 60, cy: 60 }, { duration: 0 })
+      return
+    }
+
+    const p = PHASES[phase]
+    const surf = p.water
+    animate(
+      waterRef.current,
+      { y: surf, height: surf.map((s) => BED_TOP - s) },
+      { duration: 1.4, ease: 'easeInOut', times: timesFor(surf.length) }
+    )
+    animate(streamRef.current, { opacity: p.stream ? 1 : 0, y2: surf[surf.length - 1] }, { duration: 0.4 })
+
+    if (p.mode === 'pour') {
+      animate(dotRef.current, { opacity: 1, cx: SPIRAL_X, cy: SPIRAL_Y }, { duration: 1.5, ease: 'easeInOut' })
+    } else if (p.mode === 'bloom') {
+      animate(dotRef.current, { opacity: 1, cx: [60, 56, 64, 60], cy: [60, 64, 56, 60] }, { duration: 1.3, ease: 'easeInOut' })
+    } else {
+      animate(dotRef.current, { opacity: 0 }, { duration: 0.3 })
+    }
+  }, [phase, animate])
+
   const active = phase >= 0 ? PHASES[phase] : null
-  const waterY = active ? active.waterY : BED_TOP
-  const pour = phase >= 1 && phase <= 3
-  const blooming = phase === 0
 
   return (
-    <div>
+    <div ref={scope}>
       <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cone ▼ */}
         <div className="flex-1">
           <svg viewBox="0 0 240 140" className="w-full">
             <defs>
               <clipPath id="v60-cone">
-                <polygon points="40,18 200,18 120,120" />
+                <polygon points="42,20 198,20 120,120" />
               </clipPath>
             </defs>
-            {/* water layer (clipped to cone) */}
-            <motion.rect
-              x="40" width="160" fill="#93c5fd" clipPath="url(#v60-cone)"
-              initial={false}
-              animate={{ y: waterY, height: Math.max(0, BED_TOP - waterY) }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-            />
+            <rect ref={waterRef} x="42" width="156" y={BED_TOP} height="0" fill="#93c5fd" clipPath="url(#v60-cone)" />
             {/* coffee bed at the point */}
-            <polygon points="92,98 148,98 120,118" fill="#6b3f1d" clipPath="url(#v60-cone)" />
+            <polygon points="101,96 139,96 120,120" fill="#6b3f1d" clipPath="url(#v60-cone)" />
             {/* cone outline + ridges */}
-            <polygon points="40,18 200,18 120,120" fill="none" stroke="#f97316" strokeWidth="2.5" />
-            <line x1="120" y1="20" x2="120" y2="116" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
-            <line x1="75" y1="20" x2="113" y2="112" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
-            <line x1="165" y1="20" x2="127" y2="112" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
+            <polygon points="42,20 198,20 120,120" fill="none" stroke="#f97316" strokeWidth="2.5" />
+            <line x1="120" y1="22" x2="120" y2="118" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
+            <line x1="78" y1="22" x2="114" y2="114" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
+            <line x1="162" y1="22" x2="126" y2="114" stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
             {/* pour stream */}
-            <motion.line
-              x1="120" y1="18" x2="120" fill="none" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"
-              animate={{ opacity: pour || blooming ? 1 : 0, y2: waterY }}
-              transition={{ duration: 0.4 }}
-            />
+            <line ref={streamRef} x1="120" y1="20" x2="120" y2={BED_TOP} stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" opacity="0" />
             <text x="120" y="134" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
           </svg>
         </div>
@@ -85,15 +116,7 @@ export function V60Animation() {
                   stroke="#fdba74" strokeWidth="0.8" opacity="0.5" />
               )
             })}
-            <motion.circle
-              r="4" fill="#1e293b"
-              animate={
-                pour ? { cx: SPIRAL_X, cy: SPIRAL_Y, opacity: 1 }
-                : blooming ? { cx: [60, 56, 64, 60], cy: [60, 64, 56, 60], opacity: 1 }
-                : { cx: 60, cy: 60, opacity: 0 }
-              }
-              transition={{ duration: pour ? 1.2 : 0.8, ease: 'easeInOut' }}
-            />
+            <circle ref={dotRef} cx="60" cy="60" r="4" fill="#1e293b" opacity="0" />
             <text x="60" y="126" textAnchor="middle" fontSize="9" fill="#64748b">Top — pour pattern</text>
           </svg>
         </div>
