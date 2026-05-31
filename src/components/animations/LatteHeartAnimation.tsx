@@ -100,8 +100,8 @@ export function LatteHeartAnimation() {
               <path d="M184 104 Q212 104 212 118 Q212 134 184 128" fill="none" stroke="url(#latte-cup)" strokeWidth="5" />
               <path d="M184 104 Q212 104 212 118 Q212 134 184 128" fill="none" stroke="#cbd5e1" strokeWidth="1.2" />
             </g>
-            {/* milk stream */}
-            {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2="120" y2={(ly - 2).toFixed(1)} stroke="white" strokeWidth="4" strokeLinecap="round" />}
+            {/* milk stream — falls roughly straight below the spout, not always to the centre */}
+            {streaming && <line x1={tip.x.toFixed(1)} y1={tip.y.toFixed(1)} x2={Math.min(150, Math.max(90, tip.x)).toFixed(1)} y2={(ly - 2).toFixed(1)} stroke="white" strokeWidth="4" strokeLinecap="round" />}
             {/* pitcher — tilted pouring jug, spout tip placed at `tip` (spout below handle) */}
             <g transform={`translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(1.05)`}>
               <g filter="url(#latte-shadow)">
