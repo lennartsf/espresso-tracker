@@ -18,7 +18,7 @@ npm run dev
 src/
   pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary, Animate, AnimateDetail
   components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
-  components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation
+  components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation; hooks: usePhaseTimeline, animationEngine (useRamp/useSpin); pitcherShape.ts (Jug-Pfade)
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
   lib/           supabase.ts
@@ -209,7 +209,7 @@ src/
 - [x] **Guide-Tab** (`/guide`): 6 statische Guides (Espresso, French Press, V60, AeroPress, Moka Pot, Milch), Übersicht als Karten-Grid, Detail mit Quick-Chips + Schritt-für-Schritt + Troubleshooting-Akkordeon
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
-- [x] **Animate** (`/animate`): 4 SVG+AnimeJS explainers — Boiler Types, V60 Pour Pattern, Milk Steaming (4 drinks), Latte Art Heart
+- [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types, V60 Pour Pattern, Milk Steaming, Latte Art Heart (alle self-computed-geometry-Engine, gradient/shadow-Stil, gleich große Side/Top-Views; rebuilt 2026-05-31)
 
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation
@@ -236,7 +236,22 @@ src/
 - `timeFormat.ts`: secondsToMMSS(), MMSSToSeconds(), normalizeTimeInput()
 - `guideContent.ts`: GUIDES (Guide[]), Typen QuickProblem, TroubleshootingItem, Step, Guide
 - `glossaryContent.ts`: GLOSSARY (GlossaryTerm[]), Interface GlossaryTerm { term, definition, category }; 46 Begriffe alphabetisch sortiert
-- `animationContent.ts`: ANIMATIONS (AnimationMeta[]), Interface AnimationMeta { id, title, icon, description, tags }; 4 Einträge (boiler, v60, milk, latte-heart)
-- AnimeJS v3 (^3.2.2) — nicht v4, API unterscheidet sich stark; `anime.setDashoffset`, `anime.stagger`, `anime.path()` sind v3-spezifisch
-- SVG-Elemente aus `document.getElementById` haben Typ `HTMLElement` — bei Cast auf SVGCircleElement etc. erst `as unknown` casten
+- `animationContent.ts`: ANIMATIONS (AnimationMeta[]), Interface AnimationMeta { id, title, icon, description, tags }; 4 Einträge (boiler, v60, milk, latte-heart). **id + title NICHT ändern** — AnimateDetail/animationContent Tests hängen dran (tags/description sind frei).
+- **Animationen-Tech (Stand 2026-05-31):** V60/Milk/Latte rendern Geometrie **selbst berechnet pro Frame** — kein Animations-Lib für diese SVGs (Framer Motion verworfen: imperatives `animate()` animiert SVG-Attribute wie height/cy/y2 *nicht*, nur Transform). Stattdessen: `usePhaseTimeline` = Phasen-Takt (Captions/Chips/Replay, deterministisch testbar), `animationEngine.ts` = `useRamp(key, ms)` (Fortschritt 0→1 je Phase via rAF) + `useSpin(active, degPerSec)` (rotierender Winkel, z.B. Vortex). Komponenten rechnen Wasser-Polygon / Schaum / Tip-Tiefe / Pitcher-Position / Blob→Herz-Morph direkt aus (phase, p).
+- `usePhaseTimeline(count, step)`: `step` = `number` (gleichmäßig) **oder** `number[]` (gewichtete Phasendauern in ms — z.B. V60 Bloom lang, Pulse kurz). Array muss stabil sein (Modul-Konstante `DUR`, nicht inline). phase -1 (idle) → 0..count-1 → playing=false; `replay()` neu. Tests via fake timers; rAF-Hooks guarded (kein rAF in jsdom → Visuals bewusst ungetestet, Tests prüfen nur Captions/Chips/Buttons).
+- `pitcherShape.ts`: `JUG_BODY/JUG_HANDLE` (aufrecht, Milch-Querschnitt) + `POUR_JUG_BODY/POUR_JUG_HANDLE` (gekippte Gieß-Form, Ausguss = tiefster Punkt, Henkel oben). Latte Herz-Morph: `DISC`/`HEART` Punkt-Arrays gleicher Pfad-Struktur (M + 4 Cubics) → `lerpArr` morpht ohne Größensprung.
+- **Animationen sind technik-akkurat aus Briefs gebaut** (Latte/V60/Milch nach James-Hoffmann-Technik). Vorlage: `docs/animation-brief-template.md`; ausgefüllt: `docs/animation-brief-milk.md`. Für neue/geänderte Animationen: Brief + Referenz-Stills → bauen.
+- **Animations-Workflow (wichtig, so läuft's ab):**
+  1. User liefert *einmal*: ausgefülltes Brief (`docs/animation-brief-template.md`) + Referenz-Stills + optional Stil-Vorbild.
+  2. Bauen (self-computed Engine, gemeinsamer Stil).
+  3. **Self-Review statt blind raten:** `npm run shoot [ids]` (`scripts/shoot.mjs`, Playwright + sharp, dev-deps) screenshottet `/animate/:id` über Phasen und stitcht zu *einer* Montage `screenshots/{id}-montage.png`. → **Montage lesen (ein Bild)** → gegen Brief/Stills selbst kritisieren → fixen → 2–3× intern.
+  4. Erst dann dem User die Montage zeigen; **eine** gebündelte Notizrunde, nicht Runde-für-Runde.
+  - `SHOTS`-Frame-Zeiten in shoot.mjs decken bis ~11,5 s ab (längste Animation V60). `screenshots/` ist gitignored. rAF-Hooks rendern in jsdom nicht → Tests prüfen nur Captions/Chips/Buttons, Visuals nur per Screenshot.
+- **Nächste Verbesserungs-Idee (noch ausprobieren — gewünscht für nächstes Mal):** der Qualitäts-Engpass ist die handgezeichnete SVG-Grafik. Hebel = *designte/erzeugte* statische Kunst, die die Engine nur noch animiert. Konkret (alles kostenlos):
+  - **Statische Kunst-Handoff** — `docs/animation-art-handoff.md`: feste viewBoxen + Anker; statische Szene als SVG aus **Figma/Inkscape** oder freien Packs (unDraw, SVGRepo); Skelett-SVGs liegen in `assets/animation-art/` (z.B. `v60-side-scene.svg`) zum „Hübschmachen" (IDs/Struktur behalten).
+  - **Prompt-basierte Vektor-AI** — Tools wie **Recraft** oder **SVG.io** (kostenlose Tiers) erzeugen SVG aus Text-Prompt → ich passe IDs/Anker an und klinke sie in die Engine.
+  - **Lottie** (LottieFiles, freie Lizenz, `lottie-react`) für sehr hübsche fertige Animationen — aber generisch/play-only, weniger technik-exakt; **Rive** (gratis Editor+Runtime) für interaktive, bespoke Explainer (jemand muss im GUI authoren).
+  - Empfohlene Reihenfolge fürs Experiment: erst designte/AI-SVG-Szene + bestehende Engine (behält exakte Technik), Lottie/Rive nur falls rein dekorativ.
+- **Alle 4 Animationen** (inkl. Boiler) nutzen jetzt die self-computed-Engine — `animejs` wurde entfernt (war nur für Boiler). Boiler zeichnet die Flow-Linien per `useRamp` + `pathLength="1"`/`strokeDasharray="1 1"`/`strokeDashoffset={1-p}` (kein `getTotalLength`, kein Lib).
+- **Gemeinsamer Stil:** helle Karte (`bg-slate-50 … border`), SVG-Verläufe (`linearGradient`/`radialGradient`) + weicher Schatten (`feDropShadow`), Keramik/Edelstahl-Optik. Side/Top-Views teilen denselben viewBox (240×168) → gleich groß nebeneinander; Top-Inhalt via `translate/scale`-Wrapper zentriert (Animationslogik bleibt in 0..120-Koordinaten).
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)

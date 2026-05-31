@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  V60 — STATISCHE Top-Szene (Skelett). viewBox NICHT ändern (0 0 120 132).
+  Gruppen-IDs behalten: #dripper-top, #bed-top.
+  NICHT zeichnen (mach ich per Code): Spiral-Gießpunkt, Swirl-Wirbel.
+  Ebene #guides am Ende LÖSCHEN. Anker: Mitte (60,60), Innenradius ~44.
+  Schöner machen erlaubt (Verläufe/Schatten), Geometrie grob lassen.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 132">
+  <g id="dripper-top">
+    <circle cx="60" cy="60" r="52" fill="#fed7aa" stroke="#f97316" stroke-width="2.5"/>
+    <circle cx="60" cy="60" r="44" fill="#fef3c7"/>
+    <!-- Rippen (Platzhalter, 12 Speichen) -->
+    <g stroke="#fdba74" stroke-width="0.8" opacity="0.5">
+      <line x1="74" y1="60" x2="104" y2="60"/>
+      <line x1="46" y1="60" x2="16" y2="60"/>
+      <line x1="60" y1="74" x2="60" y2="104"/>
+      <line x1="60" y1="46" x2="60" y2="16"/>
+      <line x1="70" y1="70" x2="91" y2="91"/>
+      <line x1="50" y1="50" x2="29" y2="29"/>
+      <line x1="70" y1="50" x2="91" y2="29"/>
+      <line x1="50" y1="70" x2="29" y2="91"/>
+    </g>
+  </g>
+
+  <g id="bed-top">
+    <circle cx="60" cy="60" r="15" fill="#9a6a45" opacity="0.6"/>
+  </g>
+
+  <g id="guides" stroke-dasharray="3 3" stroke-width="0.6" opacity="0.5">
+    <circle cx="60" cy="60" r="44" fill="none" stroke="#0ea5e9"/>
+    <line x1="44" y1="60" x2="76" y2="60" stroke="#ef4444"/>
+    <line x1="60" y1="44" x2="60" y2="76" stroke="#ef4444"/>
+  </g>
+</svg>

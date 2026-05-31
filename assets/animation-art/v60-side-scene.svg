@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  V60 — STATISCHE Seiten-Szene (Skelett zum Hübschmachen in Figma/Inkscape).
+  Regeln:
+   - viewBox NICHT ändern (0 0 240 140).
+   - Gruppen-IDs behalten: #dripper, #bed, #carafe.
+   - NICHT zeichnen (mach ich per Code drüber): Wasser, Gieß-Strahl, Spiral-Punkt, Swirl, CO2-Blasen.
+   - Ebene #guides am Ende LÖSCHEN (nur Orientierung). Die Anker-Linien zeigen, wo ich Dinge platziere:
+       * water-empty  y=96  (Bett-Oberkante = tiefster Wasserstand)
+       * water-full   y=40  (höchster Wasserstand)
+       * center       x=120
+  Ersetze die Platzhalter-Pfade durch schöne Formen (Verläufe, Schatten ok), aber bleib grob in der Geometrie.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140">
+  <g id="carafe">
+    <!-- Karaffe/Tasse unter dem Dripper -->
+    <path d="M150 120 L156 156 Q156 164 148 164 L92 164 Q84 164 84 156 L90 120 Z" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+  </g>
+
+  <g id="dripper">
+    <!-- V60-Kegel ▼ : breite Öffnung oben, Spitze unten -->
+    <polygon points="42,20 198,20 120,120" fill="#fed7aa" stroke="#f97316" stroke-width="2.5"/>
+    <ellipse cx="120" cy="20" rx="78" ry="9" fill="#ffedd5" stroke="#f97316" stroke-width="2"/>
+    <!-- Rippen (Platzhalter) -->
+    <line x1="120" y1="22" x2="120" y2="118" stroke="#fdba74" stroke-width="0.8" opacity="0.5"/>
+    <line x1="78" y1="22" x2="114" y2="114" stroke="#fdba74" stroke-width="0.8" opacity="0.5"/>
+    <line x1="162" y1="22" x2="126" y2="114" stroke="#fdba74" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <g id="bed">
+    <!-- Kaffeebett in der Spitze -->
+    <polygon points="101,96 139,96 120,118" fill="#6b3f1d"/>
+  </g>
+
+  <g id="guides" stroke-dasharray="3 3" stroke-width="0.6" opacity="0.5">
+    <line x1="20" y1="96" x2="220" y2="96" stroke="#0ea5e9"/>
+    <line x1="20" y1="40" x2="220" y2="40" stroke="#0ea5e9"/>
+    <line x1="120" y1="10" x2="120" y2="130" stroke="#ef4444"/>
+  </g>
+</svg>
