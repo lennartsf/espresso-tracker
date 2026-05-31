@@ -20,7 +20,7 @@ export function V60Animation() {
 
     PHASES.forEach((_, i) => {
       const el = document.getElementById(`pour-circle-${i}`)
-      if (el) { el.setAttribute('r', '0'); (el as SVGCircleElement).style.opacity = '0' }
+      if (el) { el.setAttribute('r', '0'); (el as unknown as SVGCircleElement).style.opacity = '0' }
     })
 
     const tl = anime.timeline({ easing: 'easeOutCubic' })
