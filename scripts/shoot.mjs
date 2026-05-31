@@ -7,7 +7,7 @@ import { mkdirSync } from 'node:fs'
 const BASE = process.env.BASE || 'http://localhost:5173'
 const ids = process.argv.slice(2)
 const targets = ids.length ? ids : ['v60', 'milk', 'latte-heart']
-const SHOTS = [300, 1500, 3000, 4500, 6000, 7500]
+const SHOTS = [300, 2200, 4200, 6200, 8200, 10000, 11500]
 const TILE_W = 240
 const GAP = 8
 

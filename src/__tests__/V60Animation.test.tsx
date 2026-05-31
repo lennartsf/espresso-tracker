@@ -10,14 +10,14 @@ describe('V60Animation', () => {
     expect(screen.getByText('Bloom')).toBeInTheDocument()
     expect(screen.getByText('Pour 1')).toBeInTheDocument()
     expect(screen.getByText('Drain')).toBeInTheDocument()
-    // playback starts on mount (button reads "Pouring…"); run it to the end
-    act(() => { vi.advanceTimersByTime(9000) })
+    // playback starts on mount (button reads "Brewing…"); run it to the end
+    act(() => { vi.advanceTimersByTime(11800) })
     expect(screen.getByRole('button', { name: /replay/i })).toBeInTheDocument()
   })
 
   test('shows the bloom caption once playback starts', () => {
     render(<V60Animation />)
     act(() => { vi.advanceTimersByTime(0) })
-    expect(screen.getByText(/saturate the grounds/i)).toBeInTheDocument()
+    expect(screen.getByText(/wet all the grounds/i)).toBeInTheDocument()
   })
 })
