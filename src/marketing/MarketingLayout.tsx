@@ -12,7 +12,7 @@ export function MarketingLayout() {
       <header className="sticky top-0 z-40 border-b border-coffee-line bg-coffee-bg/80 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
           <Link to={ROUTES.home} className="font-display text-lg font-semibold text-coffee-cream">
-            ☕ SILVIA
+            SILVIA
           </Link>
           <div className="ml-auto flex items-center gap-1 text-sm">
             <TopLink to={ROUTES.home} label="Home" />
@@ -32,7 +32,7 @@ export function MarketingLayout() {
 
       <footer className="border-t border-coffee-line">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-10 text-sm text-coffee-muted sm:flex-row sm:items-center">
-          <span className="font-display text-coffee-cream">☕ SILVIA</span>
+          <span className="font-display text-coffee-cream">SILVIA</span>
           <span className="sm:ml-auto">Espresso-Tracking für die Rancilio Silvia · Phase-0-Vorschau</span>
         </div>
       </footer>
