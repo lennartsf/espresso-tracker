@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ROUTES } from '../../lib/routes'
-import heroImg from '../../assets/hero-extraction.webp'
+import heroImg from '../../assets/hero-extraction.jpg'
 
 gsap.registerPlugin(ScrollTrigger)
 
