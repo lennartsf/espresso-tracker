@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useGrinders, useBrewDevices, useEquipmentDefaults } from '../hooks/useEquipment'
 import { useCreateBrew } from '../hooks/useBrews'
@@ -136,7 +137,7 @@ export function NewBrew() {
         brew_device_id: brewDeviceId || null,
         brewed_at: new Date().toISOString(),
       })
-      navigate('/brews')
+      navigate(ROUTES.brews)
     } catch {
       setError('Error saving.')
     }

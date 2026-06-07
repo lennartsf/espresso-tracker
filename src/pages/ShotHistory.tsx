@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
@@ -27,7 +28,7 @@ export function ShotHistory() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-slate-800">📋 Shots</h1>
         <Link
-          to="/shots/new"
+          to={ROUTES.shotNew}
           className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg"
         >
           + New

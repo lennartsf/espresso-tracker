@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
 import { useCreateShot } from '../hooks/useShots'
 import { useGrinders, useMachines, useBaskets, useEquipmentDefaults } from '../hooks/useEquipment'
@@ -196,7 +197,7 @@ export function NewShot() {
       pulled_at: new Date().toISOString(),
     })
 
-    navigate('/')
+    navigate(ROUTES.app)
   }
 
   function formatDate(d: string) {

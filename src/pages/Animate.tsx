@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ANIMATIONS } from '../utils/animationContent'
+import { ROUTES } from '../lib/routes'
 
 export function Animate() {
   return (
@@ -10,7 +11,7 @@ export function Animate() {
         {ANIMATIONS.map(anim => (
           <Link
             key={anim.id}
-            to={`/animate/${anim.id}`}
+            to={ROUTES.animateDetail(anim.id)}
             className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-sm transition-shadow block"
           >
             <div className="text-3xl mb-2">{anim.icon}</div>

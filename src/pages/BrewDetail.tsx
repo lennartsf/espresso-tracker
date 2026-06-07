@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useBrew, useUpdateBrew, useDeleteBrew } from '../hooks/useBrews'
 import { useCoffees } from '../hooks/useCoffees'
 import { useGrinders, useBrewDevices } from '../hooks/useEquipment'
@@ -83,7 +84,7 @@ export function BrewDetail() {
   if (error || !brew) return (
     <div className="text-center py-10">
       <p className="text-slate-500 text-sm mb-3">Brew not found.</p>
-      <button onClick={() => navigate('/brews')} className="text-orange-500 text-sm font-semibold">← Back</button>
+      <button onClick={() => navigate(ROUTES.brews)} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
 
@@ -92,14 +93,14 @@ export function BrewDetail() {
   async function handleDelete() {
     if (!confirm('Delete this brew?')) return
     await deleteBrew.mutateAsync(brew!.id)
-    navigate('/brews')
+    navigate(ROUTES.brews)
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/brews')} className="text-slate-400 text-lg">←</button>
+          <button onClick={() => navigate(ROUTES.brews)} className="text-slate-400 text-lg">←</button>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold text-slate-800">{brew.coffees?.name ?? '—'}</h1>
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">

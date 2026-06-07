@@ -7,7 +7,7 @@ function renderDetail(id: string) {
     <MemoryRouter initialEntries={[`/animate/${id}`]}>
       <Routes>
         <Route path="/animate/:id" element={<AnimateDetail />} />
-        <Route path="/animate" element={<div>Animate Overview</div>} />
+        <Route path="/app/animate" element={<div>Animate Overview</div>} />
       </Routes>
     </MemoryRouter>
   )

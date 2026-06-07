@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 
 const navItems = [
-  { to: '/',          label: 'Home',      icon: '🏠' },
-  { to: '/shots',     label: 'Shots',     icon: '📋' },
-  { to: '/brews',     label: 'Brews',     icon: '🫖' },
-  { to: '/analysis',  label: 'Analysis',  icon: '📊' },
-  { to: '/coffees',   label: 'Coffees',   icon: '☕' },
-  { to: '/roasters',  label: 'Roasters',  icon: '📍' },
-  { to: '/equipment', label: 'Equipment', icon: '⚙️' },
-  { to: '/guide',     label: 'Guide',     icon: '📖' },
-  { to: '/glossary',  label: 'Glossary',  icon: '📚' },
-  { to: '/animate',   label: 'Animate',   icon: '🎬' },
+  { to: ROUTES.app,       label: 'Home',      icon: '🏠' },
+  { to: ROUTES.shots,     label: 'Shots',     icon: '📋' },
+  { to: ROUTES.brews,     label: 'Brews',     icon: '🫖' },
+  { to: ROUTES.analysis,  label: 'Analysis',  icon: '📊' },
+  { to: ROUTES.coffees,   label: 'Coffees',   icon: '☕' },
+  { to: ROUTES.roasters,  label: 'Roasters',  icon: '📍' },
+  { to: ROUTES.equipment, label: 'Equipment', icon: '⚙️' },
+  { to: ROUTES.guide,     label: 'Guide',     icon: '📖' },
+  { to: ROUTES.glossary,  label: 'Glossary',  icon: '📚' },
+  { to: ROUTES.animate,   label: 'Animate',   icon: '🎬' },
 ]
 
 const primaryNav = navItems.slice(0, 4)
@@ -22,8 +23,8 @@ export function Layout() {
   const location = useLocation()
 
   const isMoreActive = moreNav.some(item =>
-    item.to === '/'
-      ? location.pathname === '/'
+    item.to === ROUTES.app
+      ? location.pathname === ROUTES.app
       : location.pathname.startsWith(item.to)
   )
 
@@ -37,7 +38,7 @@ export function Layout() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === ROUTES.app}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-0.5 ${
                 isActive
@@ -74,7 +75,7 @@ export function Layout() {
                 <NavLink
                   key={to}
                   to={to}
-                  end={to === '/'}
+                  end={to === ROUTES.app}
                   onClick={() => setMoreOpen(false)}
                   className={({ isActive }) =>
                     `flex flex-col items-center py-2 px-1 rounded-lg text-xs font-medium transition-colors ${
@@ -97,7 +98,7 @@ export function Layout() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === ROUTES.app}
             onClick={() => setMoreOpen(false)}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors ${

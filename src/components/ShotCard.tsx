@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ratingColor } from '../utils/ratingColor'
+import { ROUTES } from '../lib/routes'
 import { drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
 import type { ShotWithCoffee } from '../hooks/useShots'
 
@@ -30,7 +31,7 @@ export function ShotCard({ shot }: Props) {
 
   return (
     <Link
-      to={`/shots/${shot.id}`}
+      to={ROUTES.shot(shot.id)}
       className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center hover:border-orange-300 transition-colors"
     >
       <div className="min-w-0 flex-1">

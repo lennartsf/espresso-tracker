@@ -1,5 +1,6 @@
 import { useParams, Navigate, useNavigate } from 'react-router-dom'
 import { ANIMATIONS } from '../utils/animationContent'
+import { ROUTES } from '../lib/routes'
 import { BoilerAnimation } from '../components/animations/BoilerAnimation'
 import { V60Animation } from '../components/animations/V60Animation'
 import { MilkAnimation } from '../components/animations/MilkAnimation'
@@ -18,12 +19,12 @@ export function AnimateDetail() {
   const meta = ANIMATIONS.find(a => a.id === id)
   const Component = id ? COMPONENTS[id] : undefined
 
-  if (!meta || !Component) return <Navigate to="/animate" replace />
+  if (!meta || !Component) return <Navigate to={ROUTES.animate} replace />
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-5">
-        <button onClick={() => navigate('/animate')} className="text-slate-400 text-lg">←</button>
+        <button onClick={() => navigate(ROUTES.animate)} className="text-slate-400 text-lg">←</button>
         <span className="text-3xl">{meta.icon}</span>
         <div>
           <h1 className="text-xl font-bold text-slate-800">{meta.title}</h1>

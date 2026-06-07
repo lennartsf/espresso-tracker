@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { GUIDES } from '../utils/guideContent'
+import { ROUTES } from '../lib/routes'
 
 export function GuideDetail() {
   const { id } = useParams<{ id: string }>()
@@ -8,7 +9,7 @@ export function GuideDetail() {
   const [openId, setOpenId] = useState<string | null>(null)
   const accordionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
-  if (!guide) return <Navigate to="/guide" replace />
+  if (!guide) return <Navigate to={ROUTES.guide} replace />
 
   function handleChipClick(targetId: string) {
     setOpenId(targetId)

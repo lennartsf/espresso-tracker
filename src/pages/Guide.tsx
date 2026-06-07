@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { GUIDES } from '../utils/guideContent'
+import { ROUTES } from '../lib/routes'
 
 export function Guide() {
   return (
@@ -10,7 +11,7 @@ export function Guide() {
         {GUIDES.map(guide => (
           <Link
             key={guide.id}
-            to={`/guide/${guide.id}`}
+            to={ROUTES.guideDetail(guide.id)}
             className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-sm transition-shadow block"
           >
             <div className="text-3xl mb-2">{guide.icon}</div>

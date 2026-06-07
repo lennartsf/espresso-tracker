@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useShot, useUpdateShot, useDeleteShot } from '../hooks/useShots'
 import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
@@ -36,13 +37,13 @@ export function ShotDetail() {
   if (error) return (
     <div className="text-center py-10">
       <p className="text-slate-500 text-sm mb-3">Error loading shot.</p>
-      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Back</button>
+      <button onClick={() => navigate(ROUTES.shots)} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
   if (!shot) return (
     <div className="text-center py-10">
       <p className="text-slate-500 text-sm mb-3">Shot not found.</p>
-      <button onClick={() => navigate('/shots')} className="text-orange-500 text-sm font-semibold">← Back</button>
+      <button onClick={() => navigate(ROUTES.shots)} className="text-orange-500 text-sm font-semibold">← Back</button>
     </div>
   )
 
@@ -51,7 +52,7 @@ export function ShotDetail() {
   async function handleDelete() {
     if (!confirm('Delete this shot?')) return
     await deleteShot.mutateAsync(shot!.id)
-    navigate('/shots')
+    navigate(ROUTES.shots)
   }
 
   return (
@@ -59,7 +60,7 @@ export function ShotDetail() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/shots')} className="text-slate-400 text-lg">←</button>
+          <button onClick={() => navigate(ROUTES.shots)} className="text-slate-400 text-lg">←</button>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold text-slate-800">{shot.coffees?.name ?? '—'}</h1>
             {shot.drink_type !== 'espresso' && (

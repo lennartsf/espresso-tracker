@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useBrews } from '../hooks/useBrews'
 import { BrewCard } from '../components/BrewCard'
@@ -27,7 +28,7 @@ export function Brews() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-slate-800">🫖 Brews</h1>
-        <Link to="/brews/new" className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <Link to={ROUTES.brewNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
           + New
         </Link>
       </div>

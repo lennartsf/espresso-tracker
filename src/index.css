@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Design-Tokens: Dark Premium (Marketing/Website) ──────────────
+   App-Shell (Layout) bleibt vorerst hell — Tokens werden in Phase 0
+   nur von Marketing/Auth genutzt (scoped, kein Bruch der App-Optik). */
+:root {
+  --coffee-bg: #1c1714;
+  --coffee-surface: #25201b;
+  --coffee-surface-2: #33291f;
+  --coffee-accent: #c9a35e;
+  --coffee-accent-soft: #d8bd86;
+  --coffee-cream: #f6efe4;
+  --coffee-text: #f1e9df;
+  --coffee-muted: #a89784;
+  --coffee-line: rgba(246, 239, 228, 0.10);
+}

@@ -20,10 +20,10 @@ test('shows all 6 guide cards', () => {
   expect(screen.getByText('Milk')).toBeInTheDocument()
 })
 
-test('Espresso card links to /guide/espresso', () => {
+test('Espresso card links to /app/guide/espresso', () => {
   renderGuide()
   const links = screen.getAllByRole('link')
-  const espressoLink = links.find(l => l.getAttribute('href') === '/guide/espresso')
+  const espressoLink = links.find(l => l.getAttribute('href') === '/app/guide/espresso')
   expect(espressoLink).toBeTruthy()
 })
 

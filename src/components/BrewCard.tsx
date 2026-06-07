@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ratingColor } from '../utils/ratingColor'
+import { ROUTES } from '../lib/routes'
 import { brewMethodLabel } from '../utils/brewMethods'
 import { secondsToMMSS } from '../utils/timeFormat'
 import type { BrewWithCoffee } from '../hooks/useBrews'
@@ -20,7 +21,7 @@ export function BrewCard({ brew }: Props) {
 
   return (
     <Link
-      to={`/brews/${brew.id}`}
+      to={ROUTES.brew(brew.id)}
       className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center hover:border-orange-300 transition-colors"
     >
       <div className="min-w-0 flex-1">

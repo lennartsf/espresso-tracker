@@ -13,6 +13,6 @@ test('shows all 4 animation cards', () => {
 test('each card links to correct animate route', () => {
   render(<MemoryRouter><Animate /></MemoryRouter>)
   const links = screen.getAllByRole('link')
-  expect(links.find(l => l.getAttribute('href') === '/animate/boiler')).toBeTruthy()
-  expect(links.find(l => l.getAttribute('href') === '/animate/latte-heart')).toBeTruthy()
+  expect(links.find(l => l.getAttribute('href') === '/app/animate/boiler')).toBeTruthy()
+  expect(links.find(l => l.getAttribute('href') === '/app/animate/latte-heart')).toBeTruthy()
 })
