@@ -8,6 +8,7 @@ import { DRINK_TYPES, MILK_TYPES } from '../utils/drinkTypes'
 import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
+import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses } from '../components/ui'
 
 const RATING_INFO = {
   rating:          { question: 'How good does the shot taste overall?', low: 'barely drinkable',  high: 'perfect espresso'   },
@@ -31,35 +32,27 @@ function RatingField({
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
-        <button
-          type="button"
-          onClick={() => setOpen(v => !v)}
-          className={`w-4 h-4 rounded-full text-[10px] font-bold flex-shrink-0 flex items-center justify-center transition-colors ${
-            open ? 'bg-orange-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'
-          }`}
-        >
-          i
-        </button>
-        <span className="text-xs font-semibold text-slate-400 uppercase">
+        <InfoButton open={open} onClick={() => setOpen(v => !v)} />
+        <span className="text-xs font-semibold uppercase text-coffee-muted">
           {label}{required && ' *'}
         </span>
       </div>
 
       {open && (
-        <div className="mb-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-          <p className="text-xs text-slate-600 mb-2.5">{info.question}</p>
+        <InfoBox>
+          <p className="mb-2.5 text-coffee-cream/80">{info.question}</p>
           <div className="flex items-stretch gap-2">
-            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
-              <span className="block text-base font-bold text-slate-700 leading-none mb-1">1</span>
-              <span className="text-xs text-slate-500 leading-snug">{info.low}</span>
+            <div className="flex-1 rounded-lg bg-coffee-bg p-2 text-center">
+              <span className="mb-1 block text-base font-bold leading-none text-coffee-cream">1</span>
+              <span className="text-xs leading-snug text-coffee-muted">{info.low}</span>
             </div>
-            <div className="flex items-center text-slate-300 text-xs px-1">→</div>
-            <div className="flex-1 bg-slate-50 rounded-lg p-2 text-center">
-              <span className="block text-base font-bold text-slate-700 leading-none mb-1">10</span>
-              <span className="text-xs text-slate-500 leading-snug">{info.high}</span>
+            <div className="flex items-center px-1 text-xs text-coffee-muted/60">→</div>
+            <div className="flex-1 rounded-lg bg-coffee-bg p-2 text-center">
+              <span className="mb-1 block text-base font-bold leading-none text-coffee-cream">10</span>
+              <span className="text-xs leading-snug text-coffee-muted">{info.high}</span>
             </div>
           </div>
-        </div>
+        </InfoBox>
       )}
 
       <RatingInput value={value} onChange={onChange} />
@@ -206,15 +199,15 @@ export function NewShot() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <button type="button" onClick={() => navigate(-1)} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">New Shot</h1>
+      <div className="mb-6 flex items-center gap-3">
+        <button type="button" onClick={() => navigate(-1)} className="text-lg text-coffee-muted hover:text-coffee-cream">←</button>
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">New Shot</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         {/* Getränketyp */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Drink Type</label>
+          <FieldLabel>Drink Type</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {DRINK_TYPES.map(dt => (
               <button
@@ -223,8 +216,8 @@ export function NewShot() {
                 onClick={() => setDrinkType(dt.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   drinkType === dt.value
-                    ? 'bg-orange-500 text-white'
-                    : 'border border-slate-200 text-slate-500 bg-white hover:bg-slate-50'
+                    ? 'bg-coffee-accent text-coffee-bg'
+                    : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
                 }`}
               >
                 {dt.label}
@@ -235,13 +228,13 @@ export function NewShot() {
 
         {/* Coffee */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Coffee *</label>
+          <FieldLabel required>Coffee</FieldLabel>
           {!showNewCoffee ? (
             <div className="flex gap-2">
-              <select
+              <Select
                 value={coffeeId}
                 onChange={e => handleCoffeeChange(e.target.value)}
-                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
+                className="flex-1"
               >
                 <option value="">Select coffee...</option>
                 {coffees.map(c => (
@@ -249,28 +242,28 @@ export function NewShot() {
                     {c.name}{c.roaster ? ` / ${c.roaster}` : ''}
                   </option>
                 ))}
-              </select>
+              </Select>
               <button
                 type="button"
                 onClick={() => { setShowNewCoffee(true); handleCoffeeChange('') }}
-                className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50"
+                className="rounded-lg border border-coffee-line px-3 py-2 text-sm text-coffee-muted hover:bg-coffee-surface2"
               >
                 + New
               </button>
             </div>
           ) : (
             <div className="flex gap-2">
-              <input
+              <Input
                 autoFocus
                 value={newCoffeeName}
                 onChange={e => setNewCoffeeName(e.target.value)}
                 placeholder="Coffee name"
-                className="flex-1 border border-orange-400 rounded-lg px-3 py-2 text-sm focus:outline-none"
+                className="flex-1"
               />
               <button
                 type="button"
                 onClick={() => setShowNewCoffee(false)}
-                className="px-3 py-2 text-sm text-slate-400 hover:text-slate-600"
+                className="px-3 py-2 text-sm text-coffee-muted hover:text-coffee-cream"
               >
                 Cancel
               </button>
@@ -281,13 +274,13 @@ export function NewShot() {
         {/* Roast date */}
         {coffeeId && recentDates.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Roast Date</label>
+            <FieldLabel>Roast Date</FieldLabel>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setRoastDateId('')}
                 className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
-                  roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-500 bg-white'
+                  roastDateId === '' ? 'border-coffee-accent bg-coffee-accent/15 text-coffee-accent-soft font-semibold' : 'border-coffee-line text-coffee-muted'
                 }`}
               >
                 Not specified
@@ -298,11 +291,11 @@ export function NewShot() {
                   type="button"
                   onClick={() => setRoastDateId(rd.id)}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm border transition-colors text-center ${
-                    roastDateId === rd.id ? 'border-orange-400 bg-orange-50 text-orange-600 font-semibold' : 'border-slate-200 text-slate-600 bg-white'
+                    roastDateId === rd.id ? 'border-coffee-accent bg-coffee-accent/15 text-coffee-accent-soft font-semibold' : 'border-coffee-line text-coffee-muted'
                   }`}
                 >
                   {formatDate(rd.roast_date)}
-                  {i === 0 && <span className="block text-xs text-slate-400 font-normal">Current</span>}
+                  {i === 0 && <span className="block text-xs font-normal text-coffee-muted/60">Current</span>}
                 </button>
               ))}
             </div>
@@ -311,46 +304,27 @@ export function NewShot() {
 
         {/* Mühle */}
         {grinders.length > 0 && (
-          <select
-            value={grinderId}
-            onChange={e => setGrinderId(e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-          >
+          <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
             <option value="">Grinder (optional)</option>
             {grinders.map(g => (
               <option key={g.id} value={g.id}>{g.name}{g.brand ? ` / ${g.brand}` : ''}</option>
             ))}
-          </select>
+          </Select>
         )}
 
         {/* Grind + Temp + Pressure */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Grind Setting *</label>
-            <input
-              type="number" step="0.5" value={grindSetting}
-              onChange={e => setGrindSetting(e.target.value)}
-              placeholder="12"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+            <FieldLabel required>Grind Setting</FieldLabel>
+            <Input type="number" step="0.5" value={grindSetting} onChange={e => setGrindSetting(e.target.value)} placeholder="12" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Temp (°C)</label>
-            <input
-              type="number" value={tempC}
-              onChange={e => setTempC(e.target.value)}
-              placeholder="93"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+            <FieldLabel>Temp (°C)</FieldLabel>
+            <Input type="number" value={tempC} onChange={e => setTempC(e.target.value)} placeholder="93" />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Pressure (bar)</label>
-            <input
-              type="number" step="0.1" value={pressureBar}
-              onChange={e => setPressureBar(e.target.value)}
-              placeholder="9"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+            <FieldLabel>Pressure (bar)</FieldLabel>
+            <Input type="number" step="0.1" value={pressureBar} onChange={e => setPressureBar(e.target.value)} placeholder="9" />
           </div>
         </div>
 
@@ -358,22 +332,12 @@ export function NewShot() {
         <div>
           <div className="grid grid-cols-2 gap-3 mb-1">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Dose (g)</label>
-              <input
-                type="number" step="0.1" value={doseG}
-                onChange={e => setDoseG(e.target.value)}
-                placeholder="18"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
+              <FieldLabel>Dose (g)</FieldLabel>
+              <Input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)} placeholder="18" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Yield (g)</label>
-              <input
-                type="number" step="0.1" value={yieldG}
-                onChange={e => setYieldG(e.target.value)}
-                placeholder="36"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
+              <FieldLabel>Yield (g)</FieldLabel>
+              <Input type="number" step="0.1" value={yieldG} onChange={e => setYieldG(e.target.value)} placeholder="36" />
             </div>
           </div>
           <BrewRatioBar
@@ -384,16 +348,11 @@ export function NewShot() {
 
         {/* Brew time */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Brew Time</label>
+          <FieldLabel>Brew Time</FieldLabel>
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
-              <input
-                type="number" value={brewTimeS}
-                onChange={e => setBrewTimeS(e.target.value)}
-                placeholder="28"
-                className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
-              <span className="text-sm text-slate-400">s</span>
+              <Input type="number" value={brewTimeS} onChange={e => setBrewTimeS(e.target.value)} placeholder="28" className="!w-20" />
+              <span className="text-sm text-coffee-muted">s</span>
             </div>
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
           </div>
@@ -406,55 +365,37 @@ export function NewShot() {
               type="checkbox"
               checked={preinfusion}
               onChange={e => { setPreinfusion(e.target.checked); if (!e.target.checked) setPreinfusionS('') }}
-              className="w-4 h-4 accent-orange-500"
+              className="h-4 w-4 accent-coffee-accent"
             />
-            <span className="text-xs font-semibold text-slate-400 uppercase">Preinfusion</span>
+            <span className="text-xs font-semibold uppercase text-coffee-muted">Preinfusion</span>
           </label>
           {preinfusion && (
             <>
-              <input
-                type="number"
-                step="0.5"
-                value={preinfusionS}
-                onChange={e => setPreinfusionS(e.target.value)}
-                placeholder="5"
-                className="w-20 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
-              <span className="text-sm text-slate-400">s</span>
+              <Input type="number" step="0.5" value={preinfusionS} onChange={e => setPreinfusionS(e.target.value)} placeholder="5" className="!w-20" />
+              <span className="text-sm text-coffee-muted">s</span>
             </>
           )}
         </div>
 
         {/* Milch */}
         {drinkType !== 'espresso' && (
-          <div className="border border-orange-200 bg-orange-50 rounded-xl p-3">
-            <label className="block text-xs font-semibold text-orange-600 uppercase mb-3">Milk</label>
+          <div className="rounded-xl border border-coffee-line bg-coffee-surface2 p-3">
+            <FieldLabel className="text-coffee-accent-soft">Milk</FieldLabel>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Type</label>
-                <select
-                  value={milkType}
-                  onChange={e => setMilkType(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-                >
+                <FieldLabel>Type</FieldLabel>
+                <Select value={milkType} onChange={e => setMilkType(e.target.value)}>
                   <option value="">Select...</option>
                   {MILK_TYPES.map(mt => (
                     <option key={mt.value} value={mt.value}>{mt.label}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Amount</label>
+                <FieldLabel>Amount</FieldLabel>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    step="10"
-                    value={milkMl}
-                    onChange={e => setMilkMl(e.target.value)}
-                    placeholder="120"
-                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-                  />
-                  <span className="text-sm text-slate-400">ml</span>
+                  <Input type="number" step="10" value={milkMl} onChange={e => setMilkMl(e.target.value)} placeholder="120" className="flex-1" />
+                  <span className="text-sm text-coffee-muted">ml</span>
                 </div>
               </div>
             </div>
@@ -463,18 +404,18 @@ export function NewShot() {
 
         {/* Prep Tools */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Prep</label>
+          <FieldLabel>Prep</FieldLabel>
           <div className="flex gap-4">
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
+              <input type="checkbox" checked={usedRdt} onChange={e => setUsedRdt(e.target.checked)} className="h-4 w-4 accent-coffee-accent" />
               RDT
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" checked={usedWdt} onChange={e => setUsedWdt(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
+              <input type="checkbox" checked={usedWdt} onChange={e => setUsedWdt(e.target.checked)} className="h-4 w-4 accent-coffee-accent" />
               WDT
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" checked={usedLeveler} onChange={e => setUsedLeveler(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
+              <input type="checkbox" checked={usedLeveler} onChange={e => setUsedLeveler(e.target.checked)} className="h-4 w-4 accent-coffee-accent" />
               Leveler
             </label>
           </div>
@@ -483,31 +424,23 @@ export function NewShot() {
         {/* Ausrüstung */}
         {(machines.length > 0 || baskets.length > 0) && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Equipment</label>
+            <FieldLabel>Equipment</FieldLabel>
             <div className="grid gap-2">
               {machines.length > 0 && (
-                <select
-                  value={machineId}
-                  onChange={e => setMachineId(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-                >
+                <Select value={machineId} onChange={e => setMachineId(e.target.value)}>
                   <option value="">Machine (optional)</option>
                   {machines.map(m => (
                     <option key={m.id} value={m.id}>{m.name}{m.brand ? ` / ${m.brand}` : ''}</option>
                   ))}
-                </select>
+                </Select>
               )}
               {baskets.length > 0 && (
-                <select
-                  value={basketId}
-                  onChange={e => setBasketId(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-                >
+                <Select value={basketId} onChange={e => setBasketId(e.target.value)}>
                   <option value="">Basket (optional)</option>
                   {baskets.map(b => (
                     <option key={b.id} value={b.id}>{b.name}{b.size_g ? ` ${b.size_g}g` : ''}</option>
                   ))}
-                </select>
+                </Select>
               )}
             </div>
           </div>
@@ -523,22 +456,22 @@ export function NewShot() {
 
         {/* Notes */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Tasting Notes</label>
-          <textarea
+          <FieldLabel>Tasting Notes</FieldLabel>
+          <Textarea
             value={tastingNotes}
             onChange={e => setTastingNotes(e.target.value)}
             rows={2}
             placeholder="Chocolate, nuts, slightly acidic..."
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-orange-400"
+            className="resize-none"
           />
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={createShot.isPending || createCoffee.isPending}
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+          className={buttonClasses('primary', 'w-full disabled:opacity-50')}
         >
           {createShot.isPending ? 'Saving...' : 'Save Shot'}
         </button>
