@@ -4,6 +4,11 @@ import { Badge } from '../components/ui/Badge'
 import { Card } from '../components/ui/Card'
 import { RatingBadge } from '../components/ui/RatingBadge'
 import { PageHeader } from '../components/ui/PageHeader'
+import { Input } from '../components/ui/Input'
+import { Select } from '../components/ui/Select'
+import { FieldLabel } from '../components/ui/FieldLabel'
+import { InfoButton } from '../components/ui/InfoButton'
+import { InfoBox } from '../components/ui/InfoBox'
 
 test('Button primary nutzt Gold-Akzent', () => {
   render(<Button>Go</Button>)
@@ -35,4 +40,30 @@ test('PageHeader zeigt Titel + Action', () => {
   render(<PageHeader title="Espresso" action={<button>+ New</button>} />)
   expect(screen.getByText('Espresso')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: '+ New' })).toBeInTheDocument()
+})
+
+test('Input reicht Props durch + Feld-Klasse', () => {
+  render(<Input placeholder="grind" />)
+  expect(screen.getByPlaceholderText('grind').className).toContain('bg-coffee-bg')
+})
+
+test('Select rendert Optionen', () => {
+  render(<Select><option>Espresso Forte</option></Select>)
+  expect(screen.getByRole('option', { name: 'Espresso Forte' })).toBeInTheDocument()
+})
+
+test('FieldLabel zeigt Stern bei required', () => {
+  render(<FieldLabel required>Rating</FieldLabel>)
+  expect(screen.getByText('Rating')).toBeInTheDocument()
+  expect(screen.getByText('*')).toBeInTheDocument()
+})
+
+test('InfoButton open-State nutzt Gold', () => {
+  render(<InfoButton open onClick={() => {}} />)
+  expect(screen.getByRole('button', { name: 'i' }).className).toContain('bg-coffee-accent')
+})
+
+test('InfoBox rendert Kinder', () => {
+  render(<InfoBox>Erklärung</InfoBox>)
+  expect(screen.getByText('Erklärung')).toBeInTheDocument()
 })
