@@ -28,14 +28,15 @@
 - [x] Guide.tsx + GuideDetail.tsx — DONE. Emojis 📖/📋/⚠️ + Karten-Icons (guide.icon) raus, neutrale Chips, Gold-Step-Nummern. Screenshot ok.
 - [x] Glossary.tsx — DONE. 📚 + Kategorie-Emojis (☕🫖⚙️🥛) raus, Suchfeld→Input, Cards dark. Screenshot ok.
 - [x] Animate.tsx + AnimateDetail.tsx — DONE. 🎬 + Karten-Icons (anim.icon) raus, Cards dark, Header/Back dark. **OFFEN/MARKER: die 4 Animations-SVG-Komponenten (BoilerAnimation/V60Animation/MilkAnimation/LatteHeartAnimation) + ihre Phasen-UI (usePhaseTimeline-Captions/Chips, bg-slate-50) bleiben HELL** — eigenes, riskantes Reskin (getestete Geometrie, hell-getunte SVG-Optik). Auf AnimateDetail sichtbar als helle Insel. → morgens entscheiden/separat.
-- [ ] Roasters.tsx (Header 📍; Karte/Leaflet — Tiles dunkel lassen, UI drumherum dark)
+- [x] Roasters.tsx — DONE (List/Detail/Form). 📍-Emojis→Lucide MapPin, Cards/Form dark, Avatar-Fallback dark. MARKER: RoasterMap-Tiles (CartoDB) bleiben HELL — Dark-Map-Tiles wären separater RoasterMap-Task.
 - [ ] CoffeeManager.tsx (Header ☕; nutzt PhotoUpload)
 - [ ] Equipment.tsx (Header ⚙️)
-- [ ] PhotoUpload.tsx (Emoji-Ersatz s.o.) — shared, vor/with CoffeeManager/Roasters
+- [x] PhotoUpload.tsx — DONE (mit Roasters). ☕→Lucide Coffee, 📷→Lucide Camera, Avatar dark. Test angepasst (Coffee-Icon statt ☕).
 - [ ] Final-Sweep: `grep -rnE "bg-white|border-slate|text-slate|bg-slate|bg-orange|text-orange|<emoji>" src/pages src/components` muss leer (außer bewusst dokumentierte)
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 5: Roasters + PhotoUpload reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Leaflet-Tiles hell. Nächstes: CoffeeManager.
 - WAKE 4: Animate + AnimateDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Animations-SVGs bleiben hell (separat). Nächstes: Roasters.
 - WAKE 3: Glossary reskinned + grün (tsc/146/build), Screenshot ok, committed. Kategorie-Emojis weg. Nächstes: Animate + AnimateDetail.
 - WAKE 2: Guide + GuideDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. guide.icon-Emojis weggelassen. Nächstes: Glossary.

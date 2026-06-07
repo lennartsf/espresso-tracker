@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
+import { MapPin } from 'lucide-react'
 import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, searchAddresses, type GeoResult } from '../hooks/useRoasters'
 import { useCoffeesByRoaster } from '../hooks/useCoffees'
 import { RoasterMap } from '../components/RoasterMap'
 import { PhotoUpload } from '../components/PhotoUpload'
+import { cardClasses, Badge, Input, FieldLabel, buttonClasses } from '../components/ui'
 import type { Roaster, Coffee } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -32,48 +34,52 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">📍 Roasters</h1>
-        <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Roasters</h1>
+        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
           + New
         </button>
       </div>
 
       {withCoords.length > 0 && (
-        <div className="mb-4 rounded-xl overflow-hidden border border-slate-200">
+        <div className="mb-4 rounded-xl overflow-hidden border border-coffee-line">
           <RoasterMap roasters={roasters} height="200px" zoom={6} />
         </div>
       )}
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
+      {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
 
       <div className="grid gap-2">
         {roasters.map(r => (
           <button
             key={r.id}
             onClick={() => onSelect(r)}
-            className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center text-left w-full hover:border-orange-300 transition-colors"
+            className={`${cardClasses} p-3 flex justify-between items-center text-left w-full transition-colors hover:border-coffee-accent/40`}
           >
             <div className="flex items-center gap-3">
               {r.photo_url ? (
                 <img src={r.photo_url} alt={r.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
               ) : (
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-orange-600 font-bold text-sm">{r.name[0]}</span>
+                <div className="w-10 h-10 rounded-lg bg-coffee-surface2 flex items-center justify-center flex-shrink-0">
+                  <span className="text-coffee-muted font-bold text-sm">{r.name[0]}</span>
                 </div>
               )}
               <div>
-                <p className="font-medium text-slate-800 text-sm">{r.name}</p>
-                {r.address && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[180px]">{r.address}</p>}
+                <p className="font-medium text-coffee-cream text-sm">{r.name}</p>
+                {r.address && <p className="text-xs text-coffee-muted mt-0.5 truncate max-w-[180px]">{r.address}</p>}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {r.lat !== null && <span className="text-xs text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded">📍</span>}
-              <span className="text-slate-300 text-lg">›</span>
+              {r.lat !== null && (
+                <span className="text-coffee-muted bg-coffee-surface2 px-1.5 py-0.5 rounded inline-flex items-center">
+                  <MapPin size={12} />
+                </span>
+              )}
+              <span className="text-coffee-muted/60 text-lg">›</span>
             </div>
           </button>
         ))}
         {!isLoading && roasters.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">No roasters yet. Add your first!</p>
+          <p className="text-center text-coffee-muted text-sm py-10">No roasters yet. Add your first!</p>
         )}
       </div>
     </div>
@@ -101,17 +107,17 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
     <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">{roaster.name}</h1>
+          <button type="button" onClick={onBack} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
+          <h1 className="font-display text-2xl font-semibold text-coffee-cream">{roaster.name}</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setEditing(true)} className="text-orange-500 text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-slate-300 hover:text-red-400 text-sm">Delete</button>
+          <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
+          <button onClick={handleDelete} className="text-coffee-muted hover:text-red-400 text-sm">Delete</button>
         </div>
       </div>
 
       {roaster.lat !== null && roaster.lng !== null && (
-        <div className="mb-4 rounded-xl overflow-hidden border border-slate-200">
+        <div className="mb-4 rounded-xl overflow-hidden border border-coffee-line">
           <RoasterMap
             roasters={[roaster]}
             center={{ lat: roaster.lat, lng: roaster.lng }}
@@ -121,32 +127,32 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-lg p-4 grid gap-2">
+      <div className={`${cardClasses} p-4 grid gap-2`}>
         {roaster.address && (
           <div className="flex justify-between text-sm">
-            <span className="text-slate-400">Address</span>
-            <span className="text-slate-800 text-right max-w-[200px]">{roaster.address}</span>
+            <span className="text-coffee-muted">Address</span>
+            <span className="text-coffee-cream text-right max-w-[200px]">{roaster.address}</span>
           </div>
         )}
         {roaster.website && (
           <div className="flex justify-between text-sm items-center">
-            <span className="text-slate-400">Website</span>
-            <a href={roaster.website} target="_blank" rel="noopener noreferrer" className="text-orange-500 text-sm truncate max-w-[200px]">
+            <span className="text-coffee-muted">Website</span>
+            <a href={roaster.website} target="_blank" rel="noopener noreferrer" className="text-coffee-accent-soft text-sm truncate max-w-[200px]">
               {roaster.website.replace(/^https?:\/\//, '')} ↗
             </a>
           </div>
         )}
         {!roaster.address && !roaster.website && (
-          <p className="text-slate-400 text-sm">No additional info entered.</p>
+          <p className="text-coffee-muted text-sm">No additional info entered.</p>
         )}
       </div>
 
       <div className="mt-3">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+        <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-2">
           Coffees by this Roaster
         </p>
         {coffees.length === 0 ? (
-          <p className="text-slate-400 text-sm text-center py-4 bg-white border border-slate-200 rounded-lg">
+          <p className={`${cardClasses} text-coffee-muted text-sm text-center py-4`}>
             No coffees from this roaster yet.
           </p>
         ) : (
@@ -172,15 +178,13 @@ function RoasterCoffeeCard({ coffee }: { coffee: Coffee }) {
   const details = [beanLabel(), origin].filter(Boolean).join(' · ')
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center">
+    <div className={`${cardClasses} p-3 flex justify-between items-center`}>
       <div>
-        <p className="font-medium text-slate-800 text-sm">{coffee.name}</p>
-        {details && <p className="text-xs text-slate-400 mt-0.5">{details}</p>}
+        <p className="font-medium text-coffee-cream text-sm">{coffee.name}</p>
+        {details && <p className="text-xs text-coffee-muted mt-0.5">{details}</p>}
       </div>
       {coffee.roast_level !== null && (
-        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium whitespace-nowrap">
-          Roast Level {coffee.roast_level}
-        </span>
+        <Badge className="whitespace-nowrap">Roast Level {coffee.roast_level}</Badge>
       )}
     </div>
   )
@@ -252,14 +256,14 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
     <div>
       {!compact && (
         <div className="flex items-center gap-3 mb-6">
-          <button type="button" onClick={() => onBack()} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Roaster' : 'New Roaster'}</h1>
+          <button type="button" onClick={() => onBack()} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
+          <h1 className="font-display text-2xl font-semibold text-coffee-cream">{isEdit ? 'Edit Roaster' : 'New Roaster'}</h1>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Name *</label>
+          <FieldLabel required>Name</FieldLabel>
           <div className="flex gap-3 items-start">
             <PhotoUpload
               bucket="roaster-photos"
@@ -267,51 +271,51 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
               onChange={setPhotoUrl}
               name={name}
             />
-            <input
+            <Input
               autoFocus
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Five Elephant"
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              className="flex-1"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Address</label>
+          <FieldLabel>Address</FieldLabel>
           <div className="relative">
             <div className="flex gap-2">
-              <input
+              <Input
                 value={query}
                 onChange={e => { setQuery(e.target.value); setLat(null); setLng(null) }}
                 onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 placeholder="Street, city..."
-                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+                className="flex-1"
               />
-              {searching && <span className="self-center text-xs text-slate-400 pr-1">…</span>}
+              {searching && <span className="self-center text-xs text-coffee-muted pr-1">…</span>}
             </div>
             {showSuggestions && (
-              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
+              <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-coffee-surface border border-coffee-line rounded-lg shadow-lg overflow-hidden">
                 {suggestions.map((s, i) => (
                   <button
                     key={i}
                     type="button"
                     onMouseDown={() => selectSuggestion(s)}
-                    className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-orange-50 border-b border-slate-100 last:border-0"
+                    className="w-full text-left px-3 py-2 text-sm text-coffee-text hover:bg-coffee-surface2 border-b border-coffee-line last:border-0 inline-flex items-center gap-1.5"
                   >
-                    <span className="text-orange-500 mr-1.5">📍</span>
+                    <MapPin size={13} className="text-coffee-accent-soft shrink-0" />
                     {s.displayName.split(',').slice(0, 4).join(', ')}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          {lat !== null && <p className="text-green-600 text-xs mt-1">✓ Location found</p>}
+          {lat !== null && <p className="text-green-400 text-xs mt-1">✓ Location found</p>}
         </div>
 
         {lat !== null && lng !== null && !compact && (
-          <div className="rounded-xl overflow-hidden border border-slate-200">
+          <div className="rounded-xl overflow-hidden border border-coffee-line">
             <RoasterMap
               roasters={[{ id: 'preview', name, address, lat, lng, website: null, photo_url: null, created_at: '' }]}
               center={{ lat, lng }}
@@ -323,23 +327,22 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
 
         {!compact && (
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Website</label>
-            <input
+            <FieldLabel>Website</FieldLabel>
+            <Input
               value={website}
               onChange={e => setWebsite(e.target.value)}
               placeholder="https://..."
               type="url"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
             />
           </div>
         )}
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={isPending}
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+          className={buttonClasses('primary', 'w-full disabled:opacity-50')}
         >
           {isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Save Roaster'}
         </button>
