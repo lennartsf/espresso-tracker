@@ -26,7 +26,7 @@
 
 ### Welle 3
 - [x] Guide.tsx + GuideDetail.tsx — DONE. Emojis 📖/📋/⚠️ + Karten-Icons (guide.icon) raus, neutrale Chips, Gold-Step-Nummern. Screenshot ok.
-- [ ] Glossary.tsx (Header 📚)
+- [x] Glossary.tsx — DONE. 📚 + Kategorie-Emojis (☕🫖⚙️🥛) raus, Suchfeld→Input, Cards dark. Screenshot ok.
 - [ ] Animate.tsx + AnimateDetail.tsx (Header 🎬; Karten-Icons aus animationContent; ⚙️🫙 etc. in AnimateDetail)
 - [ ] Roasters.tsx (Header 📍; Karte/Leaflet — Tiles dunkel lassen, UI drumherum dark)
 - [ ] CoffeeManager.tsx (Header ☕; nutzt PhotoUpload)
@@ -36,6 +36,7 @@
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 3: Glossary reskinned + grün (tsc/146/build), Screenshot ok, committed. Kategorie-Emojis weg. Nächstes: Animate + AnimateDetail.
 - WAKE 2: Guide + GuideDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. guide.icon-Emojis weggelassen. Nächstes: Glossary.
 - WAKE 1: ShotDetail.tsx (View+EditForm) reskinned + grün (tsc/146/build), committed. Equipment-Emojis→Badge. Welle 2b KOMPLETT. Nächstes: Welle 3 Guide+GuideDetail. MORGENS: ShotDetail-View/Edit eyeballen (Screenshot ausgelassen).
 - WAKE 0 (init): BrewDetail.tsx reskinned + grün (tsc/146 Tests/build), committed. Pipeline validiert. Nächstes: ShotDetail.
