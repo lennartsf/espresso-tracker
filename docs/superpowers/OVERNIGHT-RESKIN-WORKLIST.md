@@ -27,7 +27,7 @@
 ### Welle 3
 - [x] Guide.tsx + GuideDetail.tsx — DONE. Emojis 📖/📋/⚠️ + Karten-Icons (guide.icon) raus, neutrale Chips, Gold-Step-Nummern. Screenshot ok.
 - [x] Glossary.tsx — DONE. 📚 + Kategorie-Emojis (☕🫖⚙️🥛) raus, Suchfeld→Input, Cards dark. Screenshot ok.
-- [ ] Animate.tsx + AnimateDetail.tsx (Header 🎬; Karten-Icons aus animationContent; ⚙️🫙 etc. in AnimateDetail)
+- [x] Animate.tsx + AnimateDetail.tsx — DONE. 🎬 + Karten-Icons (anim.icon) raus, Cards dark, Header/Back dark. **OFFEN/MARKER: die 4 Animations-SVG-Komponenten (BoilerAnimation/V60Animation/MilkAnimation/LatteHeartAnimation) + ihre Phasen-UI (usePhaseTimeline-Captions/Chips, bg-slate-50) bleiben HELL** — eigenes, riskantes Reskin (getestete Geometrie, hell-getunte SVG-Optik). Auf AnimateDetail sichtbar als helle Insel. → morgens entscheiden/separat.
 - [ ] Roasters.tsx (Header 📍; Karte/Leaflet — Tiles dunkel lassen, UI drumherum dark)
 - [ ] CoffeeManager.tsx (Header ☕; nutzt PhotoUpload)
 - [ ] Equipment.tsx (Header ⚙️)
@@ -36,6 +36,7 @@
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 4: Animate + AnimateDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Animations-SVGs bleiben hell (separat). Nächstes: Roasters.
 - WAKE 3: Glossary reskinned + grün (tsc/146/build), Screenshot ok, committed. Kategorie-Emojis weg. Nächstes: Animate + AnimateDetail.
 - WAKE 2: Guide + GuideDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. guide.icon-Emojis weggelassen. Nächstes: Glossary.
 - WAKE 1: ShotDetail.tsx (View+EditForm) reskinned + grün (tsc/146/build), committed. Equipment-Emojis→Badge. Welle 2b KOMPLETT. Nächstes: Welle 3 Guide+GuideDetail. MORGENS: ShotDetail-View/Edit eyeballen (Screenshot ausgelassen).
