@@ -21,7 +21,7 @@
 
 ## Queue (in Reihenfolge)
 ### Welle 2b
-- [ ] ShotDetail.tsx (+ inline ShotEditForm) — 654 Z. Emojis: ⚙️ 🫙
+- [x] ShotDetail.tsx (+ inline ShotEditForm) — DONE. Emojis ⚙️🔧🫙 raus (Equipment-Chips → Badge "Grinder/Machine/Basket · name"). Screenshot übersprungen (Playwright fand keinen Shot-Link — morgens eyeballen).
 - [x] BrewDetail.tsx (+ inline BrewEditForm) — DONE (Pipeline validiert)
 
 ### Welle 3
@@ -36,6 +36,7 @@
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 1: ShotDetail.tsx (View+EditForm) reskinned + grün (tsc/146/build), committed. Equipment-Emojis→Badge. Welle 2b KOMPLETT. Nächstes: Welle 3 Guide+GuideDetail. MORGENS: ShotDetail-View/Edit eyeballen (Screenshot ausgelassen).
 - WAKE 0 (init): BrewDetail.tsx reskinned + grün (tsc/146 Tests/build), committed. Pipeline validiert. Nächstes: ShotDetail.
 - INIT 2026-06-07 Nacht: Worklist erstellt, Companion gestoppt, Dev auf 4321.
 
