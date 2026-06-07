@@ -25,7 +25,7 @@
 - [x] BrewDetail.tsx (+ inline BrewEditForm) — DONE (Pipeline validiert)
 
 ### Welle 3
-- [ ] Guide.tsx + GuideDetail.tsx (Header 📖; Karten-Icons aus guideContent)
+- [x] Guide.tsx + GuideDetail.tsx — DONE. Emojis 📖/📋/⚠️ + Karten-Icons (guide.icon) raus, neutrale Chips, Gold-Step-Nummern. Screenshot ok.
 - [ ] Glossary.tsx (Header 📚)
 - [ ] Animate.tsx + AnimateDetail.tsx (Header 🎬; Karten-Icons aus animationContent; ⚙️🫙 etc. in AnimateDetail)
 - [ ] Roasters.tsx (Header 📍; Karte/Leaflet — Tiles dunkel lassen, UI drumherum dark)
@@ -36,6 +36,7 @@
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 2: Guide + GuideDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. guide.icon-Emojis weggelassen. Nächstes: Glossary.
 - WAKE 1: ShotDetail.tsx (View+EditForm) reskinned + grün (tsc/146/build), committed. Equipment-Emojis→Badge. Welle 2b KOMPLETT. Nächstes: Welle 3 Guide+GuideDetail. MORGENS: ShotDetail-View/Edit eyeballen (Screenshot ausgelassen).
 - WAKE 0 (init): BrewDetail.tsx reskinned + grün (tsc/146 Tests/build), committed. Pipeline validiert. Nächstes: ShotDetail.
 - INIT 2026-06-07 Nacht: Worklist erstellt, Companion gestoppt, Dev auf 4321.
