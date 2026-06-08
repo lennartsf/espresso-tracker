@@ -19,9 +19,9 @@ describe('RatingInput', () => {
     expect(onChange).toHaveBeenCalledWith(7)
   })
 
-  test('highlights the selected button with orange class', () => {
+  test('highlights the selected button with accent class', () => {
     render(<RatingInput value={5} onChange={() => {}} />)
-    expect(screen.getByRole('button', { name: '5' })).toHaveClass('bg-orange-500')
-    expect(screen.getByRole('button', { name: '3' })).not.toHaveClass('bg-orange-500')
+    expect(screen.getByRole('button', { name: '5' })).toHaveClass('bg-coffee-accent')
+    expect(screen.getByRole('button', { name: '3' })).not.toHaveClass('bg-coffee-accent')
   })
 })

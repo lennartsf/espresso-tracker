@@ -13,3 +13,12 @@ export function ratingColor(v: number): string {
   }
   return map[v] ?? 'bg-slate-100 text-slate-500'
 }
+
+/** Gefüllte Dark-Klassen fürs Rating-Badge (Funktionsfarbe, für dunklen Grund). */
+export function ratingBadgeClasses(v: number): string {
+  if (v >= 8 && v <= 10) return 'bg-green-600/90 text-green-50 ring-1 ring-green-400/40 shadow-lg shadow-green-900/30'
+  if (v >= 6) return 'bg-lime-600/90 text-lime-50 ring-1 ring-lime-400/40 shadow-lg shadow-lime-900/30'
+  if (v >= 4) return 'bg-amber-600/90 text-amber-50 ring-1 ring-amber-400/40 shadow-lg shadow-amber-900/30'
+  if (v >= 1) return 'bg-red-600/90 text-red-50 ring-1 ring-red-400/40 shadow-lg shadow-red-900/30'
+  return 'bg-coffee-surface2 text-coffee-muted ring-1 ring-coffee-line'
+}

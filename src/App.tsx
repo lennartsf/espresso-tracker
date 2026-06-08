@@ -1,5 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MarketingLayout } from './marketing/MarketingLayout'
+import { Landing } from './marketing/Landing'
+import { Try } from './marketing/Try'
+import { Login } from './marketing/auth/Login'
+import { Signup } from './marketing/auth/Signup'
 import { Layout } from './components/Layout'
 import { Dashboard } from './pages/Dashboard'
 import { NewShot } from './pages/NewShot'
@@ -25,7 +30,16 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route element={<Layout />}>
+          {/* Öffentliche Website (Dark Premium) */}
+          <Route element={<MarketingLayout />}>
+            <Route index element={<Landing />} />
+            <Route path="try" element={<Try />} />
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+          </Route>
+
+          {/* App (Tracker) — alles unter /app/* */}
+          <Route path="app" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="shots" element={<ShotHistory />} />
             <Route path="shots/new" element={<NewShot />} />

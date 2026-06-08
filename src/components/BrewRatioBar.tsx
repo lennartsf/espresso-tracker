@@ -9,21 +9,21 @@ export function BrewRatioBar({ doseG, yieldG }: Props) {
 
   return (
     <div>
-      <div className="flex h-3 rounded-full overflow-hidden">
-        <div className="bg-orange-200" style={{ flex: 1 }} />
+      <div className="flex h-3 overflow-hidden rounded-full bg-coffee-bg">
+        <div className="bg-coffee-accent/30" style={{ flex: 1 }} />
         <div
-          className={ratio !== null ? 'bg-orange-500' : 'bg-slate-200'}
+          className={ratio !== null ? 'bg-coffee-accent' : 'bg-coffee-surface2'}
           style={{ flex: yieldFlex }}
         />
       </div>
-      <div className="flex justify-between items-center mt-1">
-        <span className="text-xs text-slate-400">
+      <div className="mt-1 flex items-center justify-between">
+        <span className="text-xs text-coffee-muted">
           {doseG ? `${doseG}g Dose` : '—'}
         </span>
-        <span className={`text-xs font-semibold ${ratio !== null ? 'text-orange-500' : 'text-slate-300'}`}>
+        <span className={`text-xs font-semibold ${ratio !== null ? 'text-coffee-accent-soft' : 'text-coffee-muted/60'}`}>
           {ratio !== null ? `1 : ${ratio.toFixed(2)}` : '— : —'}
         </span>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-coffee-muted">
           {yieldG ? `${yieldG}g Yield` : '—'}
         </span>
       </div>

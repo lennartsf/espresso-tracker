@@ -23,7 +23,7 @@ function formatDate(d: string) {
 
 // ── Scatter helpers ────────────────────────────────────────────────────────────
 
-const DOT_COLOR = (y: number) => y >= 8 ? '#16a34a' : '#f97316'
+const DOT_COLOR = (y: number) => y >= 8 ? '#5fa869' : '#c9a35e'
 
 function ScatterPlot({ data, xLabel, yLabel }: {
   data: { x: number; y: number; id: string }[]
@@ -31,23 +31,23 @@ function ScatterPlot({ data, xLabel, yLabel }: {
   yLabel: string
 }) {
   if (data.length === 0) {
-    return <p className="text-center text-slate-400 text-sm py-6">No data yet for {yLabel} rating.</p>
+    return <p className="text-center text-coffee-muted text-sm py-6">No data yet for {yLabel} rating.</p>
   }
   return (
     <>
       <ResponsiveContainer width="100%" height={220}>
         <ScatterChart margin={{ top: 10, right: 10, bottom: 24, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#33291f" />
           <XAxis dataKey="x" type="number" name={xLabel} domain={['auto', 'auto']}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10, fontSize: 11, fill: '#94a3b8' }}
-            tick={{ fontSize: 11, fill: '#94a3b8' }} />
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, fontSize: 11, fill: '#a89784' }}
+            tick={{ fontSize: 11, fill: '#a89784' }} />
           <YAxis dataKey="y" type="number" name={yLabel} domain={[0, 10]}
-            tick={{ fontSize: 11, fill: '#94a3b8' }} width={24} />
+            tick={{ fontSize: 11, fill: '#a89784' }} width={24} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} content={({ payload }) => {
             if (!payload?.length) return null
             const { x, y } = payload[0].payload
             return (
-              <div className="bg-white border border-slate-200 rounded px-2 py-1 text-xs shadow">
+              <div className="bg-coffee-surface2 border border-coffee-line rounded px-2 py-1 text-xs shadow">
                 <p>{xLabel}: <strong>{x}</strong></p>
                 <p>{yLabel}: <strong>{y}</strong></p>
               </div>
@@ -60,9 +60,9 @@ function ScatterPlot({ data, xLabel, yLabel }: {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="text-xs text-slate-400 text-center mt-1">
+      <p className="text-xs text-coffee-muted text-center mt-1">
         <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-1" />≥ 8
-        <span className="inline-block w-2 h-2 rounded-full bg-orange-500 ml-3 mr-1" />unter 8
+        <span className="inline-block w-2 h-2 rounded-full bg-coffee-accent ml-3 mr-1" />unter 8
       </p>
     </>
   )
@@ -107,7 +107,7 @@ function EspressoAnalysis() {
       {/* Filters */}
       <div className="grid gap-2 mb-4">
         <select value={coffeeId} onChange={e => { setCoffeeId(e.target.value); setRoastDateId('') }}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
+          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
           <option value="">All Coffees</option>
           {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
@@ -115,12 +115,12 @@ function EspressoAnalysis() {
         {coffeeId && roastDates.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => setRoastDateId('')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === '' ? 'border-orange-400 bg-orange-50 text-orange-600' : 'border-slate-200 text-slate-500 bg-white'}`}>
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === '' ? 'border-coffee-accent bg-coffee-accent/10 text-coffee-accent-soft' : 'border-coffee-line text-coffee-muted bg-coffee-bg'}`}>
               All Roasts
             </button>
             {roastDates.map((rd, i) => (
               <button key={rd.id} onClick={() => setRoastDateId(rd.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === rd.id ? 'border-orange-400 bg-orange-50 text-orange-600' : 'border-slate-200 text-slate-500 bg-white'}`}>
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${roastDateId === rd.id ? 'border-coffee-accent bg-coffee-accent/10 text-coffee-accent-soft' : 'border-coffee-line text-coffee-muted bg-coffee-bg'}`}>
                 {formatDate(rd.roast_date)}{i === 0 ? ' (current)' : ''}
               </button>
             ))}
@@ -129,7 +129,7 @@ function EspressoAnalysis() {
 
         {grinders.length > 1 && (
           <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
+            className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
             <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
@@ -137,25 +137,25 @@ function EspressoAnalysis() {
       </div>
 
       {!grinderId && grinders.length > 1 && (
-        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-          💡 Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
+        <p className="text-xs text-coffee-accent-soft bg-coffee-accent/10 border border-coffee-accent/30 rounded-lg px-3 py-2 mb-4">
+          Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
         </p>
       )}
 
       {shots.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">No espresso shots for this selection.</p>
+        <p className="text-center text-coffee-muted text-sm py-10">No espresso shots for this selection.</p>
       ) : (
         <div className="md:grid md:grid-cols-5 md:gap-6 md:items-start">
-          <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg p-4 mb-4 md:mb-0">
-            <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1">
+          <div className="md:col-span-3 bg-coffee-surface2 border border-coffee-line rounded-lg p-4 mb-4 md:mb-0">
+            <div className="flex gap-1 mb-4 bg-coffee-bg rounded-lg p-1">
               {ESPRESSO_METRICS.map(m => (
                 <button key={m.key} onClick={() => setMetric(m.key)}
-                  className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${metric === m.key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                  className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${metric === m.key ? 'bg-coffee-surface2 text-coffee-cream shadow-sm' : 'text-coffee-muted hover:text-coffee-text'}`}>
                   {m.label}
                 </button>
               ))}
             </div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+            <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
               Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Shot{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
@@ -164,7 +164,7 @@ function EspressoAnalysis() {
           <div className="md:col-span-2">
             {recipe
               ? <RecipeCard stats={recipe} />
-              : <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">No shots with Flavor ≥ 8.</div>
+              : <div className="bg-coffee-bg border border-coffee-line rounded-lg p-4 text-center text-sm text-coffee-muted">No shots with Flavor ≥ 8.</div>
             }
           </div>
         </div>
@@ -220,20 +220,20 @@ function BrewsAnalysis() {
       {/* Filters */}
       <div className="grid gap-2 mb-4">
         <select value={brewMethod} onChange={e => setBrewMethod(e.target.value)}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
+          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
           <option value="">All Methods</option>
           {BREW_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
         </select>
 
         <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
-          className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
+          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
           <option value="">All Coffees</option>
           {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
         {grinders.length > 1 && (
           <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400">
+            className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
             <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
@@ -241,25 +241,25 @@ function BrewsAnalysis() {
       </div>
 
       {!grinderId && grinders.length > 1 && (
-        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-          💡 Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
+        <p className="text-xs text-coffee-accent-soft bg-coffee-accent/10 border border-coffee-accent/30 rounded-lg px-3 py-2 mb-4">
+          Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
         </p>
       )}
 
       {brews.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">No brews for this selection.</p>
+        <p className="text-center text-coffee-muted text-sm py-10">No brews for this selection.</p>
       ) : (
         <div className="md:grid md:grid-cols-5 md:gap-6 md:items-start">
-          <div className="md:col-span-3 bg-white border border-slate-200 rounded-lg p-4 mb-4 md:mb-0">
-            <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1">
+          <div className="md:col-span-3 bg-coffee-surface2 border border-coffee-line rounded-lg p-4 mb-4 md:mb-0">
+            <div className="flex gap-1 mb-4 bg-coffee-bg rounded-lg p-1">
               {BREW_METRICS.map(m => (
                 <button key={m.key} onClick={() => setMetric(m.key)}
-                  className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${metric === m.key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                  className={`flex-1 py-1.5 rounded-md text-xs font-semibold transition-colors ${metric === m.key ? 'bg-coffee-surface2 text-coffee-cream shadow-sm' : 'text-coffee-muted hover:text-coffee-text'}`}>
                   {m.label}
                 </button>
               ))}
             </div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+            <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
               Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Brew{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
@@ -268,45 +268,45 @@ function BrewsAnalysis() {
 
           <div className="md:col-span-2">
             {topStats ? (
-              <div className="bg-white border border-slate-200 rounded-lg p-4">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
+              <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-4">
+                <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
                   Top Recipe ({topStats.count} Brew{topStats.count !== 1 ? 's' : ''} ≥ 8)
                 </p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Avg Rating</span>
-                    <span className="font-bold text-green-600">{topStats.avgRating.toFixed(1)}</span>
+                    <span className="text-coffee-muted">Avg Rating</span>
+                    <span className="font-bold text-green-400">{topStats.avgRating.toFixed(1)}</span>
                   </div>
                   {topStats.avgGrind != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Avg Grind</span>
-                      <span className="font-semibold text-slate-800">{topStats.avgGrind.toFixed(1)}</span>
+                      <span className="text-coffee-muted">Avg Grind</span>
+                      <span className="font-semibold text-coffee-cream">{topStats.avgGrind.toFixed(1)}</span>
                     </div>
                   )}
                   {topStats.avgDose != null && topStats.avgWater != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Avg Ratio</span>
-                      <span className="font-semibold text-slate-800">
+                      <span className="text-coffee-muted">Avg Ratio</span>
+                      <span className="font-semibold text-coffee-cream">
                         {topStats.avgDose.toFixed(1)} g / {topStats.avgWater.toFixed(0)} ml
                       </span>
                     </div>
                   )}
                   {topStats.avgTemp != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Avg Temp</span>
-                      <span className="font-semibold text-slate-800">{topStats.avgTemp.toFixed(1)}°C</span>
+                      <span className="text-coffee-muted">Avg Temp</span>
+                      <span className="font-semibold text-coffee-cream">{topStats.avgTemp.toFixed(1)}°C</span>
                     </div>
                   )}
                   {topStats.avgTime != null && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Avg Brew Time</span>
-                      <span className="font-semibold text-slate-800">{secondsToMMSS(Math.round(topStats.avgTime))}</span>
+                      <span className="text-coffee-muted">Avg Brew Time</span>
+                      <span className="font-semibold text-coffee-cream">{secondsToMMSS(Math.round(topStats.avgTime))}</span>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center text-sm text-slate-400">
+              <div className="bg-coffee-bg border border-coffee-line rounded-lg p-4 text-center text-sm text-coffee-muted">
                 No brews with Rating ≥ 8.
               </div>
             )}
@@ -336,38 +336,38 @@ function MilkAnalysis() {
   return (
     <div>
       <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white mb-4 focus:outline-none focus:border-orange-400">
+        className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg mb-4 focus:outline-none focus:border-coffee-accent">
         <option value="">All Coffees</option>
         {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
       </select>
 
       {shots.length === 0 ? (
-        <p className="text-center text-slate-400 text-sm py-10">No milk drinks yet.</p>
+        <p className="text-center text-coffee-muted text-sm py-10">No milk drinks yet.</p>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-orange-600">{shots.length}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Drinks total</p>
+            <div className="bg-coffee-surface2 border border-coffee-line rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-coffee-accent-soft">{shots.length}</p>
+              <p className="text-xs text-coffee-muted mt-0.5">Drinks total</p>
             </div>
-            <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-green-600">
+            <div className="bg-coffee-surface2 border border-coffee-line rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-green-400">
                 {(shots.reduce((s, x) => s + x.rating, 0) / shots.length).toFixed(1)}
               </p>
-              <p className="text-xs text-slate-500 mt-0.5">Avg Rating</p>
+              <p className="text-xs text-coffee-muted mt-0.5">Avg Rating</p>
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide p-3 border-b border-slate-100">
+          <div className="bg-coffee-surface2 border border-coffee-line rounded-lg overflow-hidden">
+            <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide p-3 border-b border-coffee-line">
               By Drink Type
             </p>
             {sorted.map(([type, { count, ratingSum }]) => (
-              <div key={type} className="flex items-center justify-between px-4 py-3 border-b border-slate-100 last:border-0">
-                <span className="text-sm text-slate-700">{drinkTypeLabel(type)}</span>
+              <div key={type} className="flex items-center justify-between px-4 py-3 border-b border-coffee-line last:border-0">
+                <span className="text-sm text-coffee-text">{drinkTypeLabel(type)}</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">{count}×</span>
-                  <span className="text-sm font-semibold text-slate-800">
+                  <span className="text-xs text-coffee-muted">{count}×</span>
+                  <span className="text-sm font-semibold text-coffee-cream">
                     Avg {(ratingSum / count).toFixed(1)}
                   </span>
                 </div>
@@ -383,9 +383,9 @@ function MilkAnalysis() {
 // ── Main Analysis ─────────────────────────────────────────────────────────────
 
 const TABS: { key: AnalysisTab; label: string }[] = [
-  { key: 'espresso', label: '☕ Espresso' },
-  { key: 'brews',    label: '🫖 Brews' },
-  { key: 'milk',     label: '🥛 Milk' },
+  { key: 'espresso', label: 'Espresso' },
+  { key: 'brews',    label: 'Brews' },
+  { key: 'milk',     label: 'Milk' },
 ]
 
 export function Analysis() {
@@ -393,15 +393,15 @@ export function Analysis() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-800 mb-4">📊 Analysis</h1>
+      <h1 className="text-xl font-bold text-coffee-cream mb-4">Analysis</h1>
 
-      <div className="flex border-b border-slate-200 mb-5">
+      <div className="flex border-b border-coffee-line mb-5">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               tab === t.key
-                ? 'text-orange-600 border-b-2 border-orange-500 -mb-px'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'text-coffee-accent-soft border-b-2 border-coffee-accent -mb-px'
+                : 'text-coffee-muted hover:text-coffee-text'
             }`}>
             {t.label}
           </button>

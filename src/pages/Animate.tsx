@@ -1,24 +1,25 @@
 import { Link } from 'react-router-dom'
 import { ANIMATIONS } from '../utils/animationContent'
+import { ROUTES } from '../lib/routes'
+import { cardClasses } from '../components/ui'
 
 export function Animate() {
   return (
     <div>
-      <h1 className="text-xl font-bold text-slate-800 mb-1">🎬 Animate</h1>
-      <p className="text-sm text-slate-500 mb-6">Visual explainers</p>
+      <h1 className="font-display text-2xl font-semibold text-coffee-cream mb-1">Animate</h1>
+      <p className="text-sm text-coffee-muted mb-6">Visual explainers</p>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {ANIMATIONS.map(anim => (
           <Link
             key={anim.id}
-            to={`/animate/${anim.id}`}
-            className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-sm transition-shadow block"
+            to={ROUTES.animateDetail(anim.id)}
+            className={`${cardClasses} block p-4 transition-colors hover:border-coffee-accent/40`}
           >
-            <div className="text-3xl mb-2">{anim.icon}</div>
-            <div className="font-semibold text-sm text-slate-800 mb-0.5">{anim.title}</div>
-            <div className="text-xs text-slate-500 mb-2">{anim.description}</div>
+            <div className="font-semibold text-sm text-coffee-cream mb-0.5">{anim.title}</div>
+            <div className="text-xs text-coffee-muted mb-2">{anim.description}</div>
             <div className="flex flex-wrap gap-1">
               {anim.tags.slice(0, 2).map(tag => (
-                <span key={tag} className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
+                <span key={tag} className="text-[10px] bg-coffee-surface2 text-coffee-muted px-2 py-0.5 rounded-full">
                   {tag}
                 </span>
               ))}

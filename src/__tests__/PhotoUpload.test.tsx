@@ -29,9 +29,9 @@ test('zeigt Bild wenn value vorhanden', () => {
   expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg')
 })
 
-test('zeigt ☕ wenn kein Name angegeben', () => {
-  render(
+test('zeigt Coffee-Icon-Placeholder wenn kein Name angegeben', () => {
+  const { container } = render(
     <PhotoUpload bucket="coffee-photos" value={null} onChange={vi.fn()} />
   )
-  expect(screen.getByText('☕')).toBeInTheDocument()
+  expect(container.querySelector('svg.lucide-coffee')).toBeTruthy()
 })

@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import {
+  Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
+  BookOpen, Library, MoreHorizontal,
+} from 'lucide-react'
+import { ROUTES } from '../lib/routes'
 
 const navItems = [
-  { to: '/',          label: 'Home',      icon: '🏠' },
-  { to: '/shots',     label: 'Shots',     icon: '📋' },
-  { to: '/brews',     label: 'Brews',     icon: '🫖' },
-  { to: '/analysis',  label: 'Analysis',  icon: '📊' },
-  { to: '/coffees',   label: 'Coffees',   icon: '☕' },
-  { to: '/roasters',  label: 'Roasters',  icon: '📍' },
-  { to: '/equipment', label: 'Equipment', icon: '⚙️' },
-  { to: '/guide',     label: 'Guide',     icon: '📖' },
-  { to: '/glossary',  label: 'Glossary',  icon: '📚' },
-  { to: '/animate',   label: 'Animate',   icon: '🎬' },
+  { to: ROUTES.app,       label: 'Home',      Icon: Home },
+  { to: ROUTES.shots,     label: 'Shots',     Icon: ListChecks },
+  { to: ROUTES.brews,     label: 'Brews',     Icon: CupSoda },
+  { to: ROUTES.analysis,  label: 'Analysis',  Icon: BarChart3 },
+  { to: ROUTES.coffees,   label: 'Coffees',   Icon: Coffee },
+  { to: ROUTES.roasters,  label: 'Roasters',  Icon: MapPin },
+  { to: ROUTES.equipment, label: 'Equipment', Icon: Settings },
+  { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
+  { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
+  // Animate hidden from nav until SVGs are dark-tuned; route /app/animate/* stays reachable.
 ]
 
 const primaryNav = navItems.slice(0, 4)
@@ -22,31 +27,31 @@ export function Layout() {
   const location = useLocation()
 
   const isMoreActive = moreNav.some(item =>
-    item.to === '/'
-      ? location.pathname === '/'
+    item.to === ROUTES.app
+      ? location.pathname === ROUTES.app
       : location.pathname.startsWith(item.to)
   )
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-coffee-bg text-coffee-text font-grotesk">
 
       {/* Sidebar — desktop only */}
-      <nav className="hidden md:flex flex-col fixed top-0 left-0 bottom-0 w-52 bg-white border-r border-slate-200 py-8 px-3 z-10">
-        <p className="text-base font-bold text-slate-800 px-3 mb-6">☕ Espresso</p>
-        {navItems.map(({ to, label, icon }) => (
+      <nav className="hidden md:flex flex-col fixed top-0 left-0 bottom-0 w-52 bg-coffee-surface border-r border-coffee-line py-8 px-3 z-10">
+        <p className="font-display text-base font-semibold text-coffee-cream px-3 mb-6">Espresso</p>
+        {navItems.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === ROUTES.app}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-0.5 ${
                 isActive
-                  ? 'bg-orange-50 text-orange-600'
-                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  ? 'bg-coffee-accent/15 text-coffee-accent-soft'
+                  : 'text-coffee-muted hover:text-coffee-cream hover:bg-coffee-surface2'
               }`
             }
           >
-            <span className="text-lg leading-none">{icon}</span>
+            <Icon size={18} strokeWidth={1.75} />
             {label}
           </NavLink>
         ))}
@@ -61,28 +66,25 @@ export function Layout() {
 
       {/* "More" overlay — mobile only */}
       {moreOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-20"
-          onClick={() => setMoreOpen(false)}
-        >
+        <div className="md:hidden fixed inset-0 z-20" onClick={() => setMoreOpen(false)}>
           <div
-            className="absolute bottom-16 left-0 right-0 bg-white border-t border-slate-200 shadow-lg"
+            className="absolute bottom-16 left-0 right-0 bg-coffee-surface border-t border-coffee-line shadow-lg"
             onClick={e => e.stopPropagation()}
           >
             <div className="grid grid-cols-4 px-2 py-3">
-              {moreNav.map(({ to, label, icon }) => (
+              {moreNav.map(({ to, label, Icon }) => (
                 <NavLink
                   key={to}
                   to={to}
-                  end={to === '/'}
+                  end={to === ROUTES.app}
                   onClick={() => setMoreOpen(false)}
                   className={({ isActive }) =>
-                    `flex flex-col items-center py-2 px-1 rounded-lg text-xs font-medium transition-colors ${
-                      isActive ? 'text-orange-500' : 'text-slate-500 hover:text-slate-700'
+                    `flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-medium transition-colors ${
+                      isActive ? 'text-coffee-accent-soft' : 'text-coffee-muted hover:text-coffee-cream'
                     }`
                   }
                 >
-                  <span className="text-2xl leading-tight mb-0.5">{icon}</span>
+                  <Icon size={22} strokeWidth={1.75} />
                   {label}
                 </NavLink>
               ))}
@@ -92,30 +94,30 @@ export function Layout() {
       )}
 
       {/* Bottom nav — mobile only */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex z-30">
-        {primaryNav.map(({ to, label, icon }) => (
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-coffee-surface border-t border-coffee-line flex z-30">
+        {primaryNav.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === ROUTES.app}
             onClick={() => setMoreOpen(false)}
             className={({ isActive }) =>
-              `flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors ${
-                isActive ? 'text-orange-500' : 'text-slate-400 hover:text-slate-600'
+              `flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium transition-colors ${
+                isActive ? 'text-coffee-accent-soft' : 'text-coffee-muted hover:text-coffee-cream'
               }`
             }
           >
-            <span className="text-xl leading-tight">{icon}</span>
+            <Icon size={20} strokeWidth={1.75} />
             {label}
           </NavLink>
         ))}
         <button
           onClick={() => setMoreOpen(v => !v)}
-          className={`flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors ${
-            moreOpen || isMoreActive ? 'text-orange-500' : 'text-slate-400 hover:text-slate-600'
+          className={`flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium transition-colors ${
+            moreOpen || isMoreActive ? 'text-coffee-accent-soft' : 'text-coffee-muted hover:text-coffee-cream'
           }`}
         >
-          <span className="text-xl leading-tight">⋯</span>
+          <MoreHorizontal size={20} strokeWidth={1.75} />
           More
         </button>
       </nav>

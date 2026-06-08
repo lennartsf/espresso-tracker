@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Coffee, Camera } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 interface Props {
@@ -62,7 +63,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
     onChange(null)
   }
 
-  const initial = name?.[0]?.toUpperCase() ?? '☕'
+  const initial = name?.[0]?.toUpperCase()
 
   return (
     <div className="flex-shrink-0">
@@ -77,16 +78,16 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
         {value ? (
           <img src={value} alt={name ?? 'photo'} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-orange-100 flex items-center justify-center">
-            <span className="text-orange-600 font-bold text-lg">{initial}</span>
+          <div className="w-full h-full bg-coffee-surface2 flex items-center justify-center text-coffee-muted">
+            {initial ? <span className="font-bold text-lg">{initial}</span> : <Coffee size={20} />}
           </div>
         )}
 
-        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           {uploading ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
-            <span className="text-white text-base">📷</span>
+            <Camera size={18} className="text-white" />
           )}
         </div>
 
@@ -110,7 +111,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
         className="hidden"
       />
 
-      {error && <p className="text-xs text-red-500 mt-1 w-14">{error}</p>}
+      {error && <p className="text-xs text-red-400 mt-1 w-14">{error}</p>}
     </div>
   )
 }

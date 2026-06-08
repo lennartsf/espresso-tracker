@@ -33,18 +33,18 @@ export function BrewTimer({ onTime }: Props) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-base font-mono font-semibold text-slate-700 w-10">{elapsed}s</span>
+      <span className="w-10 font-mono text-base font-semibold text-coffee-cream">{elapsed}s</span>
       {!running ? (
-        <button type="button" onClick={start} className="px-3 py-1 rounded bg-slate-100 text-slate-600 text-sm hover:bg-slate-200">
+        <button type="button" onClick={start} className="rounded bg-coffee-surface2 px-3 py-1 text-sm text-coffee-cream hover:bg-coffee-surface">
           ▶ Start
         </button>
       ) : (
-        <button type="button" onClick={stop} className="px-3 py-1 rounded bg-orange-500 text-white text-sm">
+        <button type="button" onClick={stop} className="rounded bg-coffee-accent px-3 py-1 text-sm font-semibold text-coffee-bg">
           ■ Stop
         </button>
       )}
       {elapsed > 0 && !running && (
-        <button type="button" onClick={reset} className="px-2 py-1 rounded bg-slate-100 text-slate-400 text-sm">
+        <button type="button" onClick={reset} className="rounded bg-coffee-surface2 px-2 py-1 text-sm text-coffee-muted hover:bg-coffee-surface">
           ↺
         </button>
       )}

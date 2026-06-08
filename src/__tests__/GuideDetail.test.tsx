@@ -8,7 +8,7 @@ function renderDetail(id: string) {
     <MemoryRouter initialEntries={[`/guide/${id}`]}>
       <Routes>
         <Route path="/guide/:id" element={<GuideDetail />} />
-        <Route path="/guide" element={<div>Guide Overview</div>} />
+        <Route path="/app/guide" element={<div>Guide Overview</div>} />
       </Routes>
     </MemoryRouter>
   )

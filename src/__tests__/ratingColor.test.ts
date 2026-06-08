@@ -1,4 +1,4 @@
-import { ratingColor } from '../utils/ratingColor'
+import { ratingColor, ratingBadgeClasses } from '../utils/ratingColor'
 
 test('gibt Rot für 1 zurück', () => {
   expect(ratingColor(1)).toBe('bg-red-100 text-red-900')
@@ -19,4 +19,20 @@ test('gibt Grün für 10 zurück', () => {
 test('gibt Fallback für ungültige Werte zurück', () => {
   expect(ratingColor(0)).toBe('bg-slate-100 text-slate-500')
   expect(ratingColor(11)).toBe('bg-slate-100 text-slate-500')
+})
+
+test('ratingBadgeClasses: hoch = grün', () => {
+  expect(ratingBadgeClasses(9)).toContain('green')
+})
+test('ratingBadgeClasses: mittel = lime', () => {
+  expect(ratingBadgeClasses(7)).toContain('lime')
+})
+test('ratingBadgeClasses: niedrig-mittel = amber', () => {
+  expect(ratingBadgeClasses(5)).toContain('amber')
+})
+test('ratingBadgeClasses: niedrig = rot', () => {
+  expect(ratingBadgeClasses(2)).toContain('red')
+})
+test('ratingBadgeClasses: ungültig = neutral', () => {
+  expect(ratingBadgeClasses(0)).toContain('coffee')
 })

@@ -7,6 +7,7 @@ import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
+import { cardClasses, Badge, Input, Select, buttonClasses } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -43,48 +44,46 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">☕ Coffees</h1>
-        <button onClick={onNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Coffees</h1>
+        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
           + New
         </button>
       </div>
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
+      {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
 
       <div className="grid gap-2">
         {coffees.map(c => (
           <button
             key={c.id}
             onClick={() => onSelect(c)}
-            className="bg-white border border-slate-200 rounded-lg p-3 flex justify-between items-center text-left w-full hover:border-orange-300 transition-colors"
+            className={`${cardClasses} p-3 flex justify-between items-center text-left w-full transition-colors hover:border-coffee-accent/40`}
           >
             <div className="flex items-center gap-3">
               {c.photo_url ? (
                 <img src={c.photo_url} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
               ) : (
-                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-orange-600 font-bold text-sm">{c.name[0]}</span>
+                <div className="w-10 h-10 rounded-lg bg-coffee-surface2 flex items-center justify-center flex-shrink-0">
+                  <span className="text-coffee-muted font-bold text-sm">{c.name[0]}</span>
                 </div>
               )}
               <div>
-                <p className="font-medium text-slate-800 text-sm">{c.name}</p>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="font-medium text-coffee-cream text-sm">{c.name}</p>
+                <p className="text-xs text-coffee-muted mt-0.5">
                   {[c.roaster, beanLabel(c)].filter(Boolean).join(' · ')}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {c.roast_level && (
-                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium">
-                  Roast Level {c.roast_level}
-                </span>
+                <Badge>Roast Level {c.roast_level}</Badge>
               )}
-              <span className="text-slate-300 text-lg">›</span>
+              <span className="text-coffee-muted/60 text-lg">›</span>
             </div>
           </button>
         ))}
         {!isLoading && coffees.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10">
+          <p className="text-center text-coffee-muted text-sm py-10">
             No coffees yet. Add your first!
           </p>
         )}
@@ -138,111 +137,107 @@ function CoffeeDetailView({
     <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-          <h1 className="text-xl font-bold text-slate-800">{coffee.name}</h1>
+          <button type="button" onClick={onBack} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
+          <h1 className="font-display text-2xl font-semibold text-coffee-cream">{coffee.name}</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={onEdit} className="text-orange-500 text-sm font-semibold">
+          <button onClick={onEdit} className="text-coffee-accent-soft text-sm font-semibold">
             Edit
           </button>
-          <button onClick={handleDeleteCoffee} className="text-slate-300 hover:text-red-400 text-sm">
+          <button onClick={handleDeleteCoffee} className="text-coffee-muted hover:text-red-400 text-sm">
             Delete
           </button>
         </div>
       </div>
 
       {coffee.roaster && (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-1">Roaster</p>
-          <p className="text-sm text-slate-800">{coffee.roaster}</p>
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Roaster</p>
+          <p className="text-sm text-coffee-cream">{coffee.roaster}</p>
         </div>
       )}
 
       {(coffee.arabica_pct !== null || coffee.robusta_pct !== null) && (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Bean Type</p>
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Bean Type</p>
           <div className="flex gap-3">
             {coffee.arabica_pct !== null && (
-              <span className="text-sm text-slate-700 bg-green-50 border border-green-200 rounded px-2 py-1">
-                Arabica {coffee.arabica_pct}%
-              </span>
+              <Badge>Arabica {coffee.arabica_pct}%</Badge>
             )}
             {coffee.robusta_pct !== null && (
-              <span className="text-sm text-slate-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
-                Robusta {coffee.robusta_pct}%
-              </span>
+              <Badge>Robusta {coffee.robusta_pct}%</Badge>
             )}
           </div>
         </div>
       )}
 
       {coffee.roast_level !== null && (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Roast Level</p>
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roast Level</p>
           <div className="flex gap-1">
             {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
               <div
                 key={n}
                 className={`flex-1 py-1 rounded text-xs font-semibold text-center ${
-                  n === coffee.roast_level ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'
+                  n === coffee.roast_level ? 'bg-coffee-accent text-coffee-bg' : 'bg-coffee-surface2 text-coffee-muted'
                 }`}
               >
                 {n}
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs text-slate-300 mt-1">
+          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1">
             <span>light</span><span>dark</span>
           </div>
         </div>
       )}
 
       {(coffee.origin_country || coffee.origin_region || coffee.altitude_m) && (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 mb-3">
-          <p className="text-xs text-slate-400 uppercase font-semibold mb-2">Origin</p>
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Origin</p>
           <div className="grid gap-1">
             {coffee.origin_country && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Country</span>
-                <span className="text-slate-800">{coffee.origin_country}</span>
+                <span className="text-coffee-muted">Country</span>
+                <span className="text-coffee-cream">{coffee.origin_country}</span>
               </div>
             )}
             {coffee.origin_region && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Region</span>
-                <span className="text-slate-800">{coffee.origin_region}</span>
+                <span className="text-coffee-muted">Region</span>
+                <span className="text-coffee-cream">{coffee.origin_region}</span>
               </div>
             )}
             {coffee.altitude_m && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Altitude</span>
-                <span className="text-slate-800">{coffee.altitude_m} m</span>
+                <span className="text-coffee-muted">Altitude</span>
+                <span className="text-coffee-cream">{coffee.altitude_m} m</span>
               </div>
             )}
           </div>
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-lg p-3">
+      <div className={`${cardClasses} p-3`}>
         <div className="flex justify-between items-center mb-2">
-          <p className="text-xs text-slate-400 uppercase font-semibold">Roast Dates</p>
-          <button onClick={() => setShowAddDate(v => !v)} className="text-xs text-orange-500 font-semibold">
+          <p className="text-xs text-coffee-muted uppercase font-semibold">Roast Dates</p>
+          <button onClick={() => setShowAddDate(v => !v)} className="text-xs text-coffee-accent-soft font-semibold">
             {showAddDate ? 'Cancel' : '+ Add'}
           </button>
         </div>
 
         {showAddDate && (
           <form onSubmit={handleAddDate} className="flex gap-2 mb-3">
-            <input
+            <Input
               type="date"
               value={newDate}
               onChange={e => setNewDate(e.target.value)}
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-orange-400"
+              className="flex-1 py-1.5"
             />
             <button
               type="submit"
               disabled={createRoastDate.isPending}
-              className="bg-orange-500 text-white text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
+              className="bg-coffee-accent text-coffee-bg text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
             >
               OK
             </button>
@@ -250,19 +245,19 @@ function CoffeeDetailView({
         )}
 
         {roastDates.length === 0 && !showAddDate && (
-          <p className="text-slate-400 text-sm">No roast dates yet.</p>
+          <p className="text-coffee-muted text-sm">No roast dates yet.</p>
         )}
 
         <div className="grid gap-2">
           {displayDates.map((rd, i) => (
             <div key={rd.id} className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-800">{formatDate(rd.roast_date)}</span>
-                {i === 0 && <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-medium">Current</span>}
+                <span className="text-sm text-coffee-cream">{formatDate(rd.roast_date)}</span>
+                {i === 0 && <Badge>Current</Badge>}
               </div>
               <button
                 onClick={() => deleteRoastDate.mutate({ id: rd.id, coffeeId: coffee.id })}
-                className="text-slate-300 hover:text-red-400 text-lg leading-none px-1"
+                className="text-coffee-muted hover:text-red-400 text-lg leading-none px-1"
               >
                 ×
               </button>
@@ -271,7 +266,7 @@ function CoffeeDetailView({
         </div>
 
         {roastDates.length > 2 && (
-          <button onClick={() => setShowAll(v => !v)} className="text-xs text-slate-400 mt-2 hover:text-slate-600">
+          <button onClick={() => setShowAll(v => !v)} className="text-xs text-coffee-muted mt-2 hover:text-coffee-cream">
             {showAll ? 'Show less' : `Show ${roastDates.length - 2} more`}
           </button>
         )}
@@ -334,8 +329,8 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">Edit Coffee</h1>
+        <button type="button" onClick={onBack} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Edit Coffee</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
@@ -347,54 +342,48 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
               onChange={setPhotoUrl}
               name={name}
             />
-            <input
+            <Input
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Name *"
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              className="flex-1"
             />
           </div>
-          <select
-            value={roasterId}
-            onChange={e => setRoasterId(e.target.value)}
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-          >
+          <Select value={roasterId} onChange={e => setRoasterId(e.target.value)}>
             <option value="">No roaster</option>
             {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </Select>
           {roasters.length === 0 && (
-            <p className="text-xs text-slate-400 mt-1">No roasters yet — add one in the 📍 Roasters tab.</p>
+            <p className="text-xs text-coffee-muted mt-1">No roasters yet — add one in the Roasters tab.</p>
           )}
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bean Type</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Bean Type</p>
           <div className="flex gap-4 mb-2">
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" checked={hasArabica} onChange={e => setHasArabica(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
+              <input type="checkbox" checked={hasArabica} onChange={e => setHasArabica(e.target.checked)} className="h-4 w-4 accent-coffee-accent" />
               Arabica
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-              <input type="checkbox" checked={hasRobusta} onChange={e => setHasRobusta(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
+              <input type="checkbox" checked={hasRobusta} onChange={e => setHasRobusta(e.target.checked)} className="h-4 w-4 accent-coffee-accent" />
               Robusta
             </label>
           </div>
           {isBlend && (
             <div className="flex gap-3 mt-2">
               <div className="flex-1">
-                <label className="text-xs text-slate-400 mb-1 block">Arabica %</label>
-                <input
+                <label className="text-xs text-coffee-muted mb-1 block">Arabica %</label>
+                <Input
                   type="number" min="0" max="100" value={arabicaPct}
                   onChange={e => { setArabicaPct(e.target.value); setRobustaPct(String(100 - parseInt(e.target.value || '0', 10))) }}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-slate-400 mb-1 block">Robusta %</label>
-                <input
+                <label className="text-xs text-coffee-muted mb-1 block">Robusta %</label>
+                <Input
                   type="number" min="0" max="100" value={robustaPct}
                   onChange={e => { setRobustaPct(e.target.value); setArabicaPct(String(100 - parseInt(e.target.value || '0', 10))) }}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
                 />
               </div>
             </div>
@@ -402,45 +391,31 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Roast Level</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
           <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-slate-300 mt-1 px-0.5">
+          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
             <span>light</span><span>dark</span>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Origin</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>
           <div className="grid gap-3">
-            <input
-              value={originCountry}
-              onChange={e => setOriginCountry(e.target.value)}
-              placeholder="Country"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
-            <input
-              value={originRegion}
-              onChange={e => setOriginRegion(e.target.value)}
-              placeholder="Region"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+            <Input value={originCountry} onChange={e => setOriginCountry(e.target.value)} placeholder="Country" />
+            <Input value={originRegion} onChange={e => setOriginRegion(e.target.value)} placeholder="Region" />
             <div className="flex items-center gap-2">
-              <input
-                type="number" value={altitudeM} onChange={e => setAltitudeM(e.target.value)}
-                placeholder="Altitude"
-                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
-              <span className="text-sm text-slate-400">m</span>
+              <Input type="number" value={altitudeM} onChange={e => setAltitudeM(e.target.value)} placeholder="Altitude" className="flex-1" />
+              <span className="text-sm text-coffee-muted">m</span>
             </div>
           </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={updateCoffee.isPending}
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+          className={buttonClasses('primary', 'w-full disabled:opacity-50')}
         >
           {updateCoffee.isPending ? 'Saving...' : 'Save Changes'}
         </button>
@@ -506,8 +481,8 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <button type="button" onClick={onBack} className="text-slate-400 text-lg">←</button>
-        <h1 className="text-xl font-bold text-slate-800">New Coffee</h1>
+        <button type="button" onClick={onBack} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">New Coffee</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-5">
@@ -519,34 +494,30 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
               onChange={setPhotoUrl}
               name={name}
             />
-            <input
+            <Input
               autoFocus
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Name *"
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
+              className="flex-1"
             />
           </div>
           <div className="flex gap-2">
-            <select
-              value={roasterId}
-              onChange={e => setRoasterId(e.target.value)}
-              className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white focus:outline-none focus:border-orange-400"
-            >
+            <Select value={roasterId} onChange={e => setRoasterId(e.target.value)} className="flex-1">
               <option value="">No roaster</option>
               {roasters.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-            </select>
+            </Select>
             <button
               type="button"
               onClick={() => setShowNewRoaster(v => !v)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-500 bg-white hover:bg-slate-50 whitespace-nowrap"
+              className="px-3 py-2 border border-coffee-line rounded-lg text-sm text-coffee-muted hover:bg-coffee-surface2 whitespace-nowrap"
             >
               {showNewRoaster ? 'Cancel' : '+ New'}
             </button>
           </div>
           {showNewRoaster && (
-            <div className="mt-2 border border-orange-200 rounded-lg p-3 bg-orange-50">
-              <p className="text-xs font-semibold text-orange-600 uppercase mb-2">New Roaster</p>
+            <div className="mt-2 border border-coffee-line rounded-lg p-3 bg-coffee-surface2">
+              <p className="text-xs font-semibold text-coffee-accent-soft uppercase mb-2">New Roaster</p>
               <RoasterForm
                 compact
                 onBack={(created?: Roaster) => {
@@ -559,23 +530,23 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Bean Type</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Bean Type</p>
           <div className="flex gap-4 mb-2">
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
               <input
                 type="checkbox"
                 checked={hasArabica}
                 onChange={e => setHasArabica(e.target.checked)}
-                className="w-4 h-4 accent-orange-500"
+                className="h-4 w-4 accent-coffee-accent"
               />
               Arabica
             </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-coffee-text cursor-pointer">
               <input
                 type="checkbox"
                 checked={hasRobusta}
                 onChange={e => setHasRobusta(e.target.checked)}
-                className="w-4 h-4 accent-orange-500"
+                className="h-4 w-4 accent-coffee-accent"
               />
               Robusta
             </label>
@@ -583,8 +554,8 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
           {isBlend && (
             <div className="flex gap-3 mt-2">
               <div className="flex-1">
-                <label className="text-xs text-slate-400 mb-1 block">Arabica %</label>
-                <input
+                <label className="text-xs text-coffee-muted mb-1 block">Arabica %</label>
+                <Input
                   type="number"
                   min="0"
                   max="100"
@@ -593,12 +564,11 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
                     setArabicaPct(e.target.value)
                     setRobustaPct(String(100 - parseInt(e.target.value || '0', 10)))
                   }}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-slate-400 mb-1 block">Robusta %</label>
-                <input
+                <label className="text-xs text-coffee-muted mb-1 block">Robusta %</label>
+                <Input
                   type="number"
                   min="0"
                   max="100"
@@ -607,7 +577,6 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
                     setRobustaPct(e.target.value)
                     setArabicaPct(String(100 - parseInt(e.target.value || '0', 10)))
                   }}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
                 />
               </div>
             </div>
@@ -615,48 +584,32 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Roast Level</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
           <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-slate-300 mt-1 px-0.5">
+          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
             <span>light</span>
             <span>dark</span>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-2">Origin</p>
+          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>
           <div className="grid gap-3">
-            <input
-              value={originCountry}
-              onChange={e => setOriginCountry(e.target.value)}
-              placeholder="Country"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
-            <input
-              value={originRegion}
-              onChange={e => setOriginRegion(e.target.value)}
-              placeholder="Region"
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-            />
+            <Input value={originCountry} onChange={e => setOriginCountry(e.target.value)} placeholder="Country" />
+            <Input value={originRegion} onChange={e => setOriginRegion(e.target.value)} placeholder="Region" />
             <div className="flex items-center gap-2">
-              <input
-                type="number"
-                value={altitudeM}
-                onChange={e => setAltitudeM(e.target.value)}
-                placeholder="Altitude"
-                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-400"
-              />
-              <span className="text-sm text-slate-400">m</span>
+              <Input type="number" value={altitudeM} onChange={e => setAltitudeM(e.target.value)} placeholder="Altitude" className="flex-1" />
+              <span className="text-sm text-coffee-muted">m</span>
             </div>
           </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={createCoffee.isPending}
-          className="w-full bg-orange-500 text-white font-semibold py-3 rounded-xl disabled:opacity-50"
+          className={buttonClasses('primary', 'w-full disabled:opacity-50')}
         >
           {createCoffee.isPending ? 'Saving...' : 'Save Coffee'}
         </button>

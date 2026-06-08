@@ -16,14 +16,25 @@ npm run dev
 ## Projektstruktur
 ```
 src/
+  marketing/     MarketingLayout, Landing, Try, components/(Hero, FeatureTeasers), auth/(AuthForm, Login, Signup)  ← öffentliche Website (Dark Premium)
   pages/         Dashboard, NewShot, ShotHistory, CoffeeManager, Analysis, Roasters, Equipment, Brews, NewBrew, BrewDetail, Guide, GuideDetail, Glossary, Animate, AnimateDetail
-  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout
+  components/    BrewTimer, RatingInput, RecipeCard, RoasterMap, ShotCard, BrewCard, BrewRatioBar, PhotoUpload, Layout, CountUp
   components/animations/  BoilerAnimation, V60Animation, MilkAnimation, LatteHeartAnimation; hooks: usePhaseTimeline, animationEngine (useRamp/useSpin); pitcherShape.ts (Jug-Pfade)
   hooks/         useCoffees, useRoasters, useShots, useEquipment, useBrews
   types/         index.ts (alle Interfaces)
-  lib/           supabase.ts
+  lib/           supabase.ts, routes.ts (ROUTES — zentrale Pfade), auth.ts (getCurrentUserId — Multi-User-Naht)
   utils/         recipeCalc.ts, ratingColor.ts, drinkTypes.ts, equipmentTypes.ts, brewMethods.ts, timeFormat.ts, guideContent.ts, glossaryContent.ts, animationContent.ts
 ```
+
+## Architektur: Website-Pivot (ab Phase 0, 2026-06-07)
+Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
+- `/` Marketing-Landing, `/try` Demo (Stub), `/login` `/signup` Auth (Stubs, Optik only) → `MarketingLayout` (Dark Premium).
+- `/app/*` die Tracker-App → bestehendes `Layout` (vorerst heller Look).
+- **Interne Links IMMER über `ROUTES` (`src/lib/routes.ts`)**, nie hartkodierte Pfade.
+
+**Design-System (Dark Premium):** Tokens als CSS-Vars in `src/index.css` (`--coffee-*`), via `tailwind.config.ts` als `coffee.*`-Farben + `font-display` (Fraunces) / `font-grotesk` (Space Grotesk) nutzbar. Fonts self-hosted (`@fontsource*`), Import in `main.tsx`. **Dark-Theme ist auf Marketing/Auth gescoped — die App-Shell bleibt vorerst hell** (Reskin = Phase 1). Motion via GSAP (`gsap` + `@gsap/react`), `prefers-reduced-motion` respektieren (Stub in Tests: `src/__tests__/setup.ts` matchMedia-Polyfill).
+
+**Multi-User-Naht (Phase 2):** `src/lib/auth.ts#getCurrentUserId()` gibt aktuell `null` (Single-User). Für Multi-User: echten Supabase-Auth-User liefern, in jedem react-query-Hook (`src/hooks/use*.ts`, die einzige DB-Grenze) `.eq('user_id', uid)` ergänzen, `user_id`-Spalten + **RLS-Policies** pro Tabelle anlegen (sonst liest jeder eingeloggte Nutzer fremde Daten). Phasen-Plan: `~/.claude/plans/dazzling-popping-prism.md`.
 
 ## Datenbank-Schema (aktuell)
 
