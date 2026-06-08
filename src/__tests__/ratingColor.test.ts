@@ -1,4 +1,4 @@
-import { ratingColor, ratingBadgeClasses } from '../utils/ratingColor'
+import { ratingColor, ratingBadgeClasses, ratingHex } from '../utils/ratingColor'
 
 test('gibt Rot für 1 zurück', () => {
   expect(ratingColor(1)).toBe('bg-red-100 text-red-900')
@@ -35,4 +35,16 @@ test('ratingBadgeClasses: niedrig = rot', () => {
 })
 test('ratingBadgeClasses: ungültig = neutral', () => {
   expect(ratingBadgeClasses(0)).toContain('coffee')
+})
+
+test('ratingHex maps the 10-step scale red -> gold -> green', () => {
+  expect(ratingHex(1)).toBe('#c0392b')   // low = red
+  expect(ratingHex(6)).toBe('#c9a35e')   // mid = coffee gold
+  expect(ratingHex(8)).toBe('#6fb16a')   // high = green
+  expect(ratingHex(10)).toBe('#4a9657')
+})
+
+test('ratingHex falls back to muted for out-of-range', () => {
+  expect(ratingHex(0)).toBe('#7a6450')
+  expect(ratingHex(11)).toBe('#7a6450')
 })
