@@ -35,8 +35,8 @@
 ### NACHTRAG — vom Final-Sweep gefunden (fehlten in Queue!)
 - [x] ShotHistory.tsx — DONE. 📋 raus, Gold-Tabs, Select-Primitive, Cards (ShotCard) schon dark.
 - [x] Brews.tsx — DONE. 🫖 raus, Gold-Tabs, Select-Primitive.
-- [ ] Analysis.tsx (Header 📊, 50 Light-Klassen, CHARTS → Chart-Farben Best-Guess + Marker)
-- [ ] RecipeCard.tsx (Komponente, 4 Light-Klassen — prüfen wo genutzt)
+- [x] Analysis.tsx — DONE. 📊/☕🫖🥛/💡 raus, Tabs Gold, Segment-Control (Container dunkel/aktiv hell), Charts: Gitter #33291f, Achsen #a89784, Punkte ≥8 grün #5fa869 / <8 gold #c9a35e, Tooltip dark. Milk-Stat-Cards + Brew-Top-Recipe dark.
+- [x] RecipeCard.tsx — DONE (von Analysis genutzt). Card dark, Avg-Badge grün-getönt.
 - [x] PhotoUpload.tsx — DONE (mit Roasters). ☕→Lucide Coffee, 📷→Lucide Camera, Avatar dark. Test angepasst (Coffee-Icon statt ☕).
 - [ ] Final-Sweep: `grep -rnE "bg-white|border-slate|text-slate|bg-slate|bg-orange|text-orange|<emoji>" src/pages src/components` muss leer (außer bewusst dokumentierte)
 
