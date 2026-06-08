@@ -67,3 +67,9 @@ test('InfoBox rendert Kinder', () => {
   render(<InfoBox>Erklärung</InfoBox>)
   expect(screen.getByText('Erklärung')).toBeInTheDocument()
 })
+
+test('glow variant returns gold gradient + glow shadow classes', () => {
+  const cls = buttonClasses('glow')
+  expect(cls).toContain('bg-gradient-to-b')
+  expect(cls).toContain('shadow-')
+})

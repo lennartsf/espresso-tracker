@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react'
 
-type Variant = 'primary' | 'secondary'
+type Variant = 'primary' | 'secondary' | 'glow'
 
 /** Klassen-Helper — für echte <button> und für <Link> mit Button-Optik. */
 export function buttonClasses(variant: Variant = 'primary', extra = ''): string {
@@ -9,7 +9,9 @@ export function buttonClasses(variant: Variant = 'primary', extra = ''): string 
   const v =
     variant === 'primary'
       ? 'bg-coffee-accent text-coffee-bg hover:bg-coffee-accent-soft'
-      : 'border border-coffee-line text-coffee-cream hover:bg-coffee-surface'
+      : variant === 'glow'
+        ? 'bg-gradient-to-b from-[#e9c987] to-coffee-accent text-coffee-bg shadow-[0_4px_14px_rgba(233,201,135,0.35)] hover:to-coffee-accent-soft'
+        : 'border border-coffee-line text-coffee-cream hover:bg-coffee-surface'
   return `${base} ${v} ${extra}`.trim()
 }
 
