@@ -33,8 +33,8 @@
 - [x] Equipment.tsx — DONE (4× CRUD via globalem Klassen-Mapping). ⚙️ raus, ★-Favorit Gold, Tabs Gold. Screenshot ok.
 
 ### NACHTRAG — vom Final-Sweep gefunden (fehlten in Queue!)
-- [ ] ShotHistory.tsx (Header 📋, Filter-Tabs, Coffee-Dropdown) — Listenseite, war nie reskinned
-- [ ] Brews.tsx (Header 🫖, Methoden-Tabs, Dropdown) — Listenseite, war nie reskinned
+- [x] ShotHistory.tsx — DONE. 📋 raus, Gold-Tabs, Select-Primitive, Cards (ShotCard) schon dark.
+- [x] Brews.tsx — DONE. 🫖 raus, Gold-Tabs, Select-Primitive.
 - [ ] Analysis.tsx (Header 📊, 50 Light-Klassen, CHARTS → Chart-Farben Best-Guess + Marker)
 - [ ] RecipeCard.tsx (Komponente, 4 Light-Klassen — prüfen wo genutzt)
 - [x] PhotoUpload.tsx — DONE (mit Roasters). ☕→Lucide Coffee, 📷→Lucide Camera, Avatar dark. Test angepasst (Coffee-Icon statt ☕).
@@ -42,6 +42,7 @@
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 8: ShotHistory + Brews reskinned + grün (tsc/146/build), committed. Nächstes: Analysis + RecipeCard (Charts → Best-Guess Chart-Farben + Marker).
 - WAKE 7: Equipment reskinned + grün (tsc/146/build), Screenshot ok, committed. Final-Sweep fand ÜBERSEHENE Seiten (nicht in Queue): Analysis/ShotHistory/Brews/RecipeCard → nachgetragen, Loop läuft weiter. Nächstes: ShotHistory + Brews.
 - WAKE 6: CoffeeManager reskinned + grün (tsc/146/build), Screenshot ok, committed. Nächstes: Equipment (letzte Seite).
 - WAKE 5: Roasters + PhotoUpload reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Leaflet-Tiles hell. Nächstes: CoffeeManager.

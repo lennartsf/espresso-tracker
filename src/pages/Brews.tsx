@@ -4,6 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useBrews } from '../hooks/useBrews'
 import { BrewCard } from '../components/BrewCard'
+import { Select } from '../components/ui'
 
 type MethodFilter = 'all' | 'french_press' | 'v60' | 'aeropress' | 'moka_pot'
 
@@ -27,21 +28,21 @@ export function Brews() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-slate-800">🫖 Brews</h1>
-        <Link to={ROUTES.brewNew} className="bg-orange-500 text-white text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Brews</h1>
+        <Link to={ROUTES.brewNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
           + New
         </Link>
       </div>
 
-      <div className="flex border-b border-slate-200 mb-4 overflow-x-auto">
+      <div className="flex border-b border-coffee-line mb-4 overflow-x-auto">
         {(['all', 'french_press', 'v60', 'aeropress', 'moka_pot'] as const).map(f => (
           <button
             key={f}
             onClick={() => setMethodFilter(f)}
             className={`px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap ${
               methodFilter === f
-                ? 'text-orange-600 border-b-2 border-orange-500 -mb-px'
-                : 'text-slate-400 hover:text-slate-600'
+                ? 'text-coffee-accent-soft border-b-2 border-coffee-accent -mb-px'
+                : 'text-coffee-muted hover:text-coffee-cream'
             }`}
           >
             {METHOD_FILTER_LABELS[f]}
@@ -49,21 +50,21 @@ export function Brews() {
         ))}
       </div>
 
-      <select
+      <Select
         value={filterCoffeeId}
         onChange={e => setFilterCoffeeId(e.target.value)}
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 bg-white mb-4 focus:outline-none focus:border-orange-400"
+        className="mb-4"
       >
         <option value="">All Coffees</option>
         {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-      </select>
+      </Select>
 
-      {isLoading && <p className="text-slate-400 text-sm text-center py-6">Loading...</p>}
+      {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
 
       <div className="grid md:grid-cols-2 gap-2">
         {brews.map(brew => <BrewCard key={brew.id} brew={brew} />)}
         {!isLoading && brews.length === 0 && (
-          <p className="text-center text-slate-400 text-sm py-10 md:col-span-2">
+          <p className="text-center text-coffee-muted text-sm py-10 md:col-span-2">
             No brews yet. Add your first!
           </p>
         )}
