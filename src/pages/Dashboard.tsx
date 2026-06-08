@@ -7,7 +7,11 @@ import { useBrews } from '../hooks/useBrews'
 import { ShotCard } from '../components/ShotCard'
 import { BrewCard } from '../components/BrewCard'
 import { ROUTES } from '../lib/routes'
-import { PageHeader, StatCard, buttonClasses } from '../components/ui'
+import { buttonClasses } from '../components/ui'
+import { EmbossedTile } from '../components/dashboard/EmbossedTile'
+import { DialGauge } from '../components/dashboard/DialGauge'
+import { LiquidBar } from '../components/dashboard/LiquidBar'
+import { CorrelationScatter, type ScatterPoint } from '../components/dashboard/CorrelationScatter'
 
 export function Dashboard() {
   const { data: shots = [], isLoading } = useShots()
@@ -20,87 +24,62 @@ export function Dashboard() {
   const ratioShots = shots.filter(s => s.brew_ratio !== null)
   const avgRatio = ratioShots.length > 0
     ? ratioShots.reduce((sum, s) => sum + (s.brew_ratio ?? 0), 0) / ratioShots.length
-    : NaN
-  const avgBrewRating = brews.length > 0
-    ? brews.reduce((sum, b) => sum + b.rating, 0) / brews.length
-    : NaN
+    : null
 
-  // GSAP: Stat-Karten gestaffelt einblenden beim Mount
-  const statsRef = useRef<HTMLDivElement>(null)
+  const scatterPoints: ScatterPoint[] = shots
+    .filter(s => s.brew_ratio !== null)
+    .map(s => ({ ratio: s.brew_ratio as number, flavor: s.rating, rating: s.rating }))
+
+  const gridRef = useRef<HTMLDivElement>(null)
   useGSAP(() => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-    if (reduce || !statsRef.current) return
-    gsap.from(statsRef.current.children, {
-      opacity: 0,
-      y: 16,
-      duration: 0.5,
-      ease: 'power2.out',
-      stagger: 0.08,
-    })
-  }, { scope: statsRef })
+    if (reduce || !gridRef.current) return
+    gsap.from(gridRef.current.children, { opacity: 0, y: 16, duration: 0.5, ease: 'power2.out', stagger: 0.08 })
+  }, { scope: gridRef })
 
   return (
-    <div>
-      <PageHeader
-        title="Espresso"
-        action={
-          <Link to={ROUTES.shotNew} className={buttonClasses('primary')}>
-            + New Shot
-          </Link>
-        }
-      />
-
-      {/* Shot Stats */}
-      <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <StatCard value={shots.length} label="Shots total" />
-        <StatCard value={avgRating} label="Avg Flavor" decimals={1} />
-        <StatCard value={topShots} label="Top Shots (≥8)" />
-        <StatCard value={avgRatio} label="Avg Ratio" decimals={2} />
+    <div className="rounded-2xl bg-[radial-gradient(140%_100%_at_50%_-20%,var(--coffee-surface),var(--coffee-bg))] p-2 sm:p-4">
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-extrabold text-coffee-cream">Espresso</h1>
+        <Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New Shot</Link>
       </div>
 
-      {/* Brew Stats */}
-      {brews.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 mb-8">
-          <StatCard value={brews.length} label="Brews total" />
-          <StatCard value={avgBrewRating} label="Avg Brew Rating" decimals={1} />
-        </div>
-      )}
-      {brews.length === 0 && <div className="mb-8" />}
+      <div ref={gridRef} className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <EmbossedTile className="flex items-center justify-center md:row-span-2">
+          <DialGauge value={avgRating} max={10} label="Ø Flavor" />
+        </EmbossedTile>
 
-      <h2 className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
-        Recent Shots
-      </h2>
+        <EmbossedTile className="md:col-span-2">
+          <LiquidBar doseG={avgRatio !== null ? 1 : null} yieldG={avgRatio} />
+          <div className="mt-2 flex gap-4 text-xs text-coffee-muted">
+            <span>{shots.length} Shots</span><span>{topShots} Top (≥8)</span>
+          </div>
+        </EmbossedTile>
 
-      {isLoading && <p className="text-coffee-muted text-sm text-center py-4">Loading...</p>}
+        <EmbossedTile className="md:col-span-2">
+          <CorrelationScatter points={scatterPoints} />
+        </EmbossedTile>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-2 mb-6">
-        {shots.slice(0, 6).map(shot => (
-          <ShotCard key={shot.id} shot={shot} />
-        ))}
+      <h2 className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-coffee-muted">Recent Shots</h2>
+      {isLoading && <p className="py-4 text-center text-sm text-coffee-muted">Loading...</p>}
+      <div className="mb-6 grid gap-2 md:grid-cols-2">
+        {shots.slice(0, 6).map(shot => <ShotCard key={shot.id} shot={shot} />)}
         {!isLoading && shots.length === 0 && (
-          <p className="text-center text-coffee-muted text-sm py-8 md:col-span-2">
-            No shots yet. Pull your first!
-          </p>
+          <p className="py-8 text-center text-sm text-coffee-muted md:col-span-2">No shots yet. Pull your first!</p>
         )}
       </div>
 
       {brews.length > 0 && (
         <>
-          <h2 className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
-            Recent Brews
-          </h2>
-          <div className="grid md:grid-cols-2 gap-2 mb-6">
-            {brews.slice(0, 4).map(brew => (
-              <BrewCard key={brew.id} brew={brew} />
-            ))}
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-coffee-muted">Recent Brews</h2>
+          <div className="mb-6 grid gap-2 md:grid-cols-2">
+            {brews.slice(0, 4).map(brew => <BrewCard key={brew.id} brew={brew} />)}
           </div>
         </>
       )}
 
-      {/* CTA only on mobile */}
-      <Link to={ROUTES.shotNew} className={`md:hidden ${buttonClasses('primary', 'w-full')}`}>
-        + New Shot
-      </Link>
+      <Link to={ROUTES.shotNew} className={`md:hidden ${buttonClasses('glow', 'w-full')}`}>+ New Shot</Link>
     </div>
   )
 }
