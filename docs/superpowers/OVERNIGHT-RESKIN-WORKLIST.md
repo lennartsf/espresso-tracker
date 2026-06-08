@@ -30,12 +30,19 @@
 - [x] Animate.tsx + AnimateDetail.tsx — DONE. 🎬 + Karten-Icons (anim.icon) raus, Cards dark, Header/Back dark. **OFFEN/MARKER: die 4 Animations-SVG-Komponenten (BoilerAnimation/V60Animation/MilkAnimation/LatteHeartAnimation) + ihre Phasen-UI (usePhaseTimeline-Captions/Chips, bg-slate-50) bleiben HELL** — eigenes, riskantes Reskin (getestete Geometrie, hell-getunte SVG-Optik). Auf AnimateDetail sichtbar als helle Insel. → morgens entscheiden/separat.
 - [x] Roasters.tsx — DONE (List/Detail/Form). 📍-Emojis→Lucide MapPin, Cards/Form dark, Avatar-Fallback dark. MARKER: RoasterMap-Tiles (CartoDB) bleiben HELL — Dark-Map-Tiles wären separater RoasterMap-Task.
 - [x] CoffeeManager.tsx — DONE (List/Detail/New/Edit). ☕/📍 raus, Bean/Roast/Origin/RoastDates dark, Bean-Chips→Badge, Roast-Level-Bar Gold. Screenshot ok.
-- [ ] Equipment.tsx (Header ⚙️)
+- [x] Equipment.tsx — DONE (4× CRUD via globalem Klassen-Mapping). ⚙️ raus, ★-Favorit Gold, Tabs Gold. Screenshot ok.
+
+### NACHTRAG — vom Final-Sweep gefunden (fehlten in Queue!)
+- [ ] ShotHistory.tsx (Header 📋, Filter-Tabs, Coffee-Dropdown) — Listenseite, war nie reskinned
+- [ ] Brews.tsx (Header 🫖, Methoden-Tabs, Dropdown) — Listenseite, war nie reskinned
+- [ ] Analysis.tsx (Header 📊, 50 Light-Klassen, CHARTS → Chart-Farben Best-Guess + Marker)
+- [ ] RecipeCard.tsx (Komponente, 4 Light-Klassen — prüfen wo genutzt)
 - [x] PhotoUpload.tsx — DONE (mit Roasters). ☕→Lucide Coffee, 📷→Lucide Camera, Avatar dark. Test angepasst (Coffee-Icon statt ☕).
 - [ ] Final-Sweep: `grep -rnE "bg-white|border-slate|text-slate|bg-slate|bg-orange|text-orange|<emoji>" src/pages src/components` muss leer (außer bewusst dokumentierte)
 
 ## Progress-Log
 (neueste oben — jede Wake hier eintragen)
+- WAKE 7: Equipment reskinned + grün (tsc/146/build), Screenshot ok, committed. Final-Sweep fand ÜBERSEHENE Seiten (nicht in Queue): Analysis/ShotHistory/Brews/RecipeCard → nachgetragen, Loop läuft weiter. Nächstes: ShotHistory + Brews.
 - WAKE 6: CoffeeManager reskinned + grün (tsc/146/build), Screenshot ok, committed. Nächstes: Equipment (letzte Seite).
 - WAKE 5: Roasters + PhotoUpload reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Leaflet-Tiles hell. Nächstes: CoffeeManager.
 - WAKE 4: Animate + AnimateDetail reskinned + grün (tsc/146/build), Screenshot ok, committed. MARKER: Animations-SVGs bleiben hell (separat). Nächstes: Roasters.
