@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
@@ -24,7 +24,19 @@ const moreNav    = navItems.slice(4)
 
 export function Layout() {
   const [moreOpen, setMoreOpen] = useState(false)
+  const [online, setOnline] = useState(() => navigator.onLine)
   const location = useLocation()
+
+  useEffect(() => {
+    const goOnline = () => setOnline(true)
+    const goOffline = () => setOnline(false)
+    window.addEventListener('online', goOnline)
+    window.addEventListener('offline', goOffline)
+    return () => {
+      window.removeEventListener('online', goOnline)
+      window.removeEventListener('offline', goOffline)
+    }
+  }, [])
 
   const isMoreActive = moreNav.some(item =>
     item.to === ROUTES.app
@@ -34,6 +46,13 @@ export function Layout() {
 
   return (
     <div className="flex min-h-screen bg-coffee-bg text-coffee-text font-grotesk">
+
+      {/* Offline-Hinweis — ehrlich: noch keine Write-Queue, Speichern schlägt offline fehl */}
+      {!online && (
+        <div role="status" className="fixed top-0 left-0 right-0 z-40 bg-coffee-surface2 border-b border-coffee-line px-4 py-1.5 pt-[max(0.375rem,env(safe-area-inset-top))] text-center text-xs text-coffee-accent-soft">
+          You're offline — changes can't be saved right now.
+        </div>
+      )}
 
       {/* Sidebar — desktop only */}
       <nav className="hidden md:flex flex-col fixed top-0 left-0 bottom-0 w-52 bg-coffee-surface border-r border-coffee-line py-8 px-3 z-10">
@@ -94,7 +113,7 @@ export function Layout() {
       )}
 
       {/* Bottom nav — mobile only */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-coffee-surface border-t border-coffee-line flex z-30">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-coffee-surface border-t border-coffee-line flex z-30 pb-[env(safe-area-inset-bottom)]">
         {primaryNav.map(({ to, label, Icon }) => (
           <NavLink
             key={to}

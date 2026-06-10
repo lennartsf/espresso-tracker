@@ -6,7 +6,7 @@ const mk = (n: number) =>
 
 test('shows empty state with no points', () => {
   render(<CorrelationScatter points={[]} />)
-  expect(screen.getByText(/erfasse shots/i)).toBeInTheDocument()
+  expect(screen.getByText(/log shots to see how ratio shapes flavor/i)).toBeInTheDocument()
 })
 
 test('renders one point per shot, no regression line below threshold', () => {

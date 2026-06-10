@@ -37,9 +37,9 @@ test('ratingBadgeClasses: ungültig = neutral', () => {
   expect(ratingBadgeClasses(0)).toContain('coffee')
 })
 
-test('ratingHex maps the 10-step scale red -> gold -> green', () => {
+test('ratingHex maps the 10-step scale red -> amber -> green', () => {
   expect(ratingHex(1)).toBe('#c0392b')   // low = red
-  expect(ratingHex(6)).toBe('#c9a35e')   // mid = coffee gold
+  expect(ratingHex(6)).toBe('#bcae49')   // mid = olive-amber (NOT brand gold #c9a35e)
   expect(ratingHex(8)).toBe('#6fb16a')   // high = green
   expect(ratingHex(10)).toBe('#4a9657')
 })

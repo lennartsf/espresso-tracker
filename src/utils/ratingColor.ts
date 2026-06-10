@@ -14,11 +14,12 @@ export function ratingColor(v: number): string {
   return map[v] ?? 'bg-slate-100 text-slate-500'
 }
 
-/** Hex der 10-stufigen Rating-Skala (rot→gold→grün) — für SVG-fills (Charts). */
+/** Hex der 10-stufigen Rating-Skala (rot→amber→grün) — für SVG-fills (Charts).
+ *  Bewusst OHNE Brand-Gold #c9a35e: Akzent = Marke/Interaktion, nie Rating. */
 export function ratingHex(v: number): string {
   const map: Record<number, string> = {
     1: '#c0392b', 2: '#d4502f', 3: '#e07b39', 4: '#e89c3f', 5: '#d9a441',
-    6: '#c9a35e', 7: '#9bbf5a', 8: '#6fb16a', 9: '#57a35f', 10: '#4a9657',
+    6: '#bcae49', 7: '#9bbf5a', 8: '#6fb16a', 9: '#57a35f', 10: '#4a9657',
   }
   return map[v] ?? '#7a6450'
 }

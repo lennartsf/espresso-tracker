@@ -7,7 +7,7 @@ import { useBrews } from '../hooks/useBrews'
 import { ShotCard } from '../components/ShotCard'
 import { BrewCard } from '../components/BrewCard'
 import { ROUTES } from '../lib/routes'
-import { buttonClasses } from '../components/ui'
+import { buttonClasses, EmptyState } from '../components/ui'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { LiquidBar } from '../components/dashboard/LiquidBar'
@@ -66,7 +66,13 @@ export function Dashboard() {
       <div className="mb-6 grid gap-2 md:grid-cols-2">
         {shots.slice(0, 6).map(shot => <ShotCard key={shot.id} shot={shot} />)}
         {!isLoading && shots.length === 0 && (
-          <p className="py-8 text-center text-sm text-coffee-muted md:col-span-2">No shots yet. Pull your first!</p>
+          <EmptyState
+            className="md:col-span-2"
+            headline="Your first pull awaits."
+            description="Log a shot and the cockpit comes alive."
+            ctaLabel="+ New Shot"
+            ctaTo={ROUTES.shotNew}
+          />
         )}
       </div>
 

@@ -27,12 +27,13 @@ test('renders gauge, scatter and recent shots with data', () => {
   })
   renderDash()
   expect(screen.getByText('Ø Flavor')).toBeInTheDocument()
-  expect(screen.getByText('Ratio × Geschmack')).toBeInTheDocument()
+  expect(screen.getByText('Ratio × Flavor')).toBeInTheDocument()
   expect(screen.getByText('shot-a')).toBeInTheDocument()
 })
 
 test('shows empty state when no shots', () => {
   shotsMock.mockReturnValue({ data: [], isLoading: false })
   renderDash()
-  expect(screen.getByText(/erfasse shots/i)).toBeInTheDocument()
+  expect(screen.getByText(/your first pull awaits/i)).toBeInTheDocument()
+  expect(screen.getByText(/log shots to see how ratio shapes flavor/i)).toBeInTheDocument()
 })

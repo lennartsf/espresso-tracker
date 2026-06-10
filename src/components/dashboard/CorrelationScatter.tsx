@@ -15,7 +15,7 @@ export function CorrelationScatter({ points }: { points: ScatterPoint[] }) {
   if (points.length === 0) {
     return (
       <div className="flex h-[120px] items-center justify-center text-xs text-coffee-muted">
-        Erfasse Shots, um Muster zwischen Verhältnis und Geschmack zu sehen.
+        Log shots to see how ratio shapes flavor.
       </div>
     )
   }
@@ -28,7 +28,7 @@ export function CorrelationScatter({ points }: { points: ScatterPoint[] }) {
   return (
     <div>
       <div className="mb-1 flex items-baseline justify-between">
-        <span className="text-[10px] uppercase tracking-wide text-coffee-muted">Ratio × Geschmack</span>
+        <span className="text-[10px] uppercase tracking-wide text-coffee-muted">Ratio × Flavor</span>
         {enough && <span className="text-[10px] text-coffee-accent-soft">r = {r >= 0 ? '+' : ''}{r.toFixed(2)}</span>}
       </div>
       <svg width="100%" height="120" viewBox="0 0 260 120">

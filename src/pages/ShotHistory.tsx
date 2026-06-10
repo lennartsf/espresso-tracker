@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
-import { Select } from '../components/ui'
+import { Select, EmptyState } from '../components/ui'
 
 type DrinkFilter = 'all' | 'espresso' | 'milk'
 
@@ -66,7 +66,17 @@ export function ShotHistory() {
       <div className="grid md:grid-cols-2 gap-2">
         {shots.map(shot => <ShotCard key={shot.id} shot={shot} />)}
         {!isLoading && shots.length === 0 && (
-          <p className="text-center text-coffee-muted text-sm py-10 md:col-span-2">No shots found.</p>
+          filterCoffeeId || drinkFilter !== 'all' ? (
+            <p className="text-center text-coffee-muted text-sm py-10 md:col-span-2">No shots match this filter.</p>
+          ) : (
+            <EmptyState
+              className="md:col-span-2"
+              headline="Your first pull awaits."
+              description="Log a shot to start dialling in."
+              ctaLabel="+ New Shot"
+              ctaTo={ROUTES.shotNew}
+            />
+          )
         )}
       </div>
     </div>

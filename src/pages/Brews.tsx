@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useBrews } from '../hooks/useBrews'
 import { BrewCard } from '../components/BrewCard'
-import { Select } from '../components/ui'
+import { Select, EmptyState } from '../components/ui'
 
 type MethodFilter = 'all' | 'french_press' | 'v60' | 'aeropress' | 'moka_pot'
 
@@ -64,9 +64,17 @@ export function Brews() {
       <div className="grid md:grid-cols-2 gap-2">
         {brews.map(brew => <BrewCard key={brew.id} brew={brew} />)}
         {!isLoading && brews.length === 0 && (
-          <p className="text-center text-coffee-muted text-sm py-10 md:col-span-2">
-            No brews yet. Add your first!
-          </p>
+          filterCoffeeId || methodFilter !== 'all' ? (
+            <p className="text-center text-coffee-muted text-sm py-10 md:col-span-2">No brews match this filter.</p>
+          ) : (
+            <EmptyState
+              className="md:col-span-2"
+              headline="Time to bloom."
+              description="Log a filter brew to start tracking."
+              ctaLabel="+ New Brew"
+              ctaTo={ROUTES.brewNew}
+            />
+          )
         )}
       </div>
     </div>

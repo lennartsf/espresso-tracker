@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../lib/routes'
 import { useCoffees, useCreateCoffee, useRoastDates } from '../hooks/useCoffees'
-import { useCreateShot } from '../hooks/useShots'
+import { useCreateShot, useShots } from '../hooks/useShots'
 import { useGrinders, useMachines, useBaskets, useEquipmentDefaults } from '../hooks/useEquipment'
 import { DRINK_TYPES, MILK_TYPES } from '../utils/drinkTypes'
 import { RatingInput } from '../components/RatingInput'
@@ -93,6 +93,37 @@ export function NewShot() {
   const [machineId, setMachineId] = useState('')
   const [basketId, setBasketId] = useState('')
   const [error, setError] = useState('')
+
+  const { data: allShots = [] } = useShots()
+  const lastShot = allShots[0]
+
+  /** Speed is craft: Routine-Shot = letzter Shot als Vorlage, nur ändern
+   *  was anders war. Ratings/Notes bewusst NICHT übernommen — neuer Shot,
+   *  neuer Geschmack. */
+  function repeatLastShot() {
+    if (!lastShot) return
+    defaultsApplied.current = true // Equipment-Defaults nicht mehr drüberschreiben
+    setCoffeeId(lastShot.coffee_id)
+    setRoastDateId(lastShot.roast_date_id ?? '')
+    setDrinkType(lastShot.drink_type ?? 'espresso')
+    setGrindSetting(lastShot.grind_setting != null ? String(lastShot.grind_setting) : '')
+    setDoseG(lastShot.dose_g != null ? String(lastShot.dose_g) : '')
+    setYieldG(lastShot.yield_g != null ? String(lastShot.yield_g) : '')
+    setBrewTimeS('')
+    setTempC(lastShot.temp_c != null ? String(lastShot.temp_c) : '')
+    setPressureBar(lastShot.pressure_bar != null ? String(lastShot.pressure_bar) : '9')
+    setPreinfusion(lastShot.preinfusion_s != null)
+    setPreinfusionS(lastShot.preinfusion_s != null ? String(lastShot.preinfusion_s) : '')
+    setUsedRdt(lastShot.used_rdt ?? false)
+    setUsedWdt(lastShot.used_wdt ?? false)
+    setUsedLeveler(lastShot.used_leveler ?? false)
+    setMilkType(lastShot.milk_type ?? '')
+    setMilkMl(lastShot.milk_ml != null ? String(lastShot.milk_ml) : '')
+    setGrinderId(lastShot.grinder_id ?? '')
+    setMachineId(lastShot.machine_id ?? '')
+    setBasketId(lastShot.basket_id ?? '')
+    setShowNewCoffee(false)
+  }
 
   const { data: roastDates = [] } = useRoastDates(coffeeId)
   const { data: grinders = [] } = useGrinders()
@@ -202,6 +233,15 @@ export function NewShot() {
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => navigate(-1)} className="text-lg text-coffee-muted hover:text-coffee-cream">←</button>
         <h1 className="font-display text-2xl font-semibold text-coffee-cream">New Shot</h1>
+        {lastShot && (
+          <button
+            type="button"
+            onClick={repeatLastShot}
+            className="ml-auto rounded-lg border border-coffee-line px-3 py-1.5 text-sm text-coffee-muted hover:bg-coffee-surface2 hover:text-coffee-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+          >
+            ↻ Repeat last
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-4">

@@ -30,7 +30,7 @@ export function DialGauge({
           <span className="block text-4xl font-extrabold text-coffee-accent-soft drop-shadow-[0_0_16px_rgba(233,201,135,0.5)]">
             <CountUp end={value} decimals={decimals} />
           </span>
-          <span className="text-[9px] text-coffee-muted">von {max}</span>
+          <span className="text-[9px] text-coffee-muted">of {max}</span>
         </div>
       </div>
     </div>

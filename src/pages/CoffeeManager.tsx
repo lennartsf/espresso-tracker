@@ -7,7 +7,7 @@ import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
-import { cardClasses, Badge, Input, Select, buttonClasses } from '../components/ui'
+import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -83,9 +83,15 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
           </button>
         ))}
         {!isLoading && coffees.length === 0 && (
-          <p className="text-center text-coffee-muted text-sm py-10">
-            No coffees yet. Add your first!
-          </p>
+          <EmptyState
+            headline="Add a bag to start dialling in."
+            description="Every shot needs its bean."
+            action={
+              <button onClick={onNew} className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-bg hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
+                + New Coffee
+              </button>
+            }
+          />
         )}
       </div>
     </div>
