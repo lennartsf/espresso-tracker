@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design-Tokens: Dark Premium (Marketing/Website) ──────────────
-   App-Shell (Layout) bleibt vorerst hell — Tokens werden in Phase 0
-   nur von Marketing/Auth genutzt (scoped, kein Bruch der App-Optik). */
+/* ── Design-Tokens: Dark Premium ──────────────────────────────────
+   Genutzt von Marketing/Auth UND der gesamten App-Shell (Reskin live
+   seit 2026-06-08). Funktionsfarben (Rating grün/gold/rot) bleiben. */
 :root {
   --coffee-bg: #1c1714;
   --coffee-surface: #25201b;

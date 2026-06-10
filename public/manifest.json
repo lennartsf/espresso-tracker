@@ -2,10 +2,11 @@
   "name": "Espresso Tracker",
   "short_name": "Espresso",
   "description": "Track and analyse your espresso shots",
-  "start_url": "/",
+  "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#f97316",
+  "background_color": "#1c1714",
+  "theme_color": "#1c1714",
   "icons": [
     {
       "src": "/icon-192.png",

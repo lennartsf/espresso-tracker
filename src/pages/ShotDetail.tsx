@@ -56,6 +56,12 @@ export function ShotDetail() {
     navigate(ROUTES.shots)
   }
 
+  // Ratio: gespeichertes brew_ratio bevorzugen, sonst aus dose/yield rechnen
+  // (ältere Shots haben brew_ratio = null, dose/yield aber gesetzt).
+  const displayRatio =
+    shot.brew_ratio ??
+    (shot.dose_g && shot.yield_g ? shot.yield_g / shot.dose_g : null)
+
   return (
     <div>
       {/* Header */}
@@ -134,7 +140,7 @@ export function ShotDetail() {
         <div className={`${cardClasses} p-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Ratio</p>
           <p className="text-base font-bold text-coffee-accent-soft">
-            {shot.brew_ratio ? `1 : ${shot.brew_ratio.toFixed(2)}` : '—'}
+            {displayRatio ? `1 : ${displayRatio.toFixed(2)}` : '—'}
           </p>
         </div>
       </div>

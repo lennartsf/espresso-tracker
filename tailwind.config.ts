@@ -6,7 +6,8 @@ export default {
     extend: {
       colors: {
         // Dark-Premium-Tokens (via CSS-Vars in index.css). Namespaced unter
-        // `coffee` → keine Kollision mit Tailwind-Defaults. Genutzt von Marketing/Auth.
+        // `coffee` → keine Kollision mit Tailwind-Defaults. Genutzt von Marketing/Auth
+        // UND der gesamten App-Shell (Reskin live seit 2026-06-08).
         coffee: {
           bg: 'var(--coffee-bg)',
           surface: 'var(--coffee-surface)',
@@ -20,7 +21,7 @@ export default {
         },
       },
       fontFamily: {
-        // Nur Marketing nutzt diese explizit; App-Default-Sans bleibt unangetastet.
+        // font-display (Fraunces) + font-grotesk (Space Grotesk) — Marketing & App.
         display: ['"Fraunces Variable"', 'Fraunces', 'Georgia', 'serif'],
         grotesk: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
       },

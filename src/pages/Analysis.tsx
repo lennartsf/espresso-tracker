@@ -10,6 +10,7 @@ import { useGrinders } from '../hooks/useEquipment'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
+import { ratingHex } from '../utils/ratingColor'
 import { BREW_METHODS } from '../utils/brewMethods'
 import { secondsToMMSS } from '../utils/timeFormat'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -23,7 +24,8 @@ function formatDate(d: string) {
 
 // ── Scatter helpers ────────────────────────────────────────────────────────────
 
-const DOT_COLOR = (y: number) => y >= 8 ? '#5fa869' : '#c9a35e'
+// Punktfarbe = 10-stufige Rating-Skala (rot→gold→grün), konsistent mit ratingColor.
+const DOT_COLOR = (y: number) => ratingHex(Math.round(y))
 
 function ScatterPlot({ data, xLabel, yLabel }: {
   data: { x: number; y: number; id: string }[]
@@ -60,10 +62,19 @@ function ScatterPlot({ data, xLabel, yLabel }: {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="text-xs text-coffee-muted text-center mt-1">
-        <span className="inline-block w-2 h-2 rounded-full bg-green-600 mr-1" />≥ 8
-        <span className="inline-block w-2 h-2 rounded-full bg-coffee-accent ml-3 mr-1" />unter 8
-      </p>
+      <div className="flex items-center justify-center gap-2 mt-1 text-xs text-coffee-muted">
+        <span>1</span>
+        <span
+          className="inline-block h-2 w-28 rounded-full"
+          style={{
+            background: `linear-gradient(to right, ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              .map(ratingHex)
+              .join(', ')})`,
+          }}
+        />
+        <span>10</span>
+        <span className="ml-1">{yLabel}</span>
+      </div>
     </>
   )
 }
