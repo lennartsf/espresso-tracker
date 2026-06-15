@@ -33,9 +33,10 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - **Interne Links IMMER über `ROUTES` (`src/lib/routes.ts`)**, nie hartkodierte Pfade.
 
 **Design-System (Dark Premium):** Tokens als CSS-Vars in `src/index.css` (`--coffee-*`), via `tailwind.config.ts` als `coffee.*`-Farben + `font-display` (Fraunces) / `font-grotesk` (Space Grotesk) nutzbar. Fonts self-hosted (`@fontsource*`), Import in `main.tsx`. **Dark-Theme deckt jetzt Marketing/Auth UND die ganze App-Shell ab** (Reskin = Phase 1 ✓, live 2026-06-08). Funktionsfarben (Rating: 10-stufig rot→amber→grün, **ohne Brand-Gold** — Stufe 6 = `#bcae49`, Akzent `#c9a35e` = nur Marke/Interaktion) bleiben bewusst. Motion via GSAP (`gsap` + `@gsap/react`), `prefers-reduced-motion` respektieren (Stub in Tests: `src/__tests__/setup.ts` matchMedia-Polyfill). **Verbindlicher Design-Prompt: `docs/DESIGN.md`** (Tokens, Pull-Arc-Signatur, States-Pflicht, Motion-Regeln, Backlog) — bei jeder UI-Arbeit befolgen.
-- **Seit 2026-06-10:** `EmptyState`-Primitive (`src/components/ui/EmptyState.tsx`, Copy in DESIGN.md), BrewTimer = Pull-Arc-Ring (0–40 s Fenster), Offline-Banner in `Layout` (ehrlich, keine Write-Queue), Bottom-Nav `safe-area-inset-bottom`, NewShot „↻ Repeat last“ (prefillt letzten Shot ohne Ratings/Notes).
-- **RoasterMap:** CartoDB `dark_all` Tiles (oranger Pin). **Animate** (`/app/animate/*`) absichtlich aus der Nav versteckt — Route erreichbar, SVGs noch helle „Inseln" (Folge-Task: dark-tunen). Reaktivieren = Nav-Eintrag in `Layout.tsx` zurück.
-- **Reskin-Folge-Tasks (Backlog):** (1) 4 Animations-SVGs für Dark tunen, dann Animate-Nav zurück. (2) Analysis Chart-Punktfarben an 10-stufige `ratingColor` koppeln (aktuell 2-Stufen grün/gold). (3) ShotDetail-**View** „RATIO —"-Bug: liest stored `brew_ratio`=null statt yield/dose zu rechnen (Edit-Form rechnet korrekt).
+- **Seit 2026-06-10:** `EmptyState`-Primitive (`src/components/ui/EmptyState.tsx`, Copy in DESIGN.md), BrewTimer = Pull-Arc-Ring (0–40 s Fenster), Bottom-Nav `safe-area-inset-bottom`, NewShot „↻ Repeat last“ (prefillt letzten Shot ohne Ratings/Notes).
+- **Offline (seit 2026-06-15):** Write-Queue (`src/lib/writeQueue.ts` + `useWriteQueue`) puffert Shot/Brew-Creates offline in localStorage, Replay bei Reconnect; `Layout`-Banner zeigt „save locally" + Pending-Count. Nur CREATE; Edits/Deletes + Inline-New-Coffee brauchen Verbindung.
+- **RoasterMap:** CartoDB `dark_all` Tiles (oranger Pin). **Animate** (`/app/animate/*`) wieder in der Nav (seit 2026-06-15, SVGs dark-getunt, `Sparkles`-Icon).
+- **Reskin-Folge-Tasks: alle ERLEDIGT.** (1) 4 Animations-SVGs dark-getunt + Animate-Nav zurück (2026-06-15). (2) Analysis Chart-Punktfarben schon 10-stufig (`DOT_COLOR=ratingHex`). (3) ShotDetail-„RATIO —"-Bug schon gefixt (Fallback yield/dose, `ShotDetail.tsx:59-63`).
 
 **Multi-User-Naht (Phase 2):** `src/lib/auth.ts#getCurrentUserId()` gibt aktuell `null` (Single-User). Für Multi-User: echten Supabase-Auth-User liefern, in jedem react-query-Hook (`src/hooks/use*.ts`, die einzige DB-Grenze) `.eq('user_id', uid)` ergänzen, `user_id`-Spalten + **RLS-Policies** pro Tabelle anlegen (sonst liest jeder eingeloggte Nutzer fremde Daten). Phasen-Plan: `~/.claude/plans/dazzling-popping-prism.md`.
 
@@ -69,7 +70,14 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | origin_region | text |
 | altitude_m | int4 |
 | photo_url | text |
+| rec_dose_g | real | ⚠ Migration 2026-06-15 (Röster-Rezept) |
+| rec_yield_g | real | ⚠ Migration 2026-06-15 |
+| rec_temp_c | real | ⚠ Migration 2026-06-15 |
+| rec_time_s | int4 | ⚠ Migration 2026-06-15 |
+| rec_grind_note | text | ⚠ Migration 2026-06-15 |
 | created_at | timestamptz |
+
+> ⚠ `rec_*`-Spalten brauchen `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` (in Supabase ausführen) — sonst schlägt Coffee-Insert/Update fehl.
 
 ### `roast_dates`
 | Spalte | Typ |
