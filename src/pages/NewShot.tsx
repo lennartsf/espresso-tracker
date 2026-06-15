@@ -156,6 +156,20 @@ export function NewShot() {
     setRoastDateId('')
   }
 
+  const selectedCoffee = coffees.find(c => c.id === coffeeId)
+  const hasRoasterRecipe = !!selectedCoffee && (
+    selectedCoffee.rec_dose_g != null || selectedCoffee.rec_yield_g != null ||
+    selectedCoffee.rec_temp_c != null || selectedCoffee.rec_time_s != null
+  )
+
+  function applyRoasterRecipe() {
+    if (!selectedCoffee) return
+    if (selectedCoffee.rec_dose_g != null) setDoseG(String(selectedCoffee.rec_dose_g))
+    if (selectedCoffee.rec_yield_g != null) setYieldG(String(selectedCoffee.rec_yield_g))
+    if (selectedCoffee.rec_temp_c != null) setTempC(String(selectedCoffee.rec_temp_c))
+    if (selectedCoffee.rec_time_s != null) setBrewTimeS(String(selectedCoffee.rec_time_s))
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -189,6 +203,11 @@ export function NewShot() {
         origin_region: null,
         altitude_m: null,
         photo_url: null,
+        rec_dose_g: null,
+        rec_yield_g: null,
+        rec_temp_c: null,
+        rec_time_s: null,
+        rec_grind_note: null,
       })
       resolvedCoffeeId = coffee.id
     }
@@ -310,6 +329,27 @@ export function NewShot() {
             </div>
           )}
         </div>
+
+        {/* Roaster recipe prefill */}
+        {hasRoasterRecipe && (
+          <button
+            type="button"
+            onClick={applyRoasterRecipe}
+            className="flex w-full items-center justify-between rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2 text-sm text-coffee-accent-soft hover:bg-coffee-accent/15"
+          >
+            <span>↻ Use roaster recipe</span>
+            <span className="text-xs text-coffee-muted">
+              {[
+                selectedCoffee?.rec_dose_g != null && selectedCoffee?.rec_yield_g != null && `${selectedCoffee.rec_dose_g}→${selectedCoffee.rec_yield_g}g`,
+                selectedCoffee?.rec_temp_c != null && `${selectedCoffee.rec_temp_c}°C`,
+                selectedCoffee?.rec_time_s != null && `${selectedCoffee.rec_time_s}s`,
+              ].filter(Boolean).join(' · ')}
+            </span>
+          </button>
+        )}
+        {hasRoasterRecipe && selectedCoffee?.rec_grind_note && (
+          <p className="-mt-2 text-xs text-coffee-muted">Roaster grind: {selectedCoffee.rec_grind_note}</p>
+        )}
 
         {/* Roast date */}
         {coffeeId && recentDates.length > 0 && (

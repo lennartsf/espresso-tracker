@@ -7,6 +7,7 @@ import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
+import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
 import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
@@ -224,6 +225,38 @@ function CoffeeDetailView({
         </div>
       )}
 
+      {(coffee.rec_dose_g != null || coffee.rec_yield_g != null || coffee.rec_temp_c != null || coffee.rec_time_s != null || coffee.rec_grind_note) && (
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roaster Recipe</p>
+          <div className="grid gap-1">
+            {coffee.rec_dose_g != null && coffee.rec_yield_g != null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-coffee-muted">Ratio</span>
+                <span className="text-coffee-cream">{coffee.rec_dose_g}g → {coffee.rec_yield_g}g</span>
+              </div>
+            )}
+            {coffee.rec_temp_c != null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-coffee-muted">Temperature</span>
+                <span className="text-coffee-cream">{coffee.rec_temp_c} °C</span>
+              </div>
+            )}
+            {coffee.rec_time_s != null && (
+              <div className="flex justify-between text-sm">
+                <span className="text-coffee-muted">Time</span>
+                <span className="text-coffee-cream">{coffee.rec_time_s}s</span>
+              </div>
+            )}
+            {coffee.rec_grind_note && (
+              <div className="flex justify-between gap-3 text-sm">
+                <span className="text-coffee-muted">Grind</span>
+                <span className="text-coffee-cream text-right">{coffee.rec_grind_note}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className={`${cardClasses} p-3`}>
         <div className="flex justify-between items-center mb-2">
           <p className="text-xs text-coffee-muted uppercase font-semibold">Roast Dates</p>
@@ -296,6 +329,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   const [originRegion, setOriginRegion] = useState(coffee.origin_region ?? '')
   const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
   const [photoUrl, setPhotoUrl] = useState<string | null>(coffee.photo_url ?? null)
+  const [recipe, setRecipe] = useState(initialRecipe(coffee))
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -326,6 +360,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
       photo_url: photoUrl,
+      ...recipePayload(recipe),
     })
     onBack()
   }
@@ -416,6 +451,8 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
           </div>
         </div>
 
+        <RoasterRecipeFields value={recipe} onChange={setRecipe} />
+
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
@@ -446,6 +483,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const [originRegion, setOriginRegion] = useState('')
   const [altitudeM, setAltitudeM] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  const [recipe, setRecipe] = useState(initialRecipe())
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -478,6 +516,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
       photo_url: photoUrl,
+      ...recipePayload(recipe),
     })
     onBack()
   }
@@ -609,6 +648,8 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
             </div>
           </div>
         </div>
+
+        <RoasterRecipeFields value={recipe} onChange={setRecipe} />
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 

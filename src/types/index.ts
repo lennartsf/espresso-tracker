@@ -25,6 +25,12 @@ export interface Coffee {
   origin_region: string | null
   altitude_m: number | null
   photo_url: string | null
+  // Roaster's recommended recipe (single, as printed on the bag) — all optional
+  rec_dose_g: number | null
+  rec_yield_g: number | null
+  rec_temp_c: number | null
+  rec_time_s: number | null
+  rec_grind_note: string | null
 }
 
 export interface RoastDate {
