@@ -35,6 +35,9 @@ export function RecipeCard({ stats }: Props) {
         {stats.avgTemp !== null && (
           <Row label="Temperature" value={`${stats.avgTemp.toFixed(0)}°C`} />
         )}
+        {stats.avgPressure !== null && (
+          <Row label="Pressure" value={`${stats.avgPressure.toFixed(1)} bar`} />
+        )}
       </div>
     </div>
   )

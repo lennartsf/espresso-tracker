@@ -78,7 +78,17 @@ export function Layout() {
 
       {/* Main content */}
       <main className="flex-1 md:ml-52 pb-20 md:pb-10 px-4 md:px-10 pt-6 w-full">
-        <div className="max-w-lg md:max-w-4xl mx-auto">
+        <div className="relative max-w-lg md:max-w-4xl mx-auto">
+          {/* Pull-Arc — single decorative motif (extraction), faint at the top of each screen */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 320 80"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute -top-3 right-0 h-12 w-40 text-coffee-accent/15"
+            fill="none"
+          >
+            <path d="M4 76 A 160 160 0 0 1 316 76" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
           <Outlet />
         </div>
       </main>
