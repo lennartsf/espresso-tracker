@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useWriteQueue } from '../hooks/useWriteQueue'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
   BookOpen, Library, Sparkles, MoreHorizontal,
@@ -24,19 +25,8 @@ const moreNav    = navItems.slice(4)
 
 export function Layout() {
   const [moreOpen, setMoreOpen] = useState(false)
-  const [online, setOnline] = useState(() => navigator.onLine)
+  const { online, pending } = useWriteQueue()
   const location = useLocation()
-
-  useEffect(() => {
-    const goOnline = () => setOnline(true)
-    const goOffline = () => setOnline(false)
-    window.addEventListener('online', goOnline)
-    window.addEventListener('offline', goOffline)
-    return () => {
-      window.removeEventListener('online', goOnline)
-      window.removeEventListener('offline', goOffline)
-    }
-  }, [])
 
   const isMoreActive = moreNav.some(item =>
     item.to === ROUTES.app
@@ -47,10 +37,14 @@ export function Layout() {
   return (
     <div className="flex min-h-screen bg-coffee-bg text-coffee-text font-grotesk">
 
-      {/* Offline-Hinweis — ehrlich: noch keine Write-Queue, Speichern schlägt offline fehl */}
-      {!online && (
+      {/* Offline / sync status — writes are buffered locally and replayed on reconnect */}
+      {(!online || pending > 0) && (
         <div role="status" className="fixed top-0 left-0 right-0 z-40 bg-coffee-surface2 border-b border-coffee-line px-4 py-1.5 pt-[max(0.375rem,env(safe-area-inset-top))] text-center text-xs text-coffee-accent-soft">
-          You're offline — changes can't be saved right now.
+          {!online
+            ? pending > 0
+              ? `You're offline — ${pending} change${pending > 1 ? 's' : ''} saved locally, will sync when you're back.`
+              : "You're offline — new shots and brews save locally and sync when you're back."
+            : `Syncing ${pending} saved change${pending > 1 ? 's' : ''}…`}
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { enqueueWrite } from '../lib/writeQueue'
 import type { Shot, NewShot } from '../types'
 
 export type ShotWithCoffee = Shot & {
@@ -33,6 +34,10 @@ export function useCreateShot() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (shot: NewShot) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        enqueueWrite('shots', shot as unknown as Record<string, unknown>)
+        return { ...shot, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Shot
+      }
       const { data, error } = await supabase
         .from('shots')
         .insert(shot)
