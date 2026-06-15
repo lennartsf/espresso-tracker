@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
-  BookOpen, Library, MoreHorizontal,
+  BookOpen, Library, Sparkles, MoreHorizontal,
 } from 'lucide-react'
 import { ROUTES } from '../lib/routes'
 
@@ -16,7 +16,7 @@ const navItems = [
   { to: ROUTES.equipment, label: 'Equipment', Icon: Settings },
   { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
   { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
-  // Animate hidden from nav until SVGs are dark-tuned; route /app/animate/* stays reachable.
+  { to: ROUTES.animate,   label: 'Animate',   Icon: Sparkles },
 ]
 
 const primaryNav = navItems.slice(0, 4)

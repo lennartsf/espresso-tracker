@@ -62,7 +62,7 @@ export function MilkAnimation() {
 
   return (
     <div>
-      <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
+      <div className="bg-coffee-surface rounded-xl p-4 mb-4 border border-coffee-line flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cross-section: pitcher moves, wand fixed in the spout */}
         <div className="flex-1">
           <svg viewBox="0 0 200 174" className="w-full">
@@ -102,7 +102,7 @@ export function MilkAnimation() {
             {/* steam wand — fixed in the spout (only the pitcher moves) */}
             <line x1="56" y1="6" x2="62" y2="66" stroke="url(#milk-steel)" strokeWidth="6" strokeLinecap="round" />
             <line x1="56" y1="6" x2="62" y2="66" stroke="#8b94a1" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
-            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Side — only the pitcher moves</text>
+            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#a89784">Side — only the pitcher moves</text>
           </svg>
         </div>
 
@@ -131,13 +131,13 @@ export function MilkAnimation() {
               {/* lance position — off-centre, left, between centre and rim */}
               <circle cx="34" cy="60" r="4.5" fill="#8b94a1" stroke="#64748b" strokeWidth="1" />
             </g>
-            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#64748b">Top — vortex, tip off-centre</text>
+            <text x="100" y="170" textAnchor="middle" fontSize="9" fill="#a89784">Top — vortex, tip off-centre</text>
           </svg>
         </div>
       </div>
 
       {/* caption */}
-      <p className="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl p-3 mb-3 min-h-[3rem]">
+      <p className="text-sm text-coffee-text bg-coffee-surface2 border border-coffee-line rounded-xl p-3 mb-3 min-h-[3rem]">
         {active ? active.caption : 'Starting…'}
       </p>
 
@@ -146,7 +146,7 @@ export function MilkAnimation() {
         {PHASES.map((ph, i) => (
           <div key={ph.label}
             className={`flex-1 rounded-lg p-2 text-center text-xs font-semibold transition-colors ${
-              i === phase ? 'bg-sky-100 border border-sky-300 text-sky-700' : i < phase ? 'bg-sky-50 border border-sky-200 text-sky-600' : 'bg-slate-50 border border-slate-200 text-slate-400'
+              i === phase ? 'bg-coffee-accent/15 border border-coffee-accent/40 text-coffee-accent-soft' : i < phase ? 'bg-coffee-accent/10 border border-coffee-accent/20 text-coffee-accent' : 'bg-coffee-surface2 border border-coffee-line text-coffee-muted'
             }`}>
             {ph.label}
           </div>
@@ -155,15 +155,15 @@ export function MilkAnimation() {
 
       {/* right/wrong hints */}
       <div className="grid grid-cols-3 gap-2 mb-3 text-xs text-center">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-green-700">✓ Tip at surface<br /><span className="text-green-500">fine microfoam</span></div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-red-700">✗ Too deep<br /><span className="text-red-400">no foam</span></div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-red-700">✗ Air too long<br /><span className="text-red-400">big bubbles</span></div>
+        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 text-green-300">✓ Tip at surface<br /><span className="text-green-400/80">fine microfoam</span></div>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-red-300">✗ Too deep<br /><span className="text-red-400/80">no foam</span></div>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-red-300">✗ Air too long<br /><span className="text-red-400/80">big bubbles</span></div>
       </div>
 
-      <p className="text-xs text-slate-400 text-center mb-3">Air goes in early (cold milk). Stop when the jug is too hot to hold (~60–65 °C) — never above 68 °C.</p>
+      <p className="text-xs text-coffee-muted text-center mb-3">Air goes in early (cold milk). Stop when the jug is too hot to hold (~60–65 °C) — never above 68 °C.</p>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-orange-500 text-white text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
         {playing ? 'Steaming…' : '↺ Replay'}
       </button>
     </div>

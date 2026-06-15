@@ -26,22 +26,22 @@ export function BoilerAnimation() {
   return (
     <div>
       {/* tabs */}
-      <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1 overflow-x-auto">
+      <div className="flex gap-1 mb-4 bg-coffee-bg rounded-lg p-1 overflow-x-auto">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setActive(t.key)}
             className={`flex-1 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors ${
-              active === t.key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              active === t.key ? 'bg-coffee-surface2 text-coffee-cream shadow-sm' : 'text-coffee-muted hover:text-coffee-cream'
             }`}>
             {t.label}
           </button>
         ))}
       </div>
 
-      <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200">
+      <div className="bg-coffee-surface rounded-xl p-4 mb-4 border border-coffee-line">
         <svg viewBox="0 0 320 200" className="w-full">
           <defs>
             <linearGradient id="boiler-body" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#f1f5f9" /><stop offset="1" stopColor="#dbe2ea" />
+              <stop offset="0" stopColor="#3b3631" /><stop offset="1" stopColor="#2a2521" />
             </linearGradient>
             <linearGradient id="boiler-heat" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#fed7aa" /><stop offset="1" stopColor="#f59e0b" />
@@ -59,7 +59,7 @@ export function BoilerAnimation() {
 
           {/* machine body */}
           <g filter="url(#boiler-shadow)">
-            <rect x="40" y="30" width="240" height="140" rx="12" fill="url(#boiler-body)" stroke="#cbd5e1" strokeWidth="2" />
+            <rect x="40" y="30" width="240" height="140" rx="12" fill="url(#boiler-body)" stroke="#4a443d" strokeWidth="2" />
           </g>
 
           {active === 'single' && (
@@ -114,7 +114,7 @@ export function BoilerAnimation() {
         </svg>
       </div>
 
-      <p className="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl p-4">
+      <p className="text-sm text-coffee-text bg-coffee-surface2 border border-coffee-line rounded-xl p-4">
         {DESCRIPTIONS[active]}
       </p>
     </div>
