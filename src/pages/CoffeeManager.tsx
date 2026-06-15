@@ -59,7 +59,7 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             onClick={() => onSelect(c)}
             className={`${cardClasses} p-3 flex justify-between items-center text-left w-full transition-colors hover:border-coffee-accent/40`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               {c.photo_url ? (
                 <img src={c.photo_url} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
               ) : (
@@ -74,9 +74,9 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {c.roast_level && (
-                <Badge>Roast Level {c.roast_level}</Badge>
+                <Badge className="whitespace-nowrap">Roast {c.roast_level}</Badge>
               )}
               <span className="text-coffee-muted/60 text-lg">›</span>
             </div>
