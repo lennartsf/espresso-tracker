@@ -86,3 +86,20 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
    erst dann Banner-Copy auf „shots save locally“ ändern.
 3. Landing-Hero: Parallax + Wort-Stagger nach Spec prüfen/ergänzen.
 4. Dekorativer Arc hinter Section-Headern (Marketing + App).
+
+## Mobile/UX-Backlog (User 2026-06-15)
+5. ✅ **Eingabefeld-Kontrast (a11y)** — ERLEDIGT (Branch `mobile-ux-batch1`):
+   `fieldClasses` (`src/components/ui/Input.tsx`) bg `coffee-bg`→`coffee-surface2`,
+   Border `coffee-line`→`white/15`, Placeholder `muted/60`→`muted`. Hand-gerollte
+   Felder migriert: Analysis-Selects → `Select`-Primitive; Equipment (23 Felder)
+   bg/text/border injiziert; AuthForm angeglichen. 167✓.
+6. **Bessere Visualisierung auf dem Handy** — Mobile-Layouts (390 px) generell
+   überarbeiten: Listen/Karten/Stat-Anzeigen, Touch-Targets, Lesbarkeit.
+7. ✅ **RoasterMap ~2× größer** — ERLEDIGT: `Roasters.tsx` height 200px→420px.
+8. ✅ **Analyse: Kaffeeauswahl wie in NewShot** — ERLEDIGT: alle Coffee-Selects in
+   `Analysis.tsx` zeigen `Name / Rösterei` (Muster aus NewShot), via `Select`.
+9. **Rezepte je Kaffee hinterlegen (Röster-Vorgabe)** — pro Kaffee die vom Röster
+   empfohlenen Brüh-Parameter speichern + anzeigen (z.B. Dose/Yield/Ratio/Temp/
+   Zeit). Braucht Schema (Felder an `coffees` oder neue `coffee_recipes`-Tabelle)
+   → Migration mit User abstimmen. In CoffeeManager erfassen, in NewShot als
+   Referenz/Prefill anzeigen.
