@@ -1,14 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { getCurrentUserId } from '../lib/auth'
 import type { Coffee, NewCoffee, RoastDate, NewRoastDate } from '../types'
 
 export function useCoffees() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['coffees'],
+    queryKey: ['coffees', uid],
+    enabled: !!uid,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('coffees')
         .select('*')
+        .eq('user_id', uid)
         .order('name')
       if (error) throw error
       return data as Coffee[]
@@ -17,18 +21,20 @@ export function useCoffees() {
 }
 
 export function useCoffeesByRoaster(roasterId: string) {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['coffees', 'roaster', roasterId],
+    queryKey: ['coffees', 'roaster', uid, roasterId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('coffees')
         .select('*')
+        .eq('user_id', uid)
         .eq('roaster_id', roasterId)
         .order('name')
       if (error) throw error
       return data as Coffee[]
     },
-    enabled: !!roasterId,
+    enabled: !!roasterId && !!uid,
   })
 }
 
@@ -38,7 +44,7 @@ export function useCreateCoffee() {
     mutationFn: async (coffee: NewCoffee) => {
       const { data, error } = await supabase
         .from('coffees')
-        .insert(coffee)
+        .insert({ ...coffee, user_id: getCurrentUserId() })
         .select()
         .single()
       if (error) throw error
@@ -80,18 +86,20 @@ export function useDeleteCoffee() {
 }
 
 export function useRoastDates(coffeeId: string) {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['roast_dates', coffeeId],
+    queryKey: ['roast_dates', uid, coffeeId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('roast_dates')
         .select('*')
+        .eq('user_id', uid)
         .eq('coffee_id', coffeeId)
         .order('roast_date', { ascending: false })
       if (error) throw error
       return data as RoastDate[]
     },
-    enabled: !!coffeeId,
+    enabled: !!coffeeId && !!uid,
   })
 }
 
@@ -101,7 +109,7 @@ export function useCreateRoastDate() {
     mutationFn: async (rd: NewRoastDate) => {
       const { data, error } = await supabase
         .from('roast_dates')
-        .insert(rd)
+        .insert({ ...rd, user_id: getCurrentUserId() })
         .select()
         .single()
       if (error) throw error

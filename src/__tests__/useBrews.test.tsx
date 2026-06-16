@@ -4,7 +4,8 @@ import { vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { useBrews } from '../hooks/useBrews'
 import type { BrewWithCoffee } from '../hooks/useBrews'
-import { useTestUser } from './helpers/auth'
+import { useTestUser, TEST_UID } from './helpers/auth'
+import { setCurrentUserId } from '../lib/auth'
 
 useTestUser()
 
@@ -58,4 +59,12 @@ test('useBrews gibt Brews zurück', async () => {
   expect(result.current.data).toHaveLength(1)
   expect(result.current.data![0].brew_method).toBe('v60')
   expect(result.current.data![0].coffees?.name).toBe('Ethiopia')
+})
+
+test('useBrews is gated (idle) when logged out', async () => {
+  setCurrentUserId(null)
+  const { result } = renderHook(() => useBrews(), { wrapper })
+  await new Promise(r => setTimeout(r, 50))
+  expect(result.current.fetchStatus).toBe('idle')
+  setCurrentUserId(TEST_UID)
 })

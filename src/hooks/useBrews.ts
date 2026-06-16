@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { enqueueWrite } from '../lib/writeQueue'
+import { getCurrentUserId } from '../lib/auth'
 import type { Brew, NewBrew } from '../types'
 
 export type BrewWithCoffee = Brew & {
@@ -10,12 +11,15 @@ export type BrewWithCoffee = Brew & {
 }
 
 export function useBrews(coffeeId?: string, brewMethod?: string) {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['brews', coffeeId ?? 'all', brewMethod ?? 'all'],
+    queryKey: ['brews', uid, coffeeId ?? 'all', brewMethod ?? 'all'],
+    enabled: !!uid,
     queryFn: async () => {
       let query = supabase
         .from('brews')
         .select('*, coffees(name), grinders(name), brew_devices(name)')
+        .eq('user_id', uid)
         .order('brewed_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (brewMethod) query = query.eq('brew_method', brewMethod)
@@ -29,6 +33,7 @@ export function useBrews(coffeeId?: string, brewMethod?: string) {
 export function useBrew(id: string) {
   return useQuery({
     queryKey: ['brew', id],
+    enabled: !!id && !!getCurrentUserId(),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('brews')
@@ -38,7 +43,6 @@ export function useBrew(id: string) {
       if (error) throw error
       return data as BrewWithCoffee
     },
-    enabled: !!id,
   })
 }
 
@@ -46,11 +50,12 @@ export function useCreateBrew() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (brew: NewBrew) => {
+      const withUser = { ...brew, user_id: getCurrentUserId() }
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        enqueueWrite('brews', brew as unknown as Record<string, unknown>)
-        return { ...brew, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Brew
+        enqueueWrite('brews', withUser as unknown as Record<string, unknown>)
+        return { ...withUser, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Brew
       }
-      const { data, error } = await supabase.from('brews').insert(brew).select().single()
+      const { data, error } = await supabase.from('brews').insert(withUser).select().single()
       if (error) throw error
       return data as Brew
     },
