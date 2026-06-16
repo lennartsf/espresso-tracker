@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useWriteQueue } from '../hooks/useWriteQueue'
+import { useAuth } from '../lib/AuthContext'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
-  BookOpen, Library, Sparkles, MoreHorizontal,
+  BookOpen, Library, Sparkles, LogOut, MoreHorizontal,
 } from 'lucide-react'
 import { ROUTES } from '../lib/routes'
 
@@ -26,7 +27,14 @@ const moreNav    = navItems.slice(4)
 export function Layout() {
   const [moreOpen, setMoreOpen] = useState(false)
   const { online, pending } = useWriteQueue()
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
   const location = useLocation()
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate(ROUTES.login)
+  }
 
   const isMoreActive = moreNav.some(item =>
     item.to === ROUTES.app
@@ -68,6 +76,13 @@ export function Layout() {
             {label}
           </NavLink>
         ))}
+        <button
+          onClick={handleLogout}
+          className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
+        >
+          <LogOut size={18} strokeWidth={1.75} />
+          Log out
+        </button>
       </nav>
 
       {/* Main content */}
@@ -111,6 +126,13 @@ export function Layout() {
                   {label}
                 </NavLink>
               ))}
+              <button
+                onClick={() => { setMoreOpen(false); handleLogout() }}
+                className="flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-xs font-medium text-coffee-muted hover:text-coffee-cream"
+              >
+                <LogOut size={22} strokeWidth={1.75} />
+                Log out
+              </button>
             </div>
           </div>
         </div>
