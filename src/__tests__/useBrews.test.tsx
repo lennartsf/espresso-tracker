@@ -4,6 +4,9 @@ import { vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { useBrews } from '../hooks/useBrews'
 import type { BrewWithCoffee } from '../hooks/useBrews'
+import { useTestUser } from './helpers/auth'
+
+useTestUser()
 
 const mockBrew: BrewWithCoffee = {
   id: 'b1',
@@ -31,15 +34,15 @@ const mockBrew: BrewWithCoffee = {
   brew_devices: null,
 }
 
-vi.mock('../lib/supabase', () => ({
-  supabase: {
-    from: () => ({
-      select: () => ({
-        order: () => Promise.resolve({ data: [mockBrew], error: null }),
-      }),
-    }),
-  },
-}))
+vi.mock('../lib/supabase', () => {
+  const chain: Record<string, unknown> = {
+    select: () => chain,
+    eq: () => chain,
+    neq: () => chain,
+    order: () => Promise.resolve({ data: [mockBrew], error: null }),
+  }
+  return { supabase: { from: () => chain } }
+})
 
 function wrapper({ children }: { children: ReactNode }) {
   return (
