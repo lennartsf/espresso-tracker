@@ -79,11 +79,11 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
   Craft-Anspruch nicht dient.
 
 ## Backlog (groß, bewusst offen)
-1. **NewShot als Mobile-Stepped-Flow** (5 Schritte: Drink → Grind/Dose/Yield →
-   Timer → Ratings → Notes; Fortschritt = dünne Akzent-Linie oben,
-   full-screen, safe-area-top). Größter Umbau, eigener Branch. **NOCH OFFEN** —
-   bewusst nicht im Batch-Durchlauf 2026-06-15 (riskanter Rewrite des Kern-Flows,
-   Design-Entscheid zur Schritt-Gruppierung nötig).
+1. ✅ **NewShot Mobile-Stepped-Flow** — ERLEDIGT (Branch `newshot-stepped-flow`):
+   5 Schritte (Coffee · Dial-in · Timer · Taste · Notes), Progress-Leiste, Back/Next,
+   Per-Step-Validierung; Desktop behält Ein-Seiten-Form (`useIsMobile`). Bug gefixt:
+   Next→Save teilten DOM-Node → React morphte type→submit mitten im Klick (Vorab-Submit).
+   Distinkte `key` lösen es (0 Stray-Inserts verifiziert).
 2. ✅ **Offline-Write-Queue** — ERLEDIGT (`lib/writeQueue.ts`, `useWriteQueue`,
    enqueue in useCreateShot/useCreateBrew, Banner-Copy ehrlich „save locally", 3 Tests).
 3. ✅ Landing-Hero: Parallax + Wort-Stagger schon vorhanden (`Hero.tsx`), Spec ok.
