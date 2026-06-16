@@ -42,7 +42,7 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
 
       {withCoords.length > 0 && (
         <div className="mb-4 rounded-xl overflow-hidden border border-coffee-line">
-          <RoasterMap roasters={roasters} height="200px" zoom={6} />
+          <RoasterMap roasters={roasters} height="420px" zoom={6} />
         </div>
       )}
 

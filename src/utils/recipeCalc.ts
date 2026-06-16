@@ -8,6 +8,7 @@ export interface RecipeStats {
   brewTimeMin: number | null
   brewTimeMax: number | null
   avgTemp: number | null
+  avgPressure: number | null
   avgRating: number
   shotCount: number
 }
@@ -24,6 +25,7 @@ export function calcBestRecipe(shots: Shot[]): RecipeStats | null {
   const doses = top.map(s => s.dose_g).filter((d): d is number => d !== null)
   const yields = top.map(s => s.yield_g).filter((y): y is number => y !== null)
   const temps = top.map(s => s.temp_c).filter((t): t is number => t !== null)
+  const pressures = top.map(s => s.pressure_bar).filter((p): p is number => p !== null)
 
   return {
     grindMin: grinds[0],
@@ -33,6 +35,7 @@ export function calcBestRecipe(shots: Shot[]): RecipeStats | null {
     brewTimeMin: times.length > 0 ? times[0] : null,
     brewTimeMax: times.length > 0 ? times[times.length - 1] : null,
     avgTemp: avg(temps),
+    avgPressure: avg(pressures),
     avgRating: avg(top.map(s => s.rating))!,
     shotCount: top.length,
   }

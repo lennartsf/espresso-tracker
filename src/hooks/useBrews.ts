@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { enqueueWrite } from '../lib/writeQueue'
 import type { Brew, NewBrew } from '../types'
 
 export type BrewWithCoffee = Brew & {
@@ -45,6 +46,10 @@ export function useCreateBrew() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (brew: NewBrew) => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        enqueueWrite('brews', brew as unknown as Record<string, unknown>)
+        return { ...brew, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Brew
+      }
       const { data, error } = await supabase.from('brews').insert(brew).select().single()
       if (error) throw error
       return data as Brew

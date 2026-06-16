@@ -51,7 +51,7 @@ function Field({ label, type, placeholder }: { label: string; type: string; plac
       <input
         type={type}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border border-coffee-line bg-coffee-bg px-4 py-3 text-coffee-text placeholder:text-coffee-muted/60 focus:border-coffee-accent focus:outline-none"
+        className="mt-1.5 w-full rounded-xl border border-white/15 bg-coffee-surface2 px-4 py-3 text-coffee-text placeholder:text-coffee-muted focus:border-coffee-accent focus:outline-none"
       />
     </label>
   )

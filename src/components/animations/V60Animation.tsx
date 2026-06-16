@@ -60,7 +60,7 @@ export function V60Animation() {
 
   return (
     <div>
-      <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
+      <div className="bg-coffee-surface rounded-xl p-4 mb-4 border border-coffee-line flex flex-col sm:flex-row gap-4">
         {/* SIDE VIEW — cone ▼ */}
         <div className="flex-1">
           <svg viewBox="0 0 240 168" className="w-full">
@@ -122,7 +122,7 @@ export function V60Animation() {
 
             {/* pour stream */}
             {pouring && <line x1="120" y1="20" x2="120" y2={ws.toFixed(1)} stroke="url(#v60-water)" strokeWidth="4" strokeLinecap="round" />}
-            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Side — water level</text>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#a89784">Side — water level</text>
           </svg>
         </div>
 
@@ -151,14 +151,14 @@ export function V60Animation() {
               )}
               {dot && <circle cx={dot.x.toFixed(1)} cy={dot.y.toFixed(1)} r="4" fill="#1e293b" />}
             </g>
-            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Top — pour & swirl</text>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#a89784">Top — pour & swirl</text>
           </svg>
         </div>
       </div>
 
       {/* caption */}
-      <p className="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl p-3 mb-4 min-h-[3rem]">
-        {active ? <><span className="font-semibold text-slate-800">{active.time} · {active.g}</span> — {active.caption}</> : 'Starting…'}
+      <p className="text-sm text-coffee-text bg-coffee-surface2 border border-coffee-line rounded-xl p-3 mb-4 min-h-[3rem]">
+        {active ? <><span className="font-semibold text-coffee-cream">{active.time} · {active.g}</span> — {active.caption}</> : 'Starting…'}
       </p>
 
       {/* chips */}
@@ -166,23 +166,23 @@ export function V60Animation() {
         {PHASES.map((ph, i) => (
           <div key={ph.label}
             className={`flex-1 rounded-lg p-1.5 text-center transition-colors ${
-              i === phase ? 'bg-blue-100 border border-blue-300' : i < phase ? 'bg-blue-50 border border-blue-200' : 'bg-slate-50 border border-slate-200'
+              i === phase ? 'bg-coffee-accent/15 border border-coffee-accent/40' : i < phase ? 'bg-coffee-accent/10 border border-coffee-accent/20' : 'bg-coffee-surface2 border border-coffee-line'
             }`}>
-            <p className={`text-[11px] font-semibold ${i <= phase ? 'text-blue-700' : 'text-slate-400'}`}>{ph.label}</p>
-            <p className={`text-[10px] ${i <= phase ? 'text-blue-500' : 'text-slate-300'}`}>{ph.time}</p>
+            <p className={`text-[11px] font-semibold ${i <= phase ? 'text-coffee-accent-soft' : 'text-coffee-muted'}`}>{ph.label}</p>
+            <p className={`text-[10px] ${i <= phase ? 'text-coffee-accent' : 'text-coffee-muted/60'}`}>{ph.time}</p>
           </div>
         ))}
       </div>
 
       {/* right/wrong hints */}
       <div className="grid grid-cols-3 gap-2 mb-4 text-xs text-center">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-green-700">✓ Low stream<br /><span className="text-green-500">near the surface</span></div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-red-700">✗ Centre only<br /><span className="text-red-400">crater</span></div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-red-700">✗ Too coarse<br /><span className="text-red-400">sour / watery</span></div>
+        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 text-green-300">✓ Low stream<br /><span className="text-green-400/80">near the surface</span></div>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-red-300">✗ Centre only<br /><span className="text-red-400/80">crater</span></div>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-red-300">✗ Too coarse<br /><span className="text-red-400/80">sour / watery</span></div>
       </div>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-orange-500 text-white text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
         {playing ? 'Brewing…' : '↺ Replay'}
       </button>
     </div>

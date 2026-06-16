@@ -44,7 +44,7 @@ test('PageHeader zeigt Titel + Action', () => {
 
 test('Input reicht Props durch + Feld-Klasse', () => {
   render(<Input placeholder="grind" />)
-  expect(screen.getByPlaceholderText('grind').className).toContain('bg-coffee-bg')
+  expect(screen.getByPlaceholderText('grind').className).toContain('bg-coffee-surface2')
 })
 
 test('Select rendert Optionen', () => {

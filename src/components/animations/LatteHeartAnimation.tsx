@@ -64,7 +64,7 @@ export function LatteHeartAnimation() {
 
   return (
     <div>
-      <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200 flex flex-col sm:flex-row gap-4">
+      <div className="bg-coffee-surface rounded-xl p-4 mb-4 border border-coffee-line flex flex-col sm:flex-row gap-4">
         {/* SIDE — cup fills & tilts upright, pitcher height changes */}
         <div className="flex-1">
           <svg viewBox="0 0 240 168" className="w-full">
@@ -109,7 +109,7 @@ export function LatteHeartAnimation() {
                 <path d={POUR_JUG_BODY} fill="url(#latte-jug)" stroke="#9aa6b2" strokeWidth="1.3" />
               </g>
             </g>
-            <text x="120" y="164" textAnchor="middle" fontSize="9" fill="#64748b">Side — fill, height & tilt</text>
+            <text x="120" y="164" textAnchor="middle" fontSize="9" fill="#a89784">Side — fill, height & tilt</text>
           </svg>
         </div>
 
@@ -137,13 +137,13 @@ export function LatteHeartAnimation() {
                 {phase === 2 && <circle cx="60" cy={pourY.toFixed(1)} r="3" fill="#fffaf0" stroke="#d4a373" strokeWidth="0.5" />}
               </g>
             </g>
-            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#64748b">Top — heart forms</text>
+            <text x="120" y="162" textAnchor="middle" fontSize="9" fill="#a89784">Top — heart forms</text>
           </svg>
         </div>
       </div>
 
       {/* caption */}
-      <p className="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl p-3 mb-4 min-h-[3rem]">
+      <p className="text-sm text-coffee-text bg-coffee-surface2 border border-coffee-line rounded-xl p-3 mb-4 min-h-[3rem]">
         {active ? active.caption : 'Starting…'}
       </p>
 
@@ -152,19 +152,19 @@ export function LatteHeartAnimation() {
         {PHASES.map((ph, i) => (
           <div key={ph.chip}
             className={`rounded-lg p-2 font-semibold transition-colors ${
-              i === phase ? 'bg-orange-100 border border-orange-300 text-orange-700'
-              : i < phase ? 'bg-orange-50 border border-orange-200 text-orange-600'
-              : 'bg-slate-50 border border-slate-200 text-slate-400'
+              i === phase ? 'bg-coffee-accent/15 border border-coffee-accent/40 text-coffee-accent-soft'
+              : i < phase ? 'bg-coffee-accent/10 border border-coffee-accent/20 text-coffee-accent'
+              : 'bg-coffee-surface2 border border-coffee-line text-coffee-muted'
             }`}>
             {ph.chip}
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-slate-400 text-center mb-3">Common miss: pouring too high while drawing — keep the pitcher right on the surface, then lift only for the final pull.</p>
+      <p className="text-xs text-coffee-muted text-center mb-3">Common miss: pouring too high while drawing — keep the pitcher right on the surface, then lift only for the final pull.</p>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-orange-500 text-white text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
         {playing ? 'Pouring…' : '↺ Replay'}
       </button>
     </div>

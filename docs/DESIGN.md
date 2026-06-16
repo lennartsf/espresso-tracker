@@ -81,8 +81,28 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
 ## Backlog (groß, bewusst offen)
 1. **NewShot als Mobile-Stepped-Flow** (5 Schritte: Drink → Grind/Dose/Yield →
    Timer → Ratings → Notes; Fortschritt = dünne Akzent-Linie oben,
-   full-screen, safe-area-top). Größter Umbau, eigener Branch.
-2. **Offline-Write-Queue** (Shots lokal puffern, Sync bei Reconnect) —
-   erst dann Banner-Copy auf „shots save locally“ ändern.
-3. Landing-Hero: Parallax + Wort-Stagger nach Spec prüfen/ergänzen.
-4. Dekorativer Arc hinter Section-Headern (Marketing + App).
+   full-screen, safe-area-top). Größter Umbau, eigener Branch. **NOCH OFFEN** —
+   bewusst nicht im Batch-Durchlauf 2026-06-15 (riskanter Rewrite des Kern-Flows,
+   Design-Entscheid zur Schritt-Gruppierung nötig).
+2. ✅ **Offline-Write-Queue** — ERLEDIGT (`lib/writeQueue.ts`, `useWriteQueue`,
+   enqueue in useCreateShot/useCreateBrew, Banner-Copy ehrlich „save locally", 3 Tests).
+3. ✅ Landing-Hero: Parallax + Wort-Stagger schon vorhanden (`Hero.tsx`), Spec ok.
+4. ✅ Dekorativer Arc hinter Section-Headern — ERLEDIGT (Layout-Content-Top + PageHeader).
+
+## Mobile/UX-Backlog (User 2026-06-15)
+5. ✅ **Eingabefeld-Kontrast (a11y)** — ERLEDIGT (Branch `mobile-ux-batch1`):
+   `fieldClasses` (`src/components/ui/Input.tsx`) bg `coffee-bg`→`coffee-surface2`,
+   Border `coffee-line`→`white/15`, Placeholder `muted/60`→`muted`. Hand-gerollte
+   Felder migriert: Analysis-Selects → `Select`-Primitive; Equipment (23 Felder)
+   bg/text/border injiziert; AuthForm angeglichen. 167✓.
+6. **Bessere Visualisierung auf dem Handy** — TEILWEISE: 390px-Audit gemacht,
+   App durchweg solide; nur Coffees-Roast-Badge kompakt gemacht (war 2-zeilig).
+   Kein weiterer akuter Mangel gefunden. Brews-Filter-Tabs scrollen (overflow-x,
+   ok-Pattern). Bleibt offen für gezielte Wünsche.
+7. ✅ **RoasterMap ~2× größer** — ERLEDIGT: `Roasters.tsx` height 200px→420px.
+8. ✅ **Analyse: Kaffeeauswahl wie in NewShot** — ERLEDIGT: alle Coffee-Selects in
+   `Analysis.tsx` zeigen `Name / Rösterei` (Muster aus NewShot), via `Select`.
+9. ✅ **Rezepte je Kaffee (Röster-Vorgabe)** — CODE ERLEDIGT (Felder an `coffees`,
+   `RoasterRecipeFields`, Detail-Anzeige, NewShot „Use roaster recipe"-Prefill).
+   **OFFEN: Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` muss
+   User in Supabase ausführen, sonst schlägt Coffee-Speichern fehl.**

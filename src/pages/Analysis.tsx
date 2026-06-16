@@ -7,6 +7,7 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { useBrews } from '../hooks/useBrews'
 import { useGrinders } from '../hooks/useEquipment'
+import { Select } from '../components/ui'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
@@ -117,11 +118,10 @@ function EspressoAnalysis() {
     <div>
       {/* Filters */}
       <div className="grid gap-2 mb-4">
-        <select value={coffeeId} onChange={e => { setCoffeeId(e.target.value); setRoastDateId('') }}
-          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
+        <Select value={coffeeId} onChange={e => { setCoffeeId(e.target.value); setRoastDateId('') }}>
           <option value="">All Coffees</option>
-          {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+          {coffees.map(c => <option key={c.id} value={c.id}>{c.name}{c.roaster ? ` / ${c.roaster}` : ''}</option>)}
+        </Select>
 
         {coffeeId && roastDates.length > 0 && (
           <div className="flex gap-2 flex-wrap">
@@ -139,11 +139,10 @@ function EspressoAnalysis() {
         )}
 
         {grinders.length > 1 && (
-          <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
-            className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
+          <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
             <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-          </select>
+          </Select>
         )}
       </div>
 
@@ -230,24 +229,21 @@ function BrewsAnalysis() {
     <div>
       {/* Filters */}
       <div className="grid gap-2 mb-4">
-        <select value={brewMethod} onChange={e => setBrewMethod(e.target.value)}
-          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
+        <Select value={brewMethod} onChange={e => setBrewMethod(e.target.value)}>
           <option value="">All Methods</option>
           {BREW_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-        </select>
+        </Select>
 
-        <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
-          className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
+        <Select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}>
           <option value="">All Coffees</option>
-          {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+          {coffees.map(c => <option key={c.id} value={c.id}>{c.name}{c.roaster ? ` / ${c.roaster}` : ''}</option>)}
+        </Select>
 
         {grinders.length > 1 && (
-          <select value={grinderId} onChange={e => setGrinderId(e.target.value)}
-            className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg focus:outline-none focus:border-coffee-accent">
+          <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
             <option value="">All Grinders</option>
             {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-          </select>
+          </Select>
         )}
       </div>
 
@@ -346,11 +342,10 @@ function MilkAnalysis() {
 
   return (
     <div>
-      <select value={coffeeId} onChange={e => setCoffeeId(e.target.value)}
-        className="w-full border border-coffee-line rounded-lg px-3 py-2 text-sm text-coffee-cream bg-coffee-bg mb-4 focus:outline-none focus:border-coffee-accent">
+      <Select value={coffeeId} onChange={e => setCoffeeId(e.target.value)} className="mb-4">
         <option value="">All Coffees</option>
-        {coffees.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-      </select>
+        {coffees.map(c => <option key={c.id} value={c.id}>{c.name}{c.roaster ? ` / ${c.roaster}` : ''}</option>)}
+      </Select>
 
       {shots.length === 0 ? (
         <p className="text-center text-coffee-muted text-sm py-10">No milk drinks yet.</p>
