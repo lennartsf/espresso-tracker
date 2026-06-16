@@ -38,7 +38,12 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - **RoasterMap:** CartoDB `dark_all` Tiles (oranger Pin). **Animate** (`/app/animate/*`) wieder in der Nav (seit 2026-06-15, SVGs dark-getunt, `Sparkles`-Icon).
 - **Reskin-Folge-Tasks: alle ERLEDIGT.** (1) 4 Animations-SVGs dark-getunt + Animate-Nav zurück (2026-06-15). (2) Analysis Chart-Punktfarben schon 10-stufig (`DOT_COLOR=ratingHex`). (3) ShotDetail-„RATIO —"-Bug schon gefixt (Fallback yield/dose, `ShotDetail.tsx:59-63`).
 
-**Multi-User-Naht (Phase 2):** `src/lib/auth.ts#getCurrentUserId()` gibt aktuell `null` (Single-User). Für Multi-User: echten Supabase-Auth-User liefern, in jedem react-query-Hook (`src/hooks/use*.ts`, die einzige DB-Grenze) `.eq('user_id', uid)` ergänzen, `user_id`-Spalten + **RLS-Policies** pro Tabelle anlegen (sonst liest jeder eingeloggte Nutzer fremde Daten). Phasen-Plan: `~/.claude/plans/dazzling-popping-prism.md`.
+## Multi-User / Auth (Phase 2, 2026-06-16 — Branch `auth-phase2`)
+- E-Mail+Passwort via Supabase Auth. `src/lib/AuthContext.tsx` (`AuthProvider`/`useAuth`) hält die Session + synct `getCurrentUserId()` (Modul-Cache via `onAuthStateChange`); `ProtectedRoute` schützt `/app/*`; Logout in `Layout` (Sidebar + Mobile-„More").
+- Alle 10 Tabellen haben `user_id` + RLS (`auth.uid() = user_id`). `equipment_defaults` PK = `(user_id, method)`. Jeder Hook in `src/hooks/use*.ts` filtert `.eq('user_id', uid)`, `enabled: !!uid`, und setzt `user_id` beim Insert. Offline-Queue trägt `user_id` mit.
+- **Rollout-Reihenfolge (in Supabase ausführen):** (1) `docs/migrations/2026-06-16-auth-1-add-user-id.sql`, (2) in der App registrieren + `select id,email from auth.users;`, (3) ID in `…-auth-2-backfill.sql` einsetzen + ausführen, (4) `…-auth-3-enable-rls.sql`, (5) deployen. **Dashboard:** Authentication → Providers → Email → „Confirm email" AUS.
+- RLS zuletzt → kein Datenverlust, kein Aussperren. Plan/Spec: `docs/superpowers/{plans,specs}/2026-06-16-auth-phase2*`.
+- **Backlog:** Passwort-Reset, E-Mail-Bestätigung, Storage-RLS/per-User-Pfade, später geteilter Katalog-Split.
 
 ## Datenbank-Schema (aktuell)
 
