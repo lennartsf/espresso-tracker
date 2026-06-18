@@ -6,7 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip } from 
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
 import { ROUTES } from '../lib/routes'
-import { buttonClasses, EmptyState } from '../components/ui'
+import { buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { LiquidBar } from '../components/dashboard/LiquidBar'
@@ -88,11 +88,12 @@ export function Dashboard() {
   }, { scope: gridRef, dependencies: [weekStart] })
 
   return (
-    <div className="rounded-2xl bg-[radial-gradient(140%_100%_at_50%_-20%,var(--coffee-surface),var(--coffee-bg))] p-2 sm:p-4">
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-extrabold text-coffee-cream">Espresso</h1>
-        <Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New Shot</Link>
-      </div>
+    <div>
+      <PageHeader
+        eyebrow="Your week"
+        title="Espresso"
+        action={<Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New Shot</Link>}
+      />
 
       {/* Week picker */}
       <div className="mb-4 flex items-center justify-between rounded-2xl border border-coffee-line bg-coffee-surface2 px-3 py-2">
