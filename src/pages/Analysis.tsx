@@ -7,7 +7,8 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { useBrews } from '../hooks/useBrews'
 import { useGrinders } from '../hooks/useEquipment'
-import { Select, PageHeader } from '../components/ui'
+import { Select, PageHeader, cardClasses } from '../components/ui'
+import { DialGauge } from '../components/dashboard/DialGauge'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
@@ -29,6 +30,15 @@ function formatDate(d: string) {
 // quality=false → Intensitäts-Creme (Body/Säure/Bitterness: Stärke, kein gut/schlecht).
 const dotColor = (y: number, quality: boolean) =>
   quality ? ratingHex(Math.round(y)) : intensityFill(Math.round(y))
+
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-coffee-line bg-coffee-surface2 p-3 text-center">
+      <p className="font-display text-lg font-bold text-coffee-accent-soft">{value}</p>
+      <p className="mt-0.5 text-[10px] uppercase tracking-wide text-coffee-muted">{label}</p>
+    </div>
+  )
+}
 
 function ScatterPlot({ data, xLabel, yLabel, quality }: {
   data: { x: number; y: number; id: string }[]
@@ -278,41 +288,20 @@ function BrewsAnalysis() {
 
           <div className="md:col-span-2">
             {topStats ? (
-              <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-4">
+              <div className={`${cardClasses} p-4`}>
                 <p className="text-xs font-semibold text-coffee-muted uppercase tracking-wide mb-3">
                   Top Recipe ({topStats.count} Brew{topStats.count !== 1 ? 's' : ''} ≥ 8)
                 </p>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-coffee-muted">Avg Rating</span>
-                    <span className="font-bold text-green-400">{topStats.avgRating.toFixed(1)}</span>
-                  </div>
-                  {topStats.avgGrind != null && (
-                    <div className="flex justify-between">
-                      <span className="text-coffee-muted">Avg Grind</span>
-                      <span className="font-semibold text-coffee-cream">{topStats.avgGrind.toFixed(1)}</span>
-                    </div>
-                  )}
+                <div className="flex justify-center">
+                  <DialGauge value={topStats.avgRating} max={10} label="Avg Flavor" />
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {topStats.avgGrind != null && <StatTile label="Grind" value={topStats.avgGrind.toFixed(1)} />}
                   {topStats.avgDose != null && topStats.avgWater != null && (
-                    <div className="flex justify-between">
-                      <span className="text-coffee-muted">Avg Ratio</span>
-                      <span className="font-semibold text-coffee-cream">
-                        {topStats.avgDose.toFixed(1)} g / {topStats.avgWater.toFixed(0)} ml
-                      </span>
-                    </div>
+                    <StatTile label="Ratio" value={`${topStats.avgDose.toFixed(1)}g / ${topStats.avgWater.toFixed(0)}ml`} />
                   )}
-                  {topStats.avgTemp != null && (
-                    <div className="flex justify-between">
-                      <span className="text-coffee-muted">Avg Temp</span>
-                      <span className="font-semibold text-coffee-cream">{topStats.avgTemp.toFixed(1)}°C</span>
-                    </div>
-                  )}
-                  {topStats.avgTime != null && (
-                    <div className="flex justify-between">
-                      <span className="text-coffee-muted">Avg Brew Time</span>
-                      <span className="font-semibold text-coffee-cream">{secondsToMMSS(Math.round(topStats.avgTime))}</span>
-                    </div>
-                  )}
+                  {topStats.avgTemp != null && <StatTile label="Temp" value={`${topStats.avgTemp.toFixed(1)}°C`} />}
+                  {topStats.avgTime != null && <StatTile label="Brew Time" value={secondsToMMSS(Math.round(topStats.avgTime))} />}
                 </div>
               </div>
             ) : (
