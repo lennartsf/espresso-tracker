@@ -11,7 +11,14 @@ import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses } from '../components/ui'
 
-const STEP_TITLES = ['Coffee', 'Dial-in', 'Timer', 'Taste', 'Notes']
+const STEP_DEFS = [
+  { key: 'coffee', title: 'Coffee' },
+  { key: 'prep',   title: 'Prep' },
+  { key: 'pull',   title: 'Pull' },
+  { key: 'milk',   title: 'Milk' },
+  { key: 'rate',   title: 'Rate' },
+] as const
+type StepKey = typeof STEP_DEFS[number]['key']
 
 const RATING_INFO = {
   rating:          { question: 'How good does the shot taste overall?', low: 'barely drinkable',  high: 'perfect espresso'   },
@@ -71,7 +78,6 @@ export function NewShot() {
 
   const isMobile = useIsMobile()
   const [step, setStep] = useState(0)
-  const lastStep = STEP_TITLES.length - 1
 
   const [coffeeId, setCoffeeId] = useState('')
   const [showNewCoffee, setShowNewCoffee] = useState(false)
@@ -177,14 +183,20 @@ export function NewShot() {
     if (selectedCoffee.rec_time_s != null) setBrewTimeS(String(selectedCoffee.rec_time_s))
   }
 
-  // Mobile stepped flow: hide non-active step groups; desktop shows everything.
-  const stepClass = (n: number) => (isMobile && step !== n ? 'hidden' : 'grid gap-4')
+  // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
+  const isMilk = drinkType !== 'espresso'
+  const steps = STEP_DEFS.filter(s => s.key !== 'milk' || isMilk)
+  const lastStep = steps.length - 1
+  const stepKey: StepKey = steps[Math.min(step, lastStep)].key
+  useEffect(() => { if (step > lastStep) setStep(lastStep) }, [step, lastStep])
+
+  // Hide non-active step groups on mobile; desktop shows everything.
+  const stepClass = (key: StepKey) => (isMobile && stepKey !== key ? 'hidden' : 'grid gap-4')
 
   function goNext() {
     setError('')
-    if (step === 0 && !coffeeId && !newCoffeeName.trim()) { setError('Please select or enter a coffee.'); return }
-    if (step === 1 && !grindSetting.trim()) { setError('Grind setting is required.'); return }
-    if (step === 3 && rating === null) { setError('Please rate the flavor.'); return }
+    if (stepKey === 'coffee' && !coffeeId && !newCoffeeName.trim()) { setError('Please select or enter a coffee.'); return }
+    if (stepKey === 'prep' && !grindSetting.trim()) { setError('Grind setting is required.'); return }
     setStep(s => Math.min(lastStep, s + 1))
   }
   function goBack() {
@@ -288,18 +300,18 @@ export function NewShot() {
       {isMobile && (
         <div className="mb-5">
           <div className="flex gap-1.5">
-            {STEP_TITLES.map((t, i) => (
-              <div key={t} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-coffee-accent' : 'bg-coffee-surface2'}`} />
+            {steps.map((s, i) => (
+              <div key={s.key} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-coffee-accent' : 'bg-coffee-surface2'}`} />
             ))}
           </div>
           <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-coffee-muted">
-            Step {step + 1} of {STEP_TITLES.length} · {STEP_TITLES[step]}
+            Step {Math.min(step, lastStep) + 1} of {steps.length} · {steps[Math.min(step, lastStep)].title}
           </p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <div className={stepClass(0)}>
+        <div className={stepClass('coffee')}>
         {/* Getränketyp */}
         <div>
           <FieldLabel>Drink Type</FieldLabel>
@@ -420,7 +432,7 @@ export function NewShot() {
 
         </div>
 
-        <div className={stepClass(1)}>
+        <div className={stepClass('prep')}>
         {/* Mühle */}
         {grinders.length > 0 && (
           <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
@@ -447,41 +459,10 @@ export function NewShot() {
           </div>
         </div>
 
-        {/* Dose + Yield + Ratio */}
+        {/* Dose */}
         <div>
-          <div className="grid grid-cols-2 gap-3 mb-1">
-            <div>
-              <FieldLabel>Dose (g)</FieldLabel>
-              <Input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)} placeholder="18" />
-            </div>
-            <div>
-              <FieldLabel>Yield (g)</FieldLabel>
-              <Input type="number" step="0.1" value={yieldG} onChange={e => setYieldG(e.target.value)} placeholder="36" />
-            </div>
-          </div>
-          <BrewRatioBar
-            doseG={doseG ? parseFloat(doseG) : null}
-            yieldG={yieldG ? parseFloat(yieldG) : null}
-          />
-        </div>
-
-        {/* Preinfusion */}
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={preinfusion}
-              onChange={e => { setPreinfusion(e.target.checked); if (!e.target.checked) setPreinfusionS('') }}
-              className="h-4 w-4 accent-coffee-accent"
-            />
-            <span className="text-xs font-semibold uppercase text-coffee-muted">Preinfusion</span>
-          </label>
-          {preinfusion && (
-            <>
-              <Input type="number" step="0.5" value={preinfusionS} onChange={e => setPreinfusionS(e.target.value)} placeholder="5" className="!w-20" />
-              <span className="text-sm text-coffee-muted">s</span>
-            </>
-          )}
+          <FieldLabel>Dose (g)</FieldLabel>
+          <Input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)} placeholder="18" />
         </div>
 
         {/* Prep Tools */}
@@ -530,7 +511,26 @@ export function NewShot() {
 
         </div>
 
-        <div className={stepClass(2)}>
+        <div className={stepClass('pull')}>
+        {/* Preinfusion */}
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={preinfusion}
+              onChange={e => { setPreinfusion(e.target.checked); if (!e.target.checked) setPreinfusionS('') }}
+              className="h-4 w-4 accent-coffee-accent"
+            />
+            <span className="text-xs font-semibold uppercase text-coffee-muted">Preinfusion</span>
+          </label>
+          {preinfusion && (
+            <>
+              <Input type="number" step="0.5" value={preinfusionS} onChange={e => setPreinfusionS(e.target.value)} placeholder="5" className="!w-20" />
+              <span className="text-sm text-coffee-muted">s</span>
+            </>
+          )}
+        </div>
+
         {/* Brew time */}
         <div>
           <FieldLabel>Brew Time</FieldLabel>
@@ -542,9 +542,48 @@ export function NewShot() {
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
           </div>
         </div>
+
+        {/* Yield + Ratio (known after the pull) */}
+        <div>
+          <FieldLabel>Yield (g)</FieldLabel>
+          <Input type="number" step="0.1" value={yieldG} onChange={e => setYieldG(e.target.value)} placeholder="36" />
+          <div className="mt-2">
+            <BrewRatioBar
+              doseG={doseG ? parseFloat(doseG) : null}
+              yieldG={yieldG ? parseFloat(yieldG) : null}
+            />
+          </div>
+        </div>
         </div>
 
-        <div className={stepClass(3)}>
+        {/* Milk — own step, after the pull, before rating (milk drinks only) */}
+        {isMilk && (
+          <div className={stepClass('milk')}>
+            <div className="rounded-xl border border-coffee-line bg-coffee-surface2 p-3">
+              <FieldLabel className="text-coffee-accent-soft">Milk</FieldLabel>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <FieldLabel>Type</FieldLabel>
+                  <Select value={milkType} onChange={e => setMilkType(e.target.value)}>
+                    <option value="">Select...</option>
+                    {MILK_TYPES.map(mt => (
+                      <option key={mt.value} value={mt.value}>{mt.label}</option>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <FieldLabel>Amount</FieldLabel>
+                  <div className="flex items-center gap-2">
+                    <Input type="number" step="10" value={milkMl} onChange={e => setMilkMl(e.target.value)} placeholder="120" className="flex-1" />
+                    <span className="text-sm text-coffee-muted">ml</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className={stepClass('rate')}>
         {/* Ratings */}
         <div className="grid gap-3">
           <RatingField label="Flavor" required infoKey="rating" value={rating} onChange={setRating} />
@@ -552,34 +591,6 @@ export function NewShot() {
           <RatingField label="Acidity" infoKey="acidity_score" value={acidityScore} onChange={setAcidityScore} />
           <RatingField label="Bitterness" infoKey="bitterness_score" value={bitternessScore} onChange={setBitternessScore} />
         </div>
-
-        </div>
-
-        <div className={stepClass(4)}>
-        {/* Milk */}
-        {drinkType !== 'espresso' && (
-          <div className="rounded-xl border border-coffee-line bg-coffee-surface2 p-3">
-            <FieldLabel className="text-coffee-accent-soft">Milk</FieldLabel>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <FieldLabel>Type</FieldLabel>
-                <Select value={milkType} onChange={e => setMilkType(e.target.value)}>
-                  <option value="">Select...</option>
-                  {MILK_TYPES.map(mt => (
-                    <option key={mt.value} value={mt.value}>{mt.label}</option>
-                  ))}
-                </Select>
-              </div>
-              <div>
-                <FieldLabel>Amount</FieldLabel>
-                <div className="flex items-center gap-2">
-                  <Input type="number" step="10" value={milkMl} onChange={e => setMilkMl(e.target.value)} placeholder="120" className="flex-1" />
-                  <span className="text-sm text-coffee-muted">ml</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Notes */}
         <div>

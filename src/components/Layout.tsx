@@ -87,17 +87,7 @@ export function Layout() {
 
       {/* Main content */}
       <main className="flex-1 md:ml-52 pb-20 md:pb-10 px-4 md:px-10 pt-6 w-full">
-        <div className="relative max-w-lg md:max-w-4xl mx-auto">
-          {/* Pull-Arc — single decorative motif (extraction), faint at the top of each screen */}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 320 80"
-            preserveAspectRatio="none"
-            className="pointer-events-none absolute -top-3 right-0 h-12 w-40 text-coffee-accent/15"
-            fill="none"
-          >
-            <path d="M4 76 A 160 160 0 0 1 316 76" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+        <div className="max-w-lg md:max-w-4xl mx-auto">
           <Outlet />
         </div>
       </main>
@@ -106,7 +96,7 @@ export function Layout() {
       {moreOpen && (
         <div className="md:hidden fixed inset-0 z-20" onClick={() => setMoreOpen(false)}>
           <div
-            className="absolute bottom-16 left-0 right-0 bg-coffee-surface border-t border-coffee-line shadow-lg"
+            className="absolute bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 right-0 bg-coffee-surface border-t border-coffee-line shadow-lg"
             onClick={e => e.stopPropagation()}
           >
             <div className="grid grid-cols-4 px-2 py-3">

@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
-import { Select, EmptyState } from '../components/ui'
+import { Select, EmptyState, PageHeader } from '../components/ui'
 
 type DrinkFilter = 'all' | 'espresso' | 'milk'
 
@@ -26,15 +26,18 @@ export function ShotHistory() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Shots</h1>
-        <Link
-          to={ROUTES.shotNew}
-          className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft"
-        >
-          + New
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Your pulls"
+        title="Shots"
+        action={
+          <Link
+            to={ROUTES.shotNew}
+            className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft"
+          >
+            + New
+          </Link>
+        }
+      />
 
       <div className="flex border-b border-coffee-line mb-4">
         {(['all', 'espresso', 'milk'] as const).map(f => (

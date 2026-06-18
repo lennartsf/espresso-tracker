@@ -8,7 +8,7 @@ import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
-import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState } from '../components/ui'
+import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -44,12 +44,15 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Coffees</h1>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
-          + New
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="Your beans"
+        title="Coffees"
+        action={
+          <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
+            + New
+          </button>
+        }
+      />
 
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
 

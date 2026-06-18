@@ -7,6 +7,7 @@ import {
   useBrewDevices, useCreateBrewDevice, useUpdateBrewDevice, useDeleteBrewDevice,
   useEquipmentDefaults, useSetEquipmentDefault,
 } from '../hooks/useEquipment'
+import { PageHeader } from '../components/ui'
 import type { Grinder, Machine, Basket, BrewDevice, NewBrewDevice } from '../types'
 
 type Tab = 'grinders' | 'machines' | 'baskets' | 'brew_devices'
@@ -87,7 +88,7 @@ export function Equipment() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-coffee-cream mb-4">Equipment</h1>
+      <PageHeader eyebrow="Your gear" title="Equipment" />
 
       <div className="flex border-b border-coffee-line mb-5">
         {TABS.map(t => (

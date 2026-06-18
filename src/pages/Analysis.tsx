@@ -7,11 +7,11 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { useBrews } from '../hooks/useBrews'
 import { useGrinders } from '../hooks/useEquipment'
-import { Select } from '../components/ui'
+import { Select, PageHeader } from '../components/ui'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
-import { ratingHex } from '../utils/ratingColor'
+import { ratingHex, intensityFill } from '../utils/ratingColor'
 import { BREW_METHODS } from '../utils/brewMethods'
 import { secondsToMMSS } from '../utils/timeFormat'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -25,13 +25,16 @@ function formatDate(d: string) {
 
 // ── Scatter helpers ────────────────────────────────────────────────────────────
 
-// Punktfarbe = 10-stufige Rating-Skala (rot→gold→grün), konsistent mit ratingColor.
-const DOT_COLOR = (y: number) => ratingHex(Math.round(y))
+// quality=true → 10-stufige Qualitäts-Skala (rot→grün, nur Flavor).
+// quality=false → Intensitäts-Creme (Body/Säure/Bitterness: Stärke, kein gut/schlecht).
+const dotColor = (y: number, quality: boolean) =>
+  quality ? ratingHex(Math.round(y)) : intensityFill(Math.round(y))
 
-function ScatterPlot({ data, xLabel, yLabel }: {
+function ScatterPlot({ data, xLabel, yLabel, quality }: {
   data: { x: number; y: number; id: string }[]
   xLabel: string
   yLabel: string
+  quality: boolean
 }) {
   if (data.length === 0) {
     return <p className="text-center text-coffee-muted text-sm py-6">No data yet for {yLabel} rating.</p>
@@ -58,7 +61,7 @@ function ScatterPlot({ data, xLabel, yLabel }: {
           }} />
           <Scatter data={data}>
             {data.map(entry => (
-              <Cell key={entry.id} fill={DOT_COLOR(entry.y)} fillOpacity={0.85} />
+              <Cell key={entry.id} fill={dotColor(entry.y, quality)} fillOpacity={0.85} />
             ))}
           </Scatter>
         </ScatterChart>
@@ -69,7 +72,7 @@ function ScatterPlot({ data, xLabel, yLabel }: {
           className="inline-block h-2 w-28 rounded-full"
           style={{
             background: `linear-gradient(to right, ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-              .map(ratingHex)
+              .map(n => (quality ? ratingHex(n) : intensityFill(n)))
               .join(', ')})`,
           }}
         />
@@ -169,7 +172,7 @@ function EspressoAnalysis() {
               Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Shot{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
-            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} />
+            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} quality={metric === 'rating'} />
           </div>
           <div className="md:col-span-2">
             {recipe
@@ -270,7 +273,7 @@ function BrewsAnalysis() {
               Grind → {metricLabel}
               <span className="font-normal ml-1">({scatterData.length} Brew{scatterData.length !== 1 ? 's' : ''})</span>
             </p>
-            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} />
+            <ScatterPlot data={scatterData} xLabel="Grind" yLabel={metricLabel} quality={metric === 'rating'} />
           </div>
 
           <div className="md:col-span-2">
@@ -399,7 +402,7 @@ export function Analysis() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-coffee-cream mb-4">Analysis</h1>
+      <PageHeader eyebrow="Insights" title="Analysis" subtitle="What dials in your shots" />
 
       <div className="flex border-b border-coffee-line mb-5">
         {TABS.map(t => (

@@ -1,19 +1,25 @@
 import type { ReactNode } from 'react'
 
-export function PageHeader({ title, action }: { title: string; action?: ReactNode }) {
+/** Page header in the home/cockpit style: accent eyebrow + large display title
+ *  + optional subtitle, with an optional action on the right. */
+export function PageHeader({
+  eyebrow, title, subtitle, action,
+}: {
+  eyebrow?: string
+  title: string
+  subtitle?: string
+  action?: ReactNode
+}) {
   return (
-    <div className="relative mb-6 flex items-center justify-between gap-3">
-      {/* Pull-Arc — single decorative motif (extraction), faint behind the title */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 120 60"
-        className="pointer-events-none absolute -left-2 -top-3 h-12 w-24 text-coffee-accent/20"
-        fill="none"
-      >
-        <path d="M4 56 A 56 56 0 0 1 116 56" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-      <h1 className="relative font-display text-2xl font-semibold text-coffee-cream">{title}</h1>
-      <div className="relative">{action}</div>
+    <div className="mb-6 flex items-end justify-between gap-3">
+      <div className="min-w-0">
+        {eyebrow && (
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-coffee-accent">{eyebrow}</p>
+        )}
+        <h1 className="font-display text-3xl font-bold text-coffee-cream">{title}</h1>
+        {subtitle && <p className="mt-1 text-sm text-coffee-muted">{subtitle}</p>}
+      </div>
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useBrews } from '../hooks/useBrews'
 import { BrewCard } from '../components/BrewCard'
-import { Select, EmptyState } from '../components/ui'
+import { Select, EmptyState, PageHeader } from '../components/ui'
 
 type MethodFilter = 'all' | 'french_press' | 'v60' | 'aeropress' | 'moka_pot'
 
@@ -27,12 +27,15 @@ export function Brews() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Brews</h1>
-        <Link to={ROUTES.brewNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
-          + New
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Filter & pour-over"
+        title="Brews"
+        action={
+          <Link to={ROUTES.brewNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
+            + New
+          </Link>
+        }
+      />
 
       <div className="flex border-b border-coffee-line mb-4 overflow-x-auto">
         {(['all', 'french_press', 'v60', 'aeropress', 'moka_pot'] as const).map(f => (

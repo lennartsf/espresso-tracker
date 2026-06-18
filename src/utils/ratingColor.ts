@@ -24,6 +24,21 @@ export function ratingHex(v: number): string {
   return map[v] ?? '#7a6450'
 }
 
+/** Intensitäts-Fill (Creme, blass→satt) für NICHT-Qualitäts-Scores
+ *  (Body/Säure/Bitterness): zeigt Stärke der Ausprägung, kein gut/schlecht.
+ *  Bewusst nicht die rot→grün-Skala und nicht Brand-Gold. Für SVG-fills. */
+export function intensityFill(v: number): string {
+  const t = Math.min(1, Math.max(0, (v - 1) / 9))
+  return `rgba(246, 239, 228, ${(0.28 + t * 0.67).toFixed(2)})`
+}
+
+/** Inline-Style fürs Intensitäts-Badge auf dunklem Grund (Body/Säure/Bitterness). */
+export function intensityBadge(v: number): { backgroundColor: string; color: string } {
+  const t = Math.min(1, Math.max(0, (v - 1) / 9))
+  const alpha = 0.16 + t * 0.76
+  return { backgroundColor: `rgba(246, 239, 228, ${alpha.toFixed(2)})`, color: t > 0.5 ? '#1c1714' : '#f1e9df' }
+}
+
 /** Gefüllte Dark-Klassen fürs Rating-Badge (Funktionsfarbe, für dunklen Grund). */
 export function ratingBadgeClasses(v: number): string {
   if (v >= 8 && v <= 10) return 'bg-green-600/90 text-green-50 ring-1 ring-green-400/40 shadow-lg shadow-green-900/30'
