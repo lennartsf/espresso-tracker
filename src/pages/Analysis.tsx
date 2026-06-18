@@ -7,7 +7,7 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { useBrews } from '../hooks/useBrews'
 import { useGrinders } from '../hooks/useEquipment'
-import { Select } from '../components/ui'
+import { Select, PageHeader } from '../components/ui'
 import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
@@ -402,7 +402,7 @@ export function Analysis() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-coffee-cream mb-4">Analysis</h1>
+      <PageHeader eyebrow="Insights" title="Analysis" subtitle="What dials in your shots" />
 
       <div className="flex border-b border-coffee-line mb-5">
         {TABS.map(t => (

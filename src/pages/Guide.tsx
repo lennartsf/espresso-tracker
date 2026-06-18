@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom'
 import { GUIDES } from '../utils/guideContent'
 import { ROUTES } from '../lib/routes'
-import { cardClasses } from '../components/ui'
+import { cardClasses, PageHeader } from '../components/ui'
 
 export function Guide() {
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold text-coffee-cream mb-1">Guide</h1>
-      <p className="text-sm text-coffee-muted mb-6">Guides &amp; Troubleshooting</p>
+      <PageHeader eyebrow="Learn" title="Guide" subtitle="Guides & troubleshooting" />
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {GUIDES.map(guide => (
           <Link

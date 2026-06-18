@@ -22,12 +22,12 @@ export function BrewCard({ brew }: Props) {
   return (
     <Link
       to={ROUTES.brew(brew.id)}
-      className={`${cardClasses} p-3 flex justify-between items-center hover:border-coffee-accent/40 transition-colors`}
+      className={`${cardClasses} p-4 flex justify-between items-center hover:border-coffee-accent/40 transition-colors`}
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 mb-0.5">
           <Badge>{brewMethodLabel(brew.brew_method)}</Badge>
-          <p className="font-medium text-coffee-cream text-sm truncate">{brew.coffees?.name ?? '—'}</p>
+          <p className="font-display font-semibold text-coffee-cream text-base truncate">{brew.coffees?.name ?? '—'}</p>
         </div>
         <p className="text-xs text-coffee-muted mt-0.5 truncate">{subtitle}</p>
       </div>

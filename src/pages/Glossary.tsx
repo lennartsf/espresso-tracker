@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GLOSSARY } from '../utils/glossaryContent'
-import { cardClasses, Input } from '../components/ui'
+import { cardClasses, Input, PageHeader } from '../components/ui'
 
 const CATEGORY_LABELS = {
   espresso:  'Espresso',
@@ -19,8 +19,7 @@ export function Glossary() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold text-coffee-cream mb-1">Glossary</h1>
-      <p className="text-sm text-coffee-muted mb-4">{GLOSSARY.length} terms</p>
+      <PageHeader eyebrow="Reference" title="Glossary" subtitle={`${GLOSSARY.length} terms`} />
 
       <Input
         type="search"

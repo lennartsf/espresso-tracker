@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabase'
 import { setCurrentUserId } from './auth'
 
@@ -24,7 +23,6 @@ export function useAuth(): AuthValue {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const qc = useQueryClient()
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -38,17 +36,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
+    // Keep the cached uid + session in sync. NB: do NOT clear the query cache
+    // here — onAuthStateChange fires on every load/refresh/token event, and a
+    // clear() races with in-flight queries (leaves them stuck "loading").
+    // Per-user isolation is handled by `user_id` being in every queryKey.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next)
       setCurrentUserId(next?.user.id ?? null)
-      qc.clear() // drop another user's cached rows on login/logout/switch
     })
 
     return () => {
       mounted = false
       sub.subscription.unsubscribe()
     }
-  }, [qc])
+  }, [])
 
   const signOut = async () => {
     await supabase.auth.signOut()

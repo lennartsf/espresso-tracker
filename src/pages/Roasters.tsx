@@ -4,7 +4,7 @@ import { useRoasters, useCreateRoaster, useUpdateRoaster, useDeleteRoaster, sear
 import { useCoffeesByRoaster } from '../hooks/useCoffees'
 import { RoasterMap } from '../components/RoasterMap'
 import { PhotoUpload } from '../components/PhotoUpload'
-import { cardClasses, Badge, Input, FieldLabel, buttonClasses } from '../components/ui'
+import { cardClasses, Badge, Input, FieldLabel, buttonClasses, PageHeader } from '../components/ui'
 import type { Roaster, Coffee } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -33,12 +33,15 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="font-display text-2xl font-semibold text-coffee-cream">Roasters</h1>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
-          + New
-        </button>
-      </div>
+      <PageHeader
+        eyebrow="Where it's roasted"
+        title="Roasters"
+        action={
+          <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
+            + New
+          </button>
+        }
+      />
 
       {withCoords.length > 0 && (
         <div className="mb-4 rounded-xl overflow-hidden border border-coffee-line">

@@ -24,10 +24,10 @@ test('Badge rendert Inhalt', () => {
   expect(screen.getByText('V60')).toBeInTheDocument()
 })
 
-test('Card rendert Kinder + Surface-Klasse', () => {
+test('Card rendert Kinder + Embossed-Klasse', () => {
   render(<Card>Inhalt</Card>)
   const el = screen.getByText('Inhalt')
-  expect(el.className).toContain('bg-coffee-surface2')
+  expect(el.className).toContain('from-coffee-surface')
 })
 
 test('RatingBadge zeigt Wert + Funktionsfarbe', () => {
