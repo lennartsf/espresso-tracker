@@ -176,9 +176,21 @@ Zweck: Eine Kaffeesorte bleibt dauerhaft eingetragen. Neue Bestellungen bekommen
 
 ---
 
-## Bekannte Limitierungen (v1)
+## Stand (2026-06-18)
 
-- Kein Login → alle Daten öffentlich lesbar über Anon-Key (akzeptabel für persönlichen Gebrauch)
-- Kein Offline-Support (Service Worker fehlt noch)
-- Shot-Liste: kein Edit/Delete
-- Brew Ratio wird nur bei neuen Shots berechnet — alte Shots haben `null`
+- **Multi-User-Auth live:** E-Mail+Passwort (Supabase Auth), `/app/*` hinter Login,
+  alle 10 Tabellen privat per `user_id` + RLS (`auth.uid() = user_id`).
+- **Offline-Write-Queue:** Shot/Brew-Creates werden offline lokal gepuffert und bei
+  Reconnect synchronisiert (`src/lib/writeQueue.ts`); ehrliches Banner.
+- **Shots/Brews:** voll editier-/löschbar; Brew-Ratio fällt auf yield/dose zurück
+  wenn `brew_ratio` null (alte Shots).
+- **Design v2 (einheitlich):** Embossed-Cockpit-Karten + `PageHeader` (Eyebrow +
+  Display-Titel) + glow-„New"-Buttons auf allen Seiten; Home = Wochenansicht
+  (KW-Picker, Ø-Flavor-Dial, Shots-pro-Tag-Chart); Analyse-Rezepte als Dial/Stat-
+  Kacheln; Säure/Body/Bitterness in Intensitäts-Farbe (kein gut/schlecht).
+
+## Bekannte Limitierungen
+
+- Kein Passwort-Reset / keine E-Mail-Bestätigung (Backlog).
+- Storage-Buckets (Fotos) öffentlich per URL — noch kein Storage-RLS (Backlog).
+- Service Worker / installierbare PWA noch nicht (Offline nur Write-Queue, kein App-Cache).

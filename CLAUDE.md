@@ -34,6 +34,7 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 
 **Design-System (Dark Premium):** Tokens als CSS-Vars in `src/index.css` (`--coffee-*`), via `tailwind.config.ts` als `coffee.*`-Farben + `font-display` (Fraunces) / `font-grotesk` (Space Grotesk) nutzbar. Fonts self-hosted (`@fontsource*`), Import in `main.tsx`. **Dark-Theme deckt jetzt Marketing/Auth UND die ganze App-Shell ab** (Reskin = Phase 1 ✓, live 2026-06-08). Funktionsfarben (Rating: 10-stufig rot→amber→grün, **ohne Brand-Gold** — Stufe 6 = `#bcae49`, Akzent `#c9a35e` = nur Marke/Interaktion) bleiben bewusst. Motion via GSAP (`gsap` + `@gsap/react`), `prefers-reduced-motion` respektieren (Stub in Tests: `src/__tests__/setup.ts` matchMedia-Polyfill). **Verbindlicher Design-Prompt: `docs/DESIGN.md`** (Tokens, Pull-Arc-Signatur, States-Pflicht, Motion-Regeln, Backlog) — bei jeder UI-Arbeit befolgen.
 - **Seit 2026-06-10:** `EmptyState`-Primitive (`src/components/ui/EmptyState.tsx`, Copy in DESIGN.md), BrewTimer = Pull-Arc-Ring (0–40 s Fenster), Bottom-Nav `safe-area-inset-bottom`, NewShot „↻ Repeat last“ (prefillt letzten Shot ohne Ratings/Notes).
+- **Einheitliches Layout v2 (2026-06-18):** Jede Seite = `<PageHeader>` (Eyebrow + Display-Titel + glow-Action) auf Seiten-bg + Embossed-Karten (`cardClasses` = Verlauf+Inset, `rounded-2xl`); kein Home-Radial-Wrapper mehr. „+ New" überall `buttonClasses('glow')`. Home = Wochenansicht (`Dashboard.tsx`: KW-Picker, Ø-Flavor-Dial, „shots per day"-Balken, Wochen-Shots; Korrelations-Scatter raus). Analyse-Rezepte als Dial/Stat-Kacheln (`RecipeCard` + Brews-Top-Recipe). Body/Säure/Bitterness = `intensityFill`/`intensityBadge` (Stärke, kein gut/schlecht); Flavor bleibt rot→grün. NewShot mobil = 5-Step-Flow (Coffee·Prep·Pull·Milk·Rate), Desktop Ein-Seiten-Form. Mobile: `overflow-x:hidden` + `min-w-0`/`truncate` in Karten (sonst sprengen lange Namen die Breite). Details: `docs/DESIGN.md` → „Einheitliches Layout (v2)".
 - **Offline (seit 2026-06-15):** Write-Queue (`src/lib/writeQueue.ts` + `useWriteQueue`) puffert Shot/Brew-Creates offline in localStorage, Replay bei Reconnect; `Layout`-Banner zeigt „save locally" + Pending-Count. Nur CREATE; Edits/Deletes + Inline-New-Coffee brauchen Verbindung.
 - **RoasterMap:** CartoDB `dark_all` Tiles (oranger Pin). **Animate** (`/app/animate/*`) wieder in der Nav (seit 2026-06-15, SVGs dark-getunt, `Sparkles`-Icon).
 - **Reskin-Folge-Tasks: alle ERLEDIGT.** (1) 4 Animations-SVGs dark-getunt + Animate-Nav zurück (2026-06-15). (2) Analysis Chart-Punktfarben schon 10-stufig (`DOT_COLOR=ratingHex`). (3) ShotDetail-„RATIO —"-Bug schon gefixt (Fallback yield/dose, `ShotDetail.tsx:59-63`).
@@ -41,7 +42,7 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 ## Multi-User / Auth (Phase 2, 2026-06-16 — Branch `auth-phase2`)
 - E-Mail+Passwort via Supabase Auth. `src/lib/AuthContext.tsx` (`AuthProvider`/`useAuth`) hält die Session + synct `getCurrentUserId()` (Modul-Cache via `onAuthStateChange`); `ProtectedRoute` schützt `/app/*`; Logout in `Layout` (Sidebar + Mobile-„More").
 - Alle 10 Tabellen haben `user_id` + RLS (`auth.uid() = user_id`). `equipment_defaults` PK = `(user_id, method)`. Jeder Hook in `src/hooks/use*.ts` filtert `.eq('user_id', uid)`, `enabled: !!uid`, und setzt `user_id` beim Insert. Offline-Queue trägt `user_id` mit.
-- **Rollout-Reihenfolge (in Supabase ausführen):** (1) `docs/migrations/2026-06-16-auth-1-add-user-id.sql`, (2) in der App registrieren + `select id,email from auth.users;`, (3) ID in `…-auth-2-backfill.sql` einsetzen + ausführen, (4) `…-auth-3-enable-rls.sql`, (5) deployen. **Dashboard:** Authentication → Providers → Email → „Confirm email" AUS.
+- **Rollout ABGESCHLOSSEN (2026-06-18, live):** alle 3 Migrationen + Backfill ausgeführt, RLS aktiv, „Confirm email" AUS + Signups AN im Supabase-Dashboard. Owner-Account = `lennartsiegfriedfriedel@gmail.com`. Beim RLS-Enable mussten 4 alte „Public access"-Policies (shots/coffees/roast_dates/roasters) gedroppt werden (hätten sonst allen Vollzugriff gegeben) — **Regel: bei RLS-Enable immer `pg_policies` auf brachliegende permissive Policies prüfen.** SQL-Dateien unter `docs/migrations/2026-06-16-auth-{1,2,3}-*.sql` bleiben als Referenz.
 - RLS zuletzt → kein Datenverlust, kein Aussperren. Plan/Spec: `docs/superpowers/{plans,specs}/2026-06-16-auth-phase2*`.
 - **Backlog:** Passwort-Reset, E-Mail-Bestätigung, Storage-RLS/per-User-Pfade, später geteilter Katalog-Split.
 
@@ -82,7 +83,7 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | rec_grind_note | text | ⚠ Migration 2026-06-15 |
 | created_at | timestamptz |
 
-> ⚠ `rec_*`-Spalten brauchen `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` (in Supabase ausführen) — sonst schlägt Coffee-Insert/Update fehl.
+> ✅ `rec_*`-Spalten live (Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` ausgeführt).
 
 ### `roast_dates`
 | Spalte | Typ |
