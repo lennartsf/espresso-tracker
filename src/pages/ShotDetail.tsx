@@ -6,7 +6,7 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
-import { ratingBadgeClasses } from '../utils/ratingColor'
+import { ratingBadgeClasses, intensityBadge } from '../utils/ratingColor'
 import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
 import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses } from '../components/ui'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -103,19 +103,19 @@ export function ShotDetail() {
           {shot.body_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Body</p>
-              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingBadgeClasses(shot.body_score)}`}>{shot.body_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.body_score)}>{shot.body_score}</p>
             </div>
           )}
           {shot.acidity_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Acidity</p>
-              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingBadgeClasses(shot.acidity_score)}`}>{shot.acidity_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.acidity_score)}>{shot.acidity_score}</p>
             </div>
           )}
           {shot.bitterness_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Bitterness</p>
-              <p className={`font-bold text-sm px-1.5 py-0.5 rounded ${ratingBadgeClasses(shot.bitterness_score)}`}>{shot.bitterness_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.bitterness_score)}>{shot.bitterness_score}</p>
             </div>
           )}
         </div>

@@ -16,3 +16,11 @@
   --coffee-muted: #a89784;
   --coffee-line: rgba(246, 239, 228, 0.10);
 }
+
+/* Paint the page background (incl. iOS safe-area / overscroll) dark so no
+   white bar shows above the app at the top on mobile. */
+html,
+body,
+#root {
+  background-color: var(--coffee-bg);
+}
