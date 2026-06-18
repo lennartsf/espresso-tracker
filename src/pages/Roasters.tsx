@@ -37,9 +37,7 @@ function RoasterList({ onSelect, onNew }: { onSelect: (r: Roaster) => void; onNe
         eyebrow="Where it's roasted"
         title="Roasters"
         action={
-          <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
-            + New
-          </button>
+          <button onClick={onNew} className={buttonClasses('glow')}>+ New</button>
         }
       />
 
