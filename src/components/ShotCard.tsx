@@ -32,12 +32,12 @@ export function ShotCard({ shot }: Props) {
   return (
     <Link
       to={ROUTES.shot(shot.id)}
-      className={`${cardClasses} p-4 flex justify-between items-center hover:border-coffee-accent/40 transition-colors`}
+      className={`${cardClasses} min-w-0 p-4 flex justify-between items-center hover:border-coffee-accent/40 transition-colors`}
     >
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 mb-0.5">
-          <Badge>{drinkTypeLabel(shot.drink_type)}</Badge>
-          <p className="font-display font-semibold text-coffee-cream text-base truncate">{shot.coffees?.name ?? '—'}</p>
+        <div className="flex items-center gap-2 mb-0.5 min-w-0">
+          <span className="shrink-0"><Badge>{drinkTypeLabel(shot.drink_type)}</Badge></span>
+          <p className="font-display font-semibold text-coffee-cream text-base truncate min-w-0">{shot.coffees?.name ?? '—'}</p>
         </div>
         <p className="text-xs text-coffee-muted mt-0.5 truncate">{subtitle}</p>
       </div>
