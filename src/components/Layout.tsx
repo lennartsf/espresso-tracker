@@ -86,8 +86,8 @@ export function Layout() {
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 md:ml-52 pb-20 md:pb-10 px-4 md:px-10 pt-6 w-full">
-        <div className="max-w-lg md:max-w-4xl mx-auto">
+      <main className="min-w-0 flex-1 overflow-x-hidden md:ml-52 pb-20 md:pb-10 px-4 md:px-10 pt-6 w-full">
+        <div className="min-w-0 max-w-lg md:max-w-4xl mx-auto">
           <Outlet />
         </div>
       </main>
