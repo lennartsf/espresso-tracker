@@ -24,3 +24,11 @@ body,
 #root {
   background-color: var(--coffee-bg);
 }
+
+/* No legitimate content needs horizontal scrolling — clip any stray overflow so
+   mobile Safari never zooms out / shows a horizontal scrollbar. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
