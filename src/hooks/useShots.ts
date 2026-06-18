@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { enqueueWrite } from '../lib/writeQueue'
+import { getCurrentUserId } from '../lib/auth'
 import type { Shot, NewShot } from '../types'
 
 export type ShotWithCoffee = Shot & {
@@ -12,12 +13,15 @@ export type ShotWithCoffee = Shot & {
 }
 
 export function useShots(coffeeId?: string, roastDateId?: string, drinkFilter?: 'espresso' | 'milk') {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['shots', coffeeId ?? 'all', roastDateId ?? 'all', drinkFilter ?? 'all'],
+    queryKey: ['shots', uid, coffeeId ?? 'all', roastDateId ?? 'all', drinkFilter ?? 'all'],
+    enabled: !!uid,
     queryFn: async () => {
       let query = supabase
         .from('shots')
         .select('*, coffees(name), roast_dates(roast_date), grinders(name), machines(name), baskets(name, size_g)')
+        .eq('user_id', uid)
         .order('pulled_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (roastDateId) query = query.eq('roast_date_id', roastDateId)
@@ -34,13 +38,14 @@ export function useCreateShot() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (shot: NewShot) => {
+      const withUser = { ...shot, user_id: getCurrentUserId() }
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        enqueueWrite('shots', shot as unknown as Record<string, unknown>)
-        return { ...shot, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Shot
+        enqueueWrite('shots', withUser as unknown as Record<string, unknown>)
+        return { ...withUser, id: `queued-${crypto.randomUUID()}`, created_at: new Date().toISOString() } as Shot
       }
       const { data, error } = await supabase
         .from('shots')
-        .insert(shot)
+        .insert(withUser)
         .select()
         .single()
       if (error) throw error
@@ -53,6 +58,7 @@ export function useCreateShot() {
 export function useShot(id: string) {
   return useQuery({
     queryKey: ['shot', id],
+    enabled: !!id && !!getCurrentUserId(),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('shots')
@@ -62,7 +68,6 @@ export function useShot(id: string) {
       if (error) throw error
       return data as ShotWithCoffee
     },
-    enabled: !!id,
   })
 }
 

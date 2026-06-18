@@ -1,14 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { getCurrentUserId } from '../lib/auth'
 import type { Roaster, NewRoaster } from '../types'
 
 export function useRoasters() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['roasters'],
+    queryKey: ['roasters', uid],
+    enabled: !!uid,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('roasters')
         .select('*')
+        .eq('user_id', uid)
         .order('name')
       if (error) throw error
       return data as Roaster[]
@@ -22,7 +26,7 @@ export function useCreateRoaster() {
     mutationFn: async (roaster: NewRoaster) => {
       const { data, error } = await supabase
         .from('roasters')
-        .insert(roaster)
+        .insert({ ...roaster, user_id: getCurrentUserId() })
         .select()
         .single()
       if (error) throw error

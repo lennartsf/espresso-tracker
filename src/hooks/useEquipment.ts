@@ -1,14 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { getCurrentUserId } from '../lib/auth'
 import type { Grinder, NewGrinder, Machine, NewMachine, Basket, NewBasket, BrewDevice, NewBrewDevice, EquipmentDefault } from '../types'
 
 // ── Grinders ──────────────────────────────────────────────────────────────────
 
 export function useGrinders() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['grinders'],
+    queryKey: ['grinders', uid],
+    enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('grinders').select('*').order('name')
+      const { data, error } = await supabase.from('grinders').select('*').eq('user_id', uid).order('name')
       if (error) throw error
       return data as Grinder[]
     },
@@ -19,7 +22,7 @@ export function useCreateGrinder() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (g: NewGrinder) => {
-      const { data, error } = await supabase.from('grinders').insert(g).select().single()
+      const { data, error } = await supabase.from('grinders').insert({ ...g, user_id: getCurrentUserId() }).select().single()
       if (error) throw error
       return data as Grinder
     },
@@ -53,10 +56,12 @@ export function useDeleteGrinder() {
 // ── Machines ──────────────────────────────────────────────────────────────────
 
 export function useMachines() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['machines'],
+    queryKey: ['machines', uid],
+    enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('machines').select('*').order('name')
+      const { data, error } = await supabase.from('machines').select('*').eq('user_id', uid).order('name')
       if (error) throw error
       return data as Machine[]
     },
@@ -67,7 +72,7 @@ export function useCreateMachine() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (m: NewMachine) => {
-      const { data, error } = await supabase.from('machines').insert(m).select().single()
+      const { data, error } = await supabase.from('machines').insert({ ...m, user_id: getCurrentUserId() }).select().single()
       if (error) throw error
       return data as Machine
     },
@@ -101,10 +106,12 @@ export function useDeleteMachine() {
 // ── Baskets ───────────────────────────────────────────────────────────────────
 
 export function useBaskets() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['baskets'],
+    queryKey: ['baskets', uid],
+    enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('baskets').select('*').order('name')
+      const { data, error } = await supabase.from('baskets').select('*').eq('user_id', uid).order('name')
       if (error) throw error
       return data as Basket[]
     },
@@ -115,7 +122,7 @@ export function useCreateBasket() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (b: NewBasket) => {
-      const { data, error } = await supabase.from('baskets').insert(b).select().single()
+      const { data, error } = await supabase.from('baskets').insert({ ...b, user_id: getCurrentUserId() }).select().single()
       if (error) throw error
       return data as Basket
     },
@@ -149,10 +156,12 @@ export function useDeleteBasket() {
 // ── Brew Devices ──────────────────────────────────────────────────────────────
 
 export function useBrewDevices() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['brew_devices'],
+    queryKey: ['brew_devices', uid],
+    enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('brew_devices').select('*').order('name')
+      const { data, error } = await supabase.from('brew_devices').select('*').eq('user_id', uid).order('name')
       if (error) throw error
       return data as BrewDevice[]
     },
@@ -163,7 +172,7 @@ export function useCreateBrewDevice() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (d: NewBrewDevice) => {
-      const { data, error } = await supabase.from('brew_devices').insert(d).select().single()
+      const { data, error } = await supabase.from('brew_devices').insert({ ...d, user_id: getCurrentUserId() }).select().single()
       if (error) throw error
       return data as BrewDevice
     },
@@ -197,10 +206,12 @@ export function useDeleteBrewDevice() {
 // ── Equipment Defaults ────────────────────────────────────────────────────────
 
 export function useEquipmentDefaults() {
+  const uid = getCurrentUserId()
   return useQuery({
-    queryKey: ['equipment_defaults'],
+    queryKey: ['equipment_defaults', uid],
+    enabled: !!uid,
     queryFn: async () => {
-      const { data, error } = await supabase.from('equipment_defaults').select('*')
+      const { data, error } = await supabase.from('equipment_defaults').select('*').eq('user_id', uid)
       if (error) throw error
       return data as EquipmentDefault[]
     },
@@ -217,7 +228,7 @@ export function useSetEquipmentDefault() {
     }) => {
       const { error } = await supabase
         .from('equipment_defaults')
-        .upsert({ method, [field]: id }, { onConflict: 'method' })
+        .upsert({ user_id: getCurrentUserId(), method, [field]: id }, { onConflict: 'user_id,method' })
       if (error) throw error
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['equipment_defaults'] }),

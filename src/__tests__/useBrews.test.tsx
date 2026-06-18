@@ -4,6 +4,10 @@ import { vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { useBrews } from '../hooks/useBrews'
 import type { BrewWithCoffee } from '../hooks/useBrews'
+import { useTestUser, TEST_UID } from './helpers/auth'
+import { setCurrentUserId } from '../lib/auth'
+
+useTestUser()
 
 const mockBrew: BrewWithCoffee = {
   id: 'b1',
@@ -31,15 +35,15 @@ const mockBrew: BrewWithCoffee = {
   brew_devices: null,
 }
 
-vi.mock('../lib/supabase', () => ({
-  supabase: {
-    from: () => ({
-      select: () => ({
-        order: () => Promise.resolve({ data: [mockBrew], error: null }),
-      }),
-    }),
-  },
-}))
+vi.mock('../lib/supabase', () => {
+  const chain: Record<string, unknown> = {
+    select: () => chain,
+    eq: () => chain,
+    neq: () => chain,
+    order: () => Promise.resolve({ data: [mockBrew], error: null }),
+  }
+  return { supabase: { from: () => chain } }
+})
 
 function wrapper({ children }: { children: ReactNode }) {
   return (
@@ -55,4 +59,12 @@ test('useBrews gibt Brews zurück', async () => {
   expect(result.current.data).toHaveLength(1)
   expect(result.current.data![0].brew_method).toBe('v60')
   expect(result.current.data![0].coffees?.name).toBe('Ethiopia')
+})
+
+test('useBrews is gated (idle) when logged out', async () => {
+  setCurrentUserId(null)
+  const { result } = renderHook(() => useBrews(), { wrapper })
+  await new Promise(r => setTimeout(r, 50))
+  expect(result.current.fetchStatus).toBe('idle')
+  setCurrentUserId(TEST_UID)
 })

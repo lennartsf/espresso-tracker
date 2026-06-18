@@ -4,6 +4,9 @@ import { vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { useGrinders, useMachines, useBaskets, useBrewDevices, useEquipmentDefaults } from '../hooks/useEquipment'
 import type { Grinder, Machine, Basket, BrewDevice, EquipmentDefault } from '../types'
+import { useTestUser } from './helpers/auth'
+
+useTestUser()
 
 const mockGrinder: Grinder = {
   id: 'g1', name: 'Niche Zero', brand: 'Niche',
@@ -31,20 +34,22 @@ const mockDefault: EquipmentDefault = {
 
 vi.mock('../lib/supabase', () => ({
   supabase: {
-    from: (table: string) => ({
-      select: () => ({
-        order: () => Promise.resolve({
-          data: table === 'grinders'            ? [mockGrinder]
-               : table === 'machines'           ? [mockMachine]
-               : table === 'brew_devices'       ? [mockDevice]
-               : [mockBasket],
-          error: null,
-        }),
-        // equipment_defaults has no .order()
-        then: (resolve: (v: { data: EquipmentDefault[]; error: null }) => void) =>
-          resolve({ data: [mockDefault], error: null }),
-      }),
-    }),
+    from: (table: string) => {
+      const data = table === 'grinders'            ? [mockGrinder]
+                 : table === 'machines'           ? [mockMachine]
+                 : table === 'brew_devices'       ? [mockDevice]
+                 : table === 'equipment_defaults' ? [mockDefault]
+                 : [mockBasket]
+      const chain: Record<string, unknown> = {
+        select: () => chain,
+        eq: () => chain,
+        order: () => Promise.resolve({ data, error: null }),
+        // equipment_defaults is awaited without .order()
+        then: (resolve: (v: { data: unknown; error: null }) => void) =>
+          resolve({ data, error: null }),
+      }
+      return chain
+    },
   },
 }))
 

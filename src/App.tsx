@@ -5,7 +5,8 @@ import { Landing } from './marketing/Landing'
 import { Try } from './marketing/Try'
 import { Login } from './marketing/auth/Login'
 import { Signup } from './marketing/auth/Signup'
-import { Layout } from './components/Layout'
+import { AuthProvider } from './lib/AuthContext'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import { Dashboard } from './pages/Dashboard'
 import { NewShot } from './pages/NewShot'
 import { ShotHistory } from './pages/ShotHistory'
@@ -28,6 +29,7 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthProvider>
       <BrowserRouter>
         <Routes>
           {/* Öffentliche Website (Dark Premium) */}
@@ -38,8 +40,8 @@ export default function App() {
             <Route path="signup" element={<Signup />} />
           </Route>
 
-          {/* App (Tracker) — alles unter /app/* */}
-          <Route path="app" element={<Layout />}>
+          {/* App (Tracker) — alles unter /app/*, hinter Login */}
+          <Route path="app" element={<ProtectedRoute />}>
             <Route index element={<Dashboard />} />
             <Route path="shots" element={<ShotHistory />} />
             <Route path="shots/new" element={<NewShot />} />
@@ -59,6 +61,7 @@ export default function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
