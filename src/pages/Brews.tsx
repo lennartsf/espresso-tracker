@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useBrews } from '../hooks/useBrews'
 import { BrewCard } from '../components/BrewCard'
-import { Select, EmptyState, PageHeader } from '../components/ui'
+import { Select, EmptyState, PageHeader, buttonClasses } from '../components/ui'
 
 type MethodFilter = 'all' | 'french_press' | 'v60' | 'aeropress' | 'moka_pot'
 
@@ -31,9 +31,7 @@ export function Brews() {
         eyebrow="Filter & pour-over"
         title="Brews"
         action={
-          <Link to={ROUTES.brewNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft">
-            + New
-          </Link>
+          <Link to={ROUTES.brewNew} className={buttonClasses('glow')}>+ New</Link>
         }
       />
 

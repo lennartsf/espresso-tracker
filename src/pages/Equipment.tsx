@@ -7,7 +7,7 @@ import {
   useBrewDevices, useCreateBrewDevice, useUpdateBrewDevice, useDeleteBrewDevice,
   useEquipmentDefaults, useSetEquipmentDefault,
 } from '../hooks/useEquipment'
-import { PageHeader } from '../components/ui'
+import { PageHeader, buttonClasses } from '../components/ui'
 import type { Grinder, Machine, Basket, BrewDevice, NewBrewDevice } from '../types'
 
 type Tab = 'grinders' | 'machines' | 'baskets' | 'brew_devices'
@@ -143,14 +143,14 @@ function GrinderList({ onSelect, onNew }: { onSelect: (g: Grinder) => void; onNe
     <div>
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-coffee-muted">{grinders.length} Grinder{grinders.length !== 1 ? 's' : ''}</p>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <button onClick={onNew} className={buttonClasses('glow')}>
           + New
         </button>
       </div>
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {grinders.map(g => (
-          <div key={g.id} className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 flex items-start gap-3">
+          <div key={g.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -216,19 +216,19 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {grinder.brand && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{grinder.brand}</p>
         </div>
       )}
       {grinder.grinder_type && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Burr Type</p>
           <p className="text-sm text-coffee-cream">{grinderTypeLabel(grinder.grinder_type)}</p>
         </div>
       )}
       {(grinder.burr_size_mm !== null || grinder.motor_watt !== null) && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Specs</p>
           <div className="grid gap-1">
             {grinder.burr_size_mm !== null && (
@@ -257,7 +257,7 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
         </div>
       )}
       {grinder.notes && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{grinder.notes}</p>
         </div>
@@ -403,14 +403,14 @@ function MachineList({ onSelect, onNew }: { onSelect: (m: Machine) => void; onNe
     <div>
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-coffee-muted">{machines.length} Machine{machines.length !== 1 ? 's' : ''}</p>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <button onClick={onNew} className={buttonClasses('glow')}>
           + New
         </button>
       </div>
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {machines.map(m => (
-          <div key={m.id} className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 flex items-start gap-3">
+          <div key={m.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -476,19 +476,19 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {machine.brand && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{machine.brand}</p>
         </div>
       )}
       {machine.funktionsweise && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Boiler Type</p>
           <p className="text-sm text-coffee-cream">{funktionsweiseLabel(machine.funktionsweise)}</p>
         </div>
       )}
       {(machine.brew_group_type || machine.brew_group_size_mm !== null) && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Group Head</p>
           <div className="grid gap-1">
             {machine.brew_group_type && (
@@ -507,7 +507,7 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
         </div>
       )}
       {machine.notes && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{machine.notes}</p>
         </div>
@@ -634,14 +634,14 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
     <div>
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-coffee-muted">{baskets.length} Basket{baskets.length !== 1 ? 's' : ''}</p>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <button onClick={onNew} className={buttonClasses('glow')}>
           + New
         </button>
       </div>
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {baskets.map(b => (
-          <div key={b.id} className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 flex items-start gap-3">
+          <div key={b.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -711,25 +711,25 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {basket.brand && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{basket.brand}</p>
         </div>
       )}
       {basket.diameter_mm !== null && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Diameter</p>
           <p className="text-sm text-coffee-cream">{basket.diameter_mm} mm</p>
         </div>
       )}
       {basket.size_g !== null && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Rated Dose</p>
           <p className="text-sm text-coffee-cream">{basket.size_g} g</p>
         </div>
       )}
       {basket.notes && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{basket.notes}</p>
         </div>
@@ -839,14 +839,14 @@ function BrewDeviceList({ onSelect, onNew }: { onSelect: (d: BrewDevice) => void
     <div>
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-coffee-muted">{devices.length} Device{devices.length !== 1 ? 's' : ''}</p>
-        <button onClick={onNew} className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg">
+        <button onClick={onNew} className={buttonClasses('glow')}>
           + New
         </button>
       </div>
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {devices.map(d => (
-          <div key={d.id} className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 flex items-start gap-3">
+          <div key={d.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -916,23 +916,23 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {device.brand && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{device.brand}</p>
         </div>
       )}
       {device.device_type && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Type</p>
           <p className="text-sm text-coffee-cream">{deviceTypeLabel(device.device_type)}</p>
         </div>
       )}
-      <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3 mb-3">
+      <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
         <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Default for</p>
         <DefaultSetter itemId={device.id} field="brew_device_id" />
       </div>
       {device.notes && (
-        <div className="bg-coffee-surface2 border border-coffee-line rounded-lg p-3">
+        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{device.notes}</p>
         </div>

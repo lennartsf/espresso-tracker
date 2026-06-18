@@ -4,7 +4,7 @@ import { ROUTES } from '../lib/routes'
 import { useCoffees } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { ShotCard } from '../components/ShotCard'
-import { Select, EmptyState, PageHeader } from '../components/ui'
+import { Select, EmptyState, PageHeader, buttonClasses } from '../components/ui'
 
 type DrinkFilter = 'all' | 'espresso' | 'milk'
 
@@ -30,12 +30,7 @@ export function ShotHistory() {
         eyebrow="Your pulls"
         title="Shots"
         action={
-          <Link
-            to={ROUTES.shotNew}
-            className="bg-coffee-accent text-coffee-bg text-sm font-semibold px-3 py-1.5 rounded-lg hover:bg-coffee-accent-soft"
-          >
-            + New
-          </Link>
+          <Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New</Link>
         }
       />
 
