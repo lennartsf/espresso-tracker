@@ -47,7 +47,8 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
   Coffees „Add a bag to start dialling in.“ Ton trocken, nie entschuldigend.
 - **Loading:** Skeletons im Ziel-Layout; Spinner nur in Buttons.
 - **Error:** Inline-Karte, Klartext, eine Retry-Aktion.
-- **Offline:** Banner in `Layout` (ehrlich: noch keine Write-Queue).
+- **Offline:** Write-Queue (`src/lib/writeQueue.ts` + `useWriteQueue`) puffert
+  Shot/Brew-Creates offline, Sync bei Reconnect; Banner zeigt „save locally" + Pending.
 
 ## Mobile
 - Bottom-Nav: `env(safe-area-inset-bottom)`; Full-Screen-Flows zusätzlich
@@ -87,7 +88,9 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
 2. ✅ **Offline-Write-Queue** — ERLEDIGT (`lib/writeQueue.ts`, `useWriteQueue`,
    enqueue in useCreateShot/useCreateBrew, Banner-Copy ehrlich „save locally", 3 Tests).
 3. ✅ Landing-Hero: Parallax + Wort-Stagger schon vorhanden (`Hero.tsx`), Spec ok.
-4. ✅ Dekorativer Arc hinter Section-Headern — ERLEDIGT (Layout-Content-Top + PageHeader).
+4. ↩︎ Dekorativer Arc hinter Section-Headern — gebaut, dann WIEDER ENTFERNT
+   (2026-06-18): wirkte als „Schweif" neben dem New-Button. Pull-Arc bleibt nur
+   funktional (BrewTimer-Ring, DialGauge).
 
 ## Mobile/UX-Backlog (User 2026-06-15)
 5. ✅ **Eingabefeld-Kontrast (a11y)** — ERLEDIGT (Branch `mobile-ux-batch1`):
@@ -102,7 +105,25 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
 7. ✅ **RoasterMap ~2× größer** — ERLEDIGT: `Roasters.tsx` height 200px→420px.
 8. ✅ **Analyse: Kaffeeauswahl wie in NewShot** — ERLEDIGT: alle Coffee-Selects in
    `Analysis.tsx` zeigen `Name / Rösterei` (Muster aus NewShot), via `Select`.
-9. ✅ **Rezepte je Kaffee (Röster-Vorgabe)** — CODE ERLEDIGT (Felder an `coffees`,
-   `RoasterRecipeFields`, Detail-Anzeige, NewShot „Use roaster recipe"-Prefill).
-   **OFFEN: Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` muss
-   User in Supabase ausführen, sonst schlägt Coffee-Speichern fehl.**
+9. ✅ **Rezepte je Kaffee (Röster-Vorgabe)** — ERLEDIGT (Felder an `coffees`,
+   `RoasterRecipeFields`, Detail-Anzeige, NewShot „Use roaster recipe"-Prefill;
+   Migration in Supabase ausgeführt).
+
+## Einheitliches Layout (v2, 2026-06-18 — verbindlich)
+Jede Seite (inkl. Home) hat dieselbe Struktur, damit der Wechsel keinen Bruch zeigt:
+- **Header:** `<PageHeader eyebrow title subtitle? action? />` — Akzent-Eyebrow +
+  großer Fraunces-Titel, Aktion (z. B. „+ New") rechts. KEINE umschließende Seiten-
+  Karte/Verlauf mehr (Home-Radial-Wrapper entfernt). Header sitzt auf dem Seiten-bg.
+- **Karten:** `cardClasses` = Embossed-Cockpit-Look (Verlauf `from-coffee-surface
+  to-coffee-bg` + Inset-Highlight, `rounded-2xl`). Gilt für alle Listen/Detail-Karten.
+- **Primär-Aktion:** „+ New"-Buttons überall `buttonClasses('glow')` (gold Pill).
+- **Stat-Optik:** Kennzahlen als `DialGauge` / `LiquidBar` / Stat-Kacheln
+  (Home + Analyse-Rezepte) statt nackter Label/Wert-Zeilen.
+- **Rating-Farben:** Flavor/Overall = 10-stufig rot→grün (`ratingHex`, Qualität).
+  Body/Säure/Bitterness = `intensityFill`/`intensityBadge` (Creme blass→satt,
+  Stärke der Ausprägung, KEIN gut/schlecht).
+- **Mobile:** `html/body overflow-x:hidden` + `main`/Content `min-w-0` gegen
+  iOS-Zoom-out. In Flex-Karten mit `truncate` IMMER `min-w-0` an Karte + Namens-Zeile,
+  sonst sprengen lange Namen die Breite (Badge wird abgeschnitten).
+- **Home:** Wochenansicht — KW-Picker (Datum + ‹/›), Ø-Flavor-Dial + Ratio + Shots-
+  pro-Tag-Balken + Wochen-Shots, alles auf die gewählte KW bezogen.
