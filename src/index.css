@@ -40,6 +40,8 @@ body {
   input,
   select,
   textarea {
-    font-size: 16px;
+    /* !important so it beats Tailwind's .text-sm utility (class > element
+       specificity); otherwise the 14px utility wins and iOS still zooms. */
+    font-size: 16px !important;
   }
 }
