@@ -534,8 +534,8 @@ export function NewShot() {
         {/* Brew time */}
         <div>
           <FieldLabel>Brew Time</FieldLabel>
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-5">
+            <div className="flex items-center gap-2 self-start">
               <Input type="number" value={brewTimeS} onChange={e => setBrewTimeS(e.target.value)} placeholder="28" className="!w-20" />
               <span className="text-sm text-coffee-muted">s</span>
             </div>

@@ -32,3 +32,14 @@ body {
   overflow-x: hidden;
   max-width: 100%;
 }
+
+/* iOS Safari auto-zooms in when a focused input's font-size is < 16px and never
+   zooms back out. Our form controls use text-sm (14px) → force ≥16px on small
+   screens so tapping a field opens the keyboard without zooming the viewport. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
