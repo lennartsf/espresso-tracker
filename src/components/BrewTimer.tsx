@@ -43,9 +43,9 @@ export function BrewTimer({ onTime }: Props) {
   const dashOffset = CIRCUMFERENCE * (1 - progress)
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="relative h-24 w-24 shrink-0">
-        <svg viewBox="0 0 96 96" className="h-24 w-24 -rotate-90" aria-hidden="true">
+    <div className="flex w-full flex-col items-center gap-5">
+      <div className="relative h-44 w-44 shrink-0">
+        <svg viewBox="0 0 96 96" className="h-44 w-44 -rotate-90" aria-hidden="true">
           <circle cx="48" cy="48" r={R} fill="none" stroke="var(--coffee-line)" strokeWidth="3" />
           <circle
             cx="48" cy="48" r={R} fill="none"
@@ -55,8 +55,8 @@ export function BrewTimer({ onTime }: Props) {
             className="motion-safe:transition-[stroke-dashoffset] motion-safe:duration-500 motion-safe:ease-linear"
           />
         </svg>
-        <span className="absolute inset-0 flex items-center justify-center font-display text-2xl font-semibold text-coffee-cream tabular-nums">
-          {elapsed}<span className="ml-0.5 font-grotesk text-xs text-coffee-muted">s</span>
+        <span className="absolute inset-0 flex items-center justify-center font-display text-5xl font-semibold text-coffee-cream tabular-nums">
+          {elapsed}<span className="ml-0.5 font-grotesk text-base text-coffee-muted">s</span>
         </span>
       </div>
       <div className="flex items-center gap-2">
