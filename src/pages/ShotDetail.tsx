@@ -70,7 +70,7 @@ export function ShotDetail() {
           <button onClick={() => navigate(ROUTES.shots)} className="text-coffee-muted hover:text-coffee-cream text-lg">←</button>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="font-display text-2xl font-semibold text-coffee-cream">{shot.coffees?.name ?? '—'}</h1>
-            {shot.drink_type !== 'espresso' && (
+            {shot.drink_type && shot.drink_type !== 'espresso' && (
               <Badge>{drinkTypeLabel(shot.drink_type)}</Badge>
             )}
           </div>
@@ -180,7 +180,7 @@ export function ShotDetail() {
       )}
 
       {/* Milk */}
-      {shot.drink_type !== 'espresso' && (shot.milk_type || shot.milk_ml) && (
+      {shot.drink_type !== 'espresso' && shot.drink_type !== 'caffe_crema' && (shot.milk_type || shot.milk_ml) && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Milk</p>
           <div className="flex justify-between items-center">

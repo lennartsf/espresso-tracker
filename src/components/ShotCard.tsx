@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function ShotCard({ shot }: Props) {
-  const isMilkDrink = shot.drink_type !== 'espresso'
+  const isMilkDrink = shot.drink_type !== 'espresso' && shot.drink_type !== 'caffe_crema'
 
   const roastDate = shot.roast_dates?.roast_date
     ? new Date(shot.roast_dates.roast_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })

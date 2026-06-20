@@ -184,7 +184,7 @@ export function NewShot() {
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
-  const isMilk = drinkType !== 'espresso'
+  const isMilk = drinkType !== 'espresso' && drinkType !== 'caffe_crema'
   const steps = STEP_DEFS.filter(s => s.key !== 'milk' || isMilk)
   const lastStep = steps.length - 1
   const stepKey: StepKey = steps[Math.min(step, lastStep)].key
@@ -269,8 +269,8 @@ export function NewShot() {
       machine_id: machineId || null,
       basket_id: basketId || null,
       drink_type: drinkType,
-      milk_type: drinkType !== 'espresso' ? (milkType || null) : null,
-      milk_ml: drinkType !== 'espresso' ? (milkMl ? parseFloat(milkMl) : null) : null,
+      milk_type: isMilk ? (milkType || null) : null,
+      milk_ml: isMilk ? (milkMl ? parseFloat(milkMl) : null) : null,
       pulled_at: new Date().toISOString(),
     })
 
