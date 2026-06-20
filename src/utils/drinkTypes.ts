@@ -1,5 +1,6 @@
 export const DRINK_TYPES = [
   { value: 'espresso',        label: 'Espresso' },
+  { value: 'caffe_crema',     label: 'Caffè Crema' },
   { value: 'cappuccino',      label: 'Cappuccino' },
   { value: 'latte_macchiato', label: 'Latte Macchiato' },
   { value: 'flat_white',      label: 'Flat White' },

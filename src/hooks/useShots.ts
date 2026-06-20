@@ -25,8 +25,8 @@ export function useShots(coffeeId?: string, roastDateId?: string, drinkFilter?: 
         .order('pulled_at', { ascending: false })
       if (coffeeId) query = query.eq('coffee_id', coffeeId)
       if (roastDateId) query = query.eq('roast_date_id', roastDateId)
-      if (drinkFilter === 'espresso') query = query.eq('drink_type', 'espresso')
-      if (drinkFilter === 'milk') query = query.neq('drink_type', 'espresso')
+      if (drinkFilter === 'espresso') query = query.in('drink_type', ['espresso', 'caffe_crema'])
+      if (drinkFilter === 'milk') query = query.not('drink_type', 'in', '("espresso","caffe_crema")')
       const { data, error } = await query
       if (error) throw error
       return data as ShotWithCoffee[]
