@@ -194,3 +194,19 @@ Zweck: Eine Kaffeesorte bleibt dauerhaft eingetragen. Neue Bestellungen bekommen
 - Kein Passwort-Reset / keine E-Mail-Bestätigung (Backlog).
 - Storage-Buckets (Fotos) öffentlich per URL — noch kein Storage-RLS (Backlog).
 - Service Worker / installierbare PWA noch nicht (Offline nur Write-Queue, kein App-Cache).
+
+---
+
+## Offener Backlog (Stand 2026-08-25)
+
+Neue User-Wünsche aufgenommen und paketweise sortiert in **`docs/BACKLOG.md`**:
+Design-Relaunch Light/Dark im MacroFactor-Look (App + Website, inkl. anpassbarem
+Dashboard), native Apps für iPhone/Mac/Android via Capacitor, Mahlgrad-Übernahme
+aus dem letzten Shot der Bohne, mehrere Rezepte pro Bohne mit Zielwert-Anzeige
+statt Prefill, Bluetooth-Waage mit Auto-Stop-Timer, Dial-in-Algorithmus für neue
+Bohnen, schönere Röster-Karte, Grind-Note → Notizen, feinere Röstgrad-Skala mit
+Bohnen-Animation.
+
+**Notiz zur Architektur-Entscheidung „PWA statt native App":** Paket G kippt diese
+Entscheidung bewusst — u. a. weil Web Bluetooth (Paket F) auf iOS-Safari nicht
+verfügbar ist. Die Website bleibt dabei als Vercel-Deployment bestehen.

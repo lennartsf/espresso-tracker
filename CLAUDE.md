@@ -239,6 +239,14 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
 - [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types, V60 Pour Pattern, Milk Steaming, Latte Art Heart (alle self-computed-geometry-Engine, gradient/shadow-Stil, gleich große Side/Top-Views; rebuilt 2026-05-31)
 
+## Backlog (aktuell) — `docs/BACKLOG.md`
+**Verbindliche Quelle für alle offenen Aufgaben: `docs/BACKLOG.md`** (Stand 2026-08-25).
+Dort sind die Wünsche zu Paketen A–H gebündelt (Aufwand, Abhängigkeiten, Reihenfolge):
+A Dial-in Quick Wins · B Rezepte pro Bohne · C Design Light/Dark + Website ·
+D Röstgrad-Feinskala + Bohnen-Visual · E Dial-in-Algorithmus · F Bluetooth-Waage ·
+G Native Apps (App Store) · H Schönere Röster-Karte.
+Bei neuer Feature-Arbeit dort zuerst nachsehen und den Status danach dort pflegen.
+
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation
 - [ ] Multi-User via Supabase Auth

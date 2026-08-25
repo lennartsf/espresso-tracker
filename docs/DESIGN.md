@@ -80,6 +80,9 @@ DialGauge. Kein zweites Motiv (keine Diagonal-Divider, keine clip-path-Shapes).
   Craft-Anspruch nicht dient.
 
 ## Backlog (groß, bewusst offen)
+> Historie der Design-Tasks. **Neue/offene Aufgaben stehen in `docs/BACKLOG.md`**
+> (Pakete A–H, Stand 2026-08-25) — insbesondere Paket C (Light/Dark + MacroFactor-Look).
+
 1. ✅ **NewShot Mobile-Stepped-Flow** — ERLEDIGT (Branch `newshot-stepped-flow`):
    5 Schritte (Coffee · Dial-in · Timer · Taste · Notes), Progress-Leiste, Back/Next,
    Per-Step-Validierung; Desktop behält Ein-Seiten-Form (`useIsMobile`). Bug gefixt:
