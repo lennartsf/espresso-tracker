@@ -1,0 +1,776 @@
+<title>Embossed oder Flach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────────
+   PAGE CHROME — folgt dem Theme des Betrachters (3 Zustände).
+   Die Mockups darunter haben BEWUSST eigene, feste Paletten,
+   damit Light und Dark nebeneinander vergleichbar bleiben.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --ground: #faf8f5;
+  --panel: #ffffff;
+  --panel-2: #f2eee8;
+  --ink: #221c17;
+  --muted: #7a6d60;
+  --line: rgba(34, 28, 23, 0.13);
+  --accent: #9c6b34;
+  --accent-soft: rgba(156, 107, 52, 0.10);
+  --good: #3f7d4e;
+  --warn: #a8632a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #16120f;
+    --panel: #1f1a15;
+    --panel-2: #2a231c;
+    --ink: #f1e9df;
+    --muted: #a2917e;
+    --line: rgba(246, 239, 228, 0.11);
+    --accent: #c9a35e;
+    --accent-soft: rgba(201, 163, 94, 0.13);
+    --good: #7fb98c;
+    --warn: #d99a5e;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #16120f;
+  --panel: #1f1a15;
+  --panel-2: #2a231c;
+  --ink: #f1e9df;
+  --muted: #a2917e;
+  --line: rgba(246, 239, 228, 0.11);
+  --accent: #c9a35e;
+  --accent-soft: rgba(201, 163, 94, 0.13);
+  --good: #7fb98c;
+  --warn: #d99a5e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ── Typography ─────────────────────────────────────────── */
+h1, h2, h3 { font-family: "Fraunces", Georgia, "Times New Roman", serif; font-weight: 700; margin: 0; text-wrap: balance; line-height: 1.12; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); letter-spacing: -0.015em; }
+h2 { font-size: clamp(1.5rem, 3vw, 1.95rem); letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; }
+.eyebrow {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.note { font-size: 0.9rem; color: var(--muted); max-width: 68ch; }
+code {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  font-size: 0.86em;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 0.1em 0.38em;
+}
+
+header .rule { height: 1px; background: var(--line); margin-top: 28px; }
+
+/* ── Section scaffolding ────────────────────────────────── */
+section { display: flex; flex-direction: column; gap: 22px; }
+.sec-head { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Comparison matrix ──────────────────────────────────── */
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+@media (max-width: 860px) { .matrix { grid-template-columns: minmax(0, 1fr); } }
+
+.variant {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.variant-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.variant-name { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.05rem; }
+.tag {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tag.is-now { border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); background: var(--accent-soft); }
+.tag.is-rec { border-color: color-mix(in srgb, var(--good) 50%, transparent); color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); }
+.variant-verdict { font-size: 0.88rem; color: var(--muted); }
+
+/* ═══════════════════════════════════════════════════════════
+   MOCKUP — Palette pro Variante fest verdrahtet.
+   data-mode = dark | light     (Theme der App)
+   data-style = embossed | flat (Kartenrezept)
+   ═══════════════════════════════════════════════════════════ */
+.mock {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  font-family: "Space Grotesk", sans-serif;
+  padding: 20px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--m-bg);
+  color: var(--m-text);
+  container-type: inline-size;
+}
+
+/* Dark: exakt die heutigen Tokens aus src/index.css */
+.mock[data-mode="dark"] {
+  --m-bg: #1c1714;
+  --m-surface: #25201b;
+  --m-surface2: #33291f;
+  --m-accent: #c9a35e;
+  --m-accent-soft: #d8bd86;
+  --m-glow-top: #e9c987;
+  --m-cream: #f6efe4;
+  --m-text: #f1e9df;
+  --m-muted: #a89784;
+  --m-line: rgba(246, 239, 228, 0.10);
+  --m-btn-ink: #1c1714;
+  --m-track: #33291f;
+}
+/* Light: Vorschlag — Gold auf Weiß fällt bei Kontrast durch,
+   deshalb ein abgedunkeltes Akzent-Braun als Interaktionsfarbe. */
+.mock[data-mode="light"] {
+  --m-bg: #f7f4ef;
+  --m-surface: #ffffff;
+  --m-surface2: #efe9e0;
+  --m-accent: #a8763a;
+  --m-accent-soft: #8f6430;
+  --m-glow-top: #c08f4c;
+  --m-cream: #221c16;
+  --m-text: #2a221b;
+  --m-muted: #7a6c5d;
+  --m-line: rgba(42, 34, 27, 0.12);
+  --m-btn-ink: #fffaf2;
+  --m-track: #e2d9cc;
+}
+
+/* ── Kartenrezept: EMBOSSED (heutiges cardClasses) ──────── */
+.mock[data-style="embossed"] .tile {
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+  background: linear-gradient(to bottom, var(--m-surface), var(--m-bg));
+}
+.mock[data-mode="dark"][data-style="embossed"] .tile {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 2px 8px rgba(233, 201, 135, 0.06);
+}
+.mock[data-mode="light"][data-style="embossed"] .tile {
+  box-shadow: 0 6px 16px rgba(64, 46, 26, 0.16), inset 0 2px 8px rgba(168, 118, 58, 0.10);
+}
+
+/* ── Kartenrezept: FLAT (Vorschlag) ─────────────────────── */
+.mock[data-style="flat"] .tile {
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+  background: var(--m-surface);
+}
+.mock[data-mode="dark"][data-style="flat"] .tile {
+  box-shadow: none;
+}
+.mock[data-mode="light"][data-style="flat"] .tile {
+  box-shadow: 0 1px 2px rgba(42, 34, 27, 0.04), 0 10px 24px -16px rgba(42, 34, 27, 0.22);
+}
+
+/* ── Mockup-Innenleben ──────────────────────────────────── */
+.m-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.m-eyebrow {
+  font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--m-accent); margin-bottom: 3px;
+}
+.m-title { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.6rem; color: var(--m-cream); line-height: 1; }
+.m-btn {
+  font-size: 0.72rem; font-weight: 600; white-space: nowrap;
+  padding: 8px 14px; border-radius: 999px; border: 0;
+  color: var(--m-btn-ink);
+  background: linear-gradient(to bottom, var(--m-glow-top), var(--m-accent));
+}
+.mock[data-mode="dark"] .m-btn { box-shadow: 0 4px 14px rgba(233, 201, 135, 0.35); }
+.mock[data-mode="light"] .m-btn { box-shadow: 0 4px 12px rgba(168, 118, 58, 0.28); }
+.mock[data-style="flat"] .m-btn { background: var(--m-accent); box-shadow: none; }
+
+.m-weekbar {
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid var(--m-line); border-radius: 14px;
+  background: var(--m-surface2); padding: 7px 12px;
+}
+.mock[data-style="flat"] .m-weekbar { background: var(--m-surface); }
+.m-arrow { color: var(--m-muted); font-size: 1rem; line-height: 1; padding: 0 6px; }
+.m-week { text-align: center; }
+.m-week strong { font-family: "Fraunces", Georgia, serif; font-size: 0.86rem; color: var(--m-cream); display: block; }
+.m-week span { font-size: 0.68rem; color: var(--m-muted); }
+
+.m-grid { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 10px; }
+@container (max-width: 300px) { .m-grid { grid-template-columns: minmax(0, 1fr); } }
+.tile { padding: 12px; min-width: 0; }
+.tile.dial { display: flex; align-items: center; justify-content: center; }
+.tile.stack { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+
+.m-label {
+  font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--m-muted);
+}
+.m-dialwrap { position: relative; width: 84px; height: 84px; }
+.m-dialwrap svg { display: block; }
+.m-dialval {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1px;
+}
+.m-dialnum {
+  font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.25rem;
+  color: var(--m-cream); font-variant-numeric: tabular-nums; line-height: 1;
+}
+.m-dialcap { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--m-muted); }
+
+.m-ratio { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--m-track); }
+.m-ratio i { display: block; }
+.m-ratio i.dose { width: 33%; background: var(--m-accent); }
+.m-ratio i.yield { width: 67%; background: color-mix(in srgb, var(--m-accent) 34%, transparent); }
+.m-ratiometa { display: flex; gap: 12px; font-size: 0.63rem; color: var(--m-muted); }
+
+.m-bars { display: flex; align-items: flex-end; gap: 6px; height: 56px; }
+.m-bars > div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.m-bars b { display: block; width: 100%; border-radius: 3px 3px 0 0; background: var(--m-accent); }
+.m-bars b.zero { background: var(--m-track); }
+.m-bars span { font-size: 0.55rem; color: var(--m-muted); }
+
+.m-shots { display: flex; flex-direction: column; gap: 7px; }
+.m-shot { display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-width: 0; }
+.m-shot .who { min-width: 0; flex: 1; }
+.m-shot .who strong {
+  display: block; font-size: 0.78rem; font-weight: 600; color: var(--m-cream);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.m-shot .who span { font-size: 0.64rem; color: var(--m-muted); }
+.m-rating {
+  font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 0.9rem;
+  width: 32px; height: 32px; flex: 0 0 32px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+/* Funktionsfarben — bleiben in BEIDEN Themes identisch in der Bedeutung */
+.m-rating.r9 { background: #4a9657; color: #f2fbf3; }
+.m-rating.r7 { background: #9bbf5a; color: #1b2410; }
+.m-rating.r5 { background: #d9a441; color: #2b1f07; }
+
+/* ── Anatomie-Sektion ───────────────────────────────────── */
+.anatomy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+@media (max-width: 760px) { .anatomy { grid-template-columns: minmax(0, 1fr); } }
+.anat-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.anat-demo { border-radius: 18px; padding: 26px 22px; border: 1px solid var(--line); }
+.anat-demo[data-mode="light"] { background: #f7f4ef; }
+.anat-demo[data-mode="dark"] { background: #1c1714; }
+.anat-card { border-radius: 16px; padding: 20px; }
+.anat-card .k {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.anat-card .v { font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.anat-demo[data-mode="light"] .anat-card .k { color: #7a6c5d; }
+.anat-demo[data-mode="light"] .anat-card .v { color: #221c16; }
+.anat-demo[data-mode="dark"] .anat-card .k { color: #a89784; }
+.anat-demo[data-mode="dark"] .anat-card .v { color: #f6efe4; }
+
+.anat-demo[data-mode="light"][data-style="embossed"] .anat-card {
+  border: 1px solid rgba(42, 34, 27, 0.12);
+  background: linear-gradient(to bottom, #ffffff, #f7f4ef);
+  box-shadow: 0 6px 16px rgba(64, 46, 26, 0.16), inset 0 2px 8px rgba(168, 118, 58, 0.10);
+}
+.anat-demo[data-mode="light"][data-style="flat"] .anat-card {
+  border: 1px solid rgba(42, 34, 27, 0.12);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(42, 34, 27, 0.04), 0 10px 24px -16px rgba(42, 34, 27, 0.22);
+}
+
+pre {
+  margin: 0; padding: 14px 16px; border-radius: 12px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  overflow-x: auto; font-size: 0.76rem; line-height: 1.65;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--ink);
+}
+pre .c { color: var(--muted); }
+
+/* ── Verdict / consequences ─────────────────────────────── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 26px 26px 28px;
+}
+.verdict { border-left: 3px solid var(--accent); }
+.verdict h2 { margin-bottom: 12px; }
+.verdict p + p { margin-top: 12px; }
+
+.reasons { display: flex; flex-direction: column; gap: 0; margin-top: 20px; }
+.reason { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 15px 0; border-top: 1px solid var(--line); }
+.reason:first-child { border-top: 0; padding-top: 4px; }
+.reason .n {
+  font-family: "Fraunces", Georgia, serif; font-weight: 700; font-size: 0.9rem;
+  color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.5;
+}
+.reason h3 { font-size: 0.98rem; margin-bottom: 3px; }
+.reason p { font-size: 0.92rem; color: var(--muted); }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; background: var(--panel-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+footer { border-top: 1px solid var(--line); padding-top: 22px; font-size: 0.85rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Espresso Tracker · Paket C2</p>
+    <h1>Embossed aufhellen — oder auf flach wechseln?</h1>
+    <div class="rule"></div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <p class="lede">
+        Dieselbe Wochenansicht, viermal: heutiges Kartenrezept gegen ein flaches, und
+        beides in Dark und Light. Alle Werte stammen aus <code>src/index.css</code> und
+        <code>cardClasses</code> — die Light-Palette ist der Vorschlag, der zur Debatte steht.
+      </p>
+    </div>
+
+    <div class="matrix">
+
+      <!-- 1 · Dark embossed (Status quo) -->
+      <div class="variant">
+        <div class="variant-head">
+          <span class="variant-name">Dark · Embossed</span>
+          <span class="tag is-now">Heute live</span>
+        </div>
+        <div class="mock" data-mode="dark" data-style="embossed">
+          <div class="m-head">
+            <div>
+              <p class="m-eyebrow">Your week</p>
+              <p class="m-title">Espresso</p>
+            </div>
+            <button class="m-btn" type="button">+ New Shot</button>
+          </div>
+          <div class="m-weekbar">
+            <span class="m-arrow">‹</span>
+            <div class="m-week"><strong>KW 35 · this week</strong><span>25–31 Aug</span></div>
+            <span class="m-arrow">›</span>
+          </div>
+          <div class="m-grid">
+            <div class="tile dial">
+              <div class="m-dialwrap">
+                <svg width="84" height="84" viewBox="0 0 100 100" style="transform: rotate(135deg);" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#33291f" stroke-width="8" stroke-linecap="round" stroke-dasharray="197.9 263.9"></circle>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#6fb16a" stroke-width="8" stroke-linecap="round" stroke-dasharray="166.2 263.9"></circle>
+                </svg>
+                <div class="m-dialval"><span class="m-dialnum">8.4</span><span class="m-dialcap">Ø Flavor</span></div>
+              </div>
+            </div>
+            <div class="tile stack">
+              <p class="m-label">Ø Ratio 1:2.1</p>
+              <div class="m-ratio"><i class="dose"></i><i class="yield"></i></div>
+              <div class="m-ratiometa"><span>13 shots</span><span>7 top (≥8)</span></div>
+            </div>
+            <div class="tile stack" style="grid-column: 1 / -1;">
+              <p class="m-label">Shots per day</p>
+              <div class="m-bars">
+                <div><b style="height:50%"></b><span>Mo</span></div>
+                <div><b class="zero" style="height:4px"></b><span>Di</span></div>
+                <div><b style="height:75%"></b><span>Mi</span></div>
+                <div><b style="height:25%"></b><span>Do</span></div>
+                <div><b style="height:100%"></b><span>Fr</span></div>
+                <div><b style="height:50%"></b><span>Sa</span></div>
+                <div><b style="height:25%"></b><span>So</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="m-shots">
+            <div class="tile m-shot">
+              <div class="who"><strong>Kenya Kirinyaga AA</strong><span>Five Elephant · 18→38 g · 29 s</span></div>
+              <span class="m-rating r9">9</span>
+            </div>
+            <div class="tile m-shot">
+              <div class="who"><strong>Brazil Fazenda Rainha</strong><span>The Barn · 18→36 g · 26 s</span></div>
+              <span class="m-rating r7">7</span>
+            </div>
+          </div>
+        </div>
+        <p class="variant-verdict">Der Verlauf funktioniert hier: dunkel-auf-dunkel liest sich als Tiefe, das Inset-Highlight als Lichtkante.</p>
+      </div>
+
+      <!-- 2 · Dark flat -->
+      <div class="variant">
+        <div class="variant-head">
+          <span class="variant-name">Dark · Flach</span>
+          <span class="tag">Vorschlag</span>
+        </div>
+        <div class="mock" data-mode="dark" data-style="flat">
+          <div class="m-head">
+            <div>
+              <p class="m-eyebrow">Your week</p>
+              <p class="m-title">Espresso</p>
+            </div>
+            <button class="m-btn" type="button">+ New Shot</button>
+          </div>
+          <div class="m-weekbar">
+            <span class="m-arrow">‹</span>
+            <div class="m-week"><strong>KW 35 · this week</strong><span>25–31 Aug</span></div>
+            <span class="m-arrow">›</span>
+          </div>
+          <div class="m-grid">
+            <div class="tile dial">
+              <div class="m-dialwrap">
+                <svg width="84" height="84" viewBox="0 0 100 100" style="transform: rotate(135deg);" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#33291f" stroke-width="8" stroke-linecap="round" stroke-dasharray="197.9 263.9"></circle>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#6fb16a" stroke-width="8" stroke-linecap="round" stroke-dasharray="166.2 263.9"></circle>
+                </svg>
+                <div class="m-dialval"><span class="m-dialnum">8.4</span><span class="m-dialcap">Ø Flavor</span></div>
+              </div>
+            </div>
+            <div class="tile stack">
+              <p class="m-label">Ø Ratio 1:2.1</p>
+              <div class="m-ratio"><i class="dose"></i><i class="yield"></i></div>
+              <div class="m-ratiometa"><span>13 shots</span><span>7 top (≥8)</span></div>
+            </div>
+            <div class="tile stack" style="grid-column: 1 / -1;">
+              <p class="m-label">Shots per day</p>
+              <div class="m-bars">
+                <div><b style="height:50%"></b><span>Mo</span></div>
+                <div><b class="zero" style="height:4px"></b><span>Di</span></div>
+                <div><b style="height:75%"></b><span>Mi</span></div>
+                <div><b style="height:25%"></b><span>Do</span></div>
+                <div><b style="height:100%"></b><span>Fr</span></div>
+                <div><b style="height:50%"></b><span>Sa</span></div>
+                <div><b style="height:25%"></b><span>So</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="m-shots">
+            <div class="tile m-shot">
+              <div class="who"><strong>Kenya Kirinyaga AA</strong><span>Five Elephant · 18→38 g · 29 s</span></div>
+              <span class="m-rating r9">9</span>
+            </div>
+            <div class="tile m-shot">
+              <div class="who"><strong>Brazil Fazenda Rainha</strong><span>The Barn · 18→36 g · 26 s</span></div>
+              <span class="m-rating r7">7</span>
+            </div>
+          </div>
+        </div>
+        <p class="variant-verdict">Ruhiger, die Zahlen treten vor. Elevation kommt aus der Flächenhelligkeit statt aus Schatten — verliert etwas „Cockpit".</p>
+      </div>
+
+      <!-- 3 · Light embossed -->
+      <div class="variant">
+        <div class="variant-head">
+          <span class="variant-name">Light · Embossed</span>
+          <span class="tag">Rezept 1:1 übertragen</span>
+        </div>
+        <div class="mock" data-mode="light" data-style="embossed">
+          <div class="m-head">
+            <div>
+              <p class="m-eyebrow">Your week</p>
+              <p class="m-title">Espresso</p>
+            </div>
+            <button class="m-btn" type="button">+ New Shot</button>
+          </div>
+          <div class="m-weekbar">
+            <span class="m-arrow">‹</span>
+            <div class="m-week"><strong>KW 35 · this week</strong><span>25–31 Aug</span></div>
+            <span class="m-arrow">›</span>
+          </div>
+          <div class="m-grid">
+            <div class="tile dial">
+              <div class="m-dialwrap">
+                <svg width="84" height="84" viewBox="0 0 100 100" style="transform: rotate(135deg);" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#e2d9cc" stroke-width="8" stroke-linecap="round" stroke-dasharray="197.9 263.9"></circle>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#4a9657" stroke-width="8" stroke-linecap="round" stroke-dasharray="166.2 263.9"></circle>
+                </svg>
+                <div class="m-dialval"><span class="m-dialnum">8.4</span><span class="m-dialcap">Ø Flavor</span></div>
+              </div>
+            </div>
+            <div class="tile stack">
+              <p class="m-label">Ø Ratio 1:2.1</p>
+              <div class="m-ratio"><i class="dose"></i><i class="yield"></i></div>
+              <div class="m-ratiometa"><span>13 shots</span><span>7 top (≥8)</span></div>
+            </div>
+            <div class="tile stack" style="grid-column: 1 / -1;">
+              <p class="m-label">Shots per day</p>
+              <div class="m-bars">
+                <div><b style="height:50%"></b><span>Mo</span></div>
+                <div><b class="zero" style="height:4px"></b><span>Di</span></div>
+                <div><b style="height:75%"></b><span>Mi</span></div>
+                <div><b style="height:25%"></b><span>Do</span></div>
+                <div><b style="height:100%"></b><span>Fr</span></div>
+                <div><b style="height:50%"></b><span>Sa</span></div>
+                <div><b style="height:25%"></b><span>So</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="m-shots">
+            <div class="tile m-shot">
+              <div class="who"><strong>Kenya Kirinyaga AA</strong><span>Five Elephant · 18→38 g · 29 s</span></div>
+              <span class="m-rating r9">9</span>
+            </div>
+            <div class="tile m-shot">
+              <div class="who"><strong>Brazil Fazenda Rainha</strong><span>The Barn · 18→36 g · 26 s</span></div>
+              <span class="m-rating r7">7</span>
+            </div>
+          </div>
+        </div>
+        <p class="variant-verdict">Hier kippt es: der Verlauf nach unten wird zum Grauschleier, das warme Inset zum Gelbstich. Weiß wirkt vergilbt statt edel.</p>
+      </div>
+
+      <!-- 4 · Light flat -->
+      <div class="variant">
+        <div class="variant-head">
+          <span class="variant-name">Light · Flach</span>
+          <span class="tag is-rec">Empfehlung</span>
+        </div>
+        <div class="mock" data-mode="light" data-style="flat">
+          <div class="m-head">
+            <div>
+              <p class="m-eyebrow">Your week</p>
+              <p class="m-title">Espresso</p>
+            </div>
+            <button class="m-btn" type="button">+ New Shot</button>
+          </div>
+          <div class="m-weekbar">
+            <span class="m-arrow">‹</span>
+            <div class="m-week"><strong>KW 35 · this week</strong><span>25–31 Aug</span></div>
+            <span class="m-arrow">›</span>
+          </div>
+          <div class="m-grid">
+            <div class="tile dial">
+              <div class="m-dialwrap">
+                <svg width="84" height="84" viewBox="0 0 100 100" style="transform: rotate(135deg);" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#e2d9cc" stroke-width="8" stroke-linecap="round" stroke-dasharray="197.9 263.9"></circle>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#4a9657" stroke-width="8" stroke-linecap="round" stroke-dasharray="166.2 263.9"></circle>
+                </svg>
+                <div class="m-dialval"><span class="m-dialnum">8.4</span><span class="m-dialcap">Ø Flavor</span></div>
+              </div>
+            </div>
+            <div class="tile stack">
+              <p class="m-label">Ø Ratio 1:2.1</p>
+              <div class="m-ratio"><i class="dose"></i><i class="yield"></i></div>
+              <div class="m-ratiometa"><span>13 shots</span><span>7 top (≥8)</span></div>
+            </div>
+            <div class="tile stack" style="grid-column: 1 / -1;">
+              <p class="m-label">Shots per day</p>
+              <div class="m-bars">
+                <div><b style="height:50%"></b><span>Mo</span></div>
+                <div><b class="zero" style="height:4px"></b><span>Di</span></div>
+                <div><b style="height:75%"></b><span>Mi</span></div>
+                <div><b style="height:25%"></b><span>Do</span></div>
+                <div><b style="height:100%"></b><span>Fr</span></div>
+                <div><b style="height:50%"></b><span>Sa</span></div>
+                <div><b style="height:25%"></b><span>So</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="m-shots">
+            <div class="tile m-shot">
+              <div class="who"><strong>Kenya Kirinyaga AA</strong><span>Five Elephant · 18→38 g · 29 s</span></div>
+              <span class="m-rating r9">9</span>
+            </div>
+            <div class="tile m-shot">
+              <div class="who"><strong>Brazil Fazenda Rainha</strong><span>The Barn · 18→36 g · 26 s</span></div>
+              <span class="m-rating r7">7</span>
+            </div>
+          </div>
+        </div>
+        <p class="variant-verdict">Weiß bleibt weiß, Trennung kommt aus Kante und weichem Abwurfschatten. Das ist die MacroFactor-Ruhe.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Anatomie ─────────────────────────────────────────── -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Woran es liegt</p>
+      <h2>Zwei Rezepte, im Ausschnitt</h2>
+      <p class="note">
+        Der Unterschied steckt in drei Zeilen. Embossed simuliert eine von oben beleuchtete,
+        gewölbte Fläche — das setzt einen dunklen Grund voraus, auf dem „heller nach oben"
+        überhaupt als Licht lesbar ist.
+      </p>
+    </div>
+
+    <div class="anatomy">
+      <div class="anat-col">
+        <h3>Embossed auf hellem Grund</h3>
+        <div class="anat-demo" data-mode="light" data-style="embossed">
+          <div class="anat-card">
+            <p class="k">Ø Flavor · Woche</p>
+            <p class="v">8.4</p>
+          </div>
+        </div>
+        <pre><span class="c">/* Verlauf hell → dunkel = Schleier */</span>
+background: linear-gradient(
+  to bottom, #ffffff, #f7f4ef);
+box-shadow:
+  0 6px 16px rgba(64,46,26,.16),
+  inset 0 2px 8px rgba(168,118,58,.10);</pre>
+        <p class="note">
+          Die untere Kartenhälfte ist messbar dunkler als die obere. Auf Dunkel liest das
+          Auge das als Wölbung; auf Weiß als Verschmutzung. Das warme Inset legt zusätzlich
+          einen Gelbstich über die oberen Pixel.
+        </p>
+      </div>
+
+      <div class="anat-col">
+        <h3>Flach auf hellem Grund</h3>
+        <div class="anat-demo" data-mode="light" data-style="flat">
+          <div class="anat-card">
+            <p class="k">Ø Flavor · Woche</p>
+            <p class="v">8.4</p>
+          </div>
+        </div>
+        <pre><span class="c">/* Fläche bleibt eine Farbe */</span>
+background: #ffffff;
+box-shadow:
+  0 1px 2px rgba(42,34,27,.04),
+  0 10px 24px -16px rgba(42,34,27,.22);</pre>
+        <p class="note">
+          Eine einzige Flächenfarbe, Höhe nur über einen weit gestreuten, fast farblosen
+          Schatten. Funktioniert unverändert in Dark, wenn man den Schatten weglässt und
+          die Fläche stattdessen eine Stufe heller setzt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Empfehlung ───────────────────────────────────────── -->
+  <section>
+    <div class="panel verdict">
+      <p class="eyebrow">Empfehlung</p>
+      <h2>Auf flach wechseln — in beiden Themes</h2>
+      <p class="note" style="max-width: 66ch;">
+        Nicht, weil Embossed schlecht ist: in Dark ist es die stärkere der beiden Varianten
+        und trägt das heutige „Cockpit"-Gefühl. Sondern weil es sich nicht in Light
+        übersetzen lässt, ohne dass es schmutzig wirkt — und zwei getrennte Kartenrezepte
+        parallel zu pflegen ist genau die Art Design-Schuld, die Paket C auflösen soll.
+      </p>
+
+      <div class="reasons">
+        <div class="reason">
+          <span class="n">1</span>
+          <div>
+            <h3>Ein Rezept statt zwei</h3>
+            <p><code>cardClasses</code> bleibt eine einzige Konstante. Bei zwei Rezepten müsste jede der 14 Seiten wissen, in welchem Theme sie steckt.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <span class="n">2</span>
+          <div>
+            <h3>MacroFactor lebt von Ruhe</h3>
+            <p>Was du an der App magst, ist flächige Stille plus kräftige Zahlen. Verläufe und Inset-Highlights arbeiten dem direkt entgegen.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <span class="n">3</span>
+          <div>
+            <h3>Die Datenvisualisierung gewinnt</h3>
+            <p>Dial, Ratio-Bar und Balken sind die eigentliche Information. Auf ruhiger Fläche liest sich die Rating-Skala rot→grün sauberer — sie muss nicht mehr gegen einen goldenen Schimmer ankämpfen.</p>
+          </div>
+        </div>
+        <div class="reason">
+          <span class="n">4</span>
+          <div>
+            <h3>Billiger als es aussieht</h3>
+            <p>Nur <code>cardClasses</code> und die Tile-Helfer im Dashboard fassen das an. Die Umstellung ist ein Ein-Zeilen-Diff plus Sichtprüfung.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Konsequenzen ─────────────────────────────────────── -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Was daraus folgt</p>
+      <h2>Diese Token brauchen einen Light-Wert</h2>
+      <p class="note">
+        Die Hex-Werte in der Light-Spalte sind der Vorschlag aus den Mockups oben —
+        Diskussionsgrundlage, nicht gesetzt.
+      </p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Token</th><th>Dark (heute)</th><th>Light (Vorschlag)</th><th>Anmerkung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--coffee-bg</code></td><td><code>#1c1714</code></td><td><code>#f7f4ef</code></td><td>Seitengrund, warm getönt statt reinweiß</td></tr>
+          <tr><td><code>--coffee-surface</code></td><td><code>#25201b</code></td><td><code>#ffffff</code></td><td>Kartenfläche</td></tr>
+          <tr><td><code>--coffee-surface-2</code></td><td><code>#33291f</code></td><td><code>#efe9e0</code></td><td>Eingabefelder, Wochenleiste</td></tr>
+          <tr><td><code>--coffee-accent</code></td><td><code>#c9a35e</code></td><td><code>#a8763a</code></td><td><strong>Kritisch:</strong> das Gold fällt auf Weiß beim Kontrast durch — Light braucht eine abgedunkelte Variante</td></tr>
+          <tr><td><code>--coffee-text</code></td><td><code>#f1e9df</code></td><td><code>#2a221b</code></td><td>Fließtext</td></tr>
+          <tr><td><code>--coffee-muted</code></td><td><code>#a89784</code></td><td><code>#7a6c5d</code></td><td>Sekundärtext</td></tr>
+          <tr><td><code>--coffee-line</code></td><td><code>rgba(246,239,228,.10)</code></td><td><code>rgba(42,34,27,.12)</code></td><td>Kanten</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Nicht in der Tabelle, aber ebenfalls betroffen: <code>ratingHex</code> (die 10 Stufen sind
+      für dunklen Grund gewählt und brauchen auf Weiß eine Prüfung), <code>intensityFill</code> /
+      <code>intensityBadge</code> (arbeiten mit Creme-Alpha auf Dunkel — auf Weiß unsichtbar,
+      müssen invertieren), die Leaflet-Tiles (<code>dark_all</code> ↔ helles Set) und die vier
+      Animations-SVGs. Genau deshalb steht in Paket C, das token-basiert zu lösen statt
+      hartkodiert — sonst werden die Animationen ein drittes Mal umgefärbt.
+    </p>
+  </section>
+
+  <footer>
+    Espresso Tracker · Paket C2 aus <code>docs/BACKLOG.md</code> · Stand 25. August 2026 ·
+    Mockups mit den echten Tokens aus <code>src/index.css</code> und <code>cardClasses</code>
+  </footer>
+
+</div>

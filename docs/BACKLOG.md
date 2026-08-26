@@ -32,11 +32,11 @@ Textarea; stattdessen läuft der Inhalt über das allgemeine `notes`-Feld des Ka
   `CoffeeManager.tsx` (Detail-Anzeige), `NewShot.tsx:398-399` (Anzeige „Roaster grind:").
 - **Migration:** bestehende `rec_grind_note`-Werte nach `coffees.notes` mergen,
   Spalte danach droppen (oder erst als deprecated stehen lassen).
-- ⚠️ **Annahme:** „austauschen" = Grind Note entfällt und wandert ins Notizfeld.
-  Falls stattdessen gemeint war *„Grind Note soll ein zweites, freieres Notizfeld
-  pro Kaffee bekommen"* — kurz sagen, dann drehe ich A2.
-- Kollision mit **Paket B:** wenn Rezepte pro Bohne kommen, gehört die Grind Note
-  ggf. *pro Rezept* statt pro Kaffee → A2 bewusst **vor** B klären.
+- ✅ **Bestätigt (User 2026-08-25):** Grind Note entfällt als eigenes Feld und
+  wandert vollständig ins allgemeine `notes`-Feld des Kaffees.
+- Kollision mit **Paket B:** wenn Rezepte pro Bohne kommen, bekommt *jedes Rezept*
+  ein eigenes `grind_hint`-Feld (siehe B). Der Kaffee-`notes`-Text bleibt davon
+  unberührt und beschreibt die Bohne, nicht das Rezept.
 
 ---
 
@@ -88,8 +88,19 @@ flächige Karten mit viel Weißraum, kräftige Zahlen-Typo, klare Datenvisualisi
 statt Deko, dezente Akzentfarbe nur an Interaktion. Das kollidiert teilweise mit dem
 heutigen „Embossed-Cockpit"-Look (Verläufe + Inset-Highlight, `cardClasses`).
 → **Entscheidung nötig:** Embossed-Optik behalten und nur aufhellen, *oder* auf flach
-+ Elevation-per-Schatten wechseln. Ich empfehle Letzteres, sonst wirkt Light-Mode
-schnell schmutzig. `docs/DESIGN.md` v3 wird dabei neu geschrieben.
++ Elevation-per-Schatten wechseln. **Empfehlung: flach.**
+`docs/DESIGN.md` v3 wird dabei neu geschrieben.
+
+**Visualisierung:** `docs/mockups/2026-08-25-embossed-vs-flat.html` (im Browser öffnen)
+zeigt die Wochenansicht in allen vier Kombinationen Dark/Light × Embossed/Flach mit
+den echten Tokens, dazu die Kartenrezepte im Ausschnitt und die Token-Tabelle mit
+Light-Vorschlägen. Kernbefund: Embossed trägt in Dark, kippt aber in Light zum
+Grauschleier + Gelbstich — und zwei parallele Kartenrezepte zu pflegen ist genau die
+Design-Schuld, die Paket C beseitigen soll.
+
+**Wichtig für C1 (aus der Visualisierung gelernt):** `--coffee-accent` **#c9a35e fällt
+auf weißem Grund beim Kontrast durch**. Light braucht eine abgedunkelte Akzent-Variante
+(Vorschlag `#a8763a`) — der Akzent ist also *kein* theme-invariantes Token.
 
 ### C3 · Anpassbares Dashboard  — **M**
 MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
@@ -163,11 +174,23 @@ schlägt den nächsten Mahlgrad vor, um schnellstmöglich das Ziel-Rezept zu tre
   Browser-Engines in der Form, dass ein PWA-Workaround entstünde. Auf dem iPhone
   gibt es Web Bluetooth also faktisch nur über Fremdbrowser wie Bluefy.
   → Für die iPhone-Nutzung führt kein Weg an **Paket G (native App)** vorbei.
-- **Protokolle sind herstellerspezifisch und teils undokumentiert.** Acaia (Pearl/Lunar),
-  Bookoo Themis, Felicita, Timemore, Decent — jede Waage hat eigene GATT-Services und
-  Byte-Frames. Realistisch: **eine** Waage zuerst sauber unterstützen, Architektur
-  aber als Adapter-Interface bauen (`scaleAdapter.ts` mit `connect/onWeight/tare`).
-  → **Welche Waage besitzt du bzw. willst du kaufen?** Das entscheidet den Umfang.
+- **Zielhardware festgelegt (User 2026-08-25): zuerst nur Bookoo** (Themis),
+  langfristig alle gängigen Hersteller. → Architektur von Anfang an als
+  **Adapter-Pattern**, auch wenn erst ein Adapter existiert:
+  ```
+  src/lib/scales/
+    types.ts          ScaleAdapter { id, name, matches(device), connect(), onWeight(cb), tare(), disconnect() }
+    bookoo.ts         Bookoo Themis — GATT-Service + Frame-Parser
+    mock.ts           aufgezeichnete Gewichtskurve für Tests/CI
+    registry.ts       Adapter-Liste; UI fragt nie einen Hersteller direkt an
+  ```
+  Die App-Seite (`BrewTimer`, `NewShot`) kennt **nur** `ScaleAdapter` — ein zweiter
+  Hersteller ist dann eine neue Datei, kein Umbau. Kandidaten für später:
+  Acaia (Pearl/Lunar), Felicita, Timemore, Decent.
+- **Protokolle sind herstellerspezifisch und teils undokumentiert** — Bookoo ist
+  hier ein guter Startpunkt, weil das Frame-Format vergleichsweise offen
+  dokumentiert ist. Vor dem Bau: GATT-Service/Characteristic-UUIDs und Byte-Layout
+  am realen Gerät verifizieren (Chrome auf Android, `chrome://bluetooth-internals`).
 - **Auto-Stop-Timer:** Gewichtsstrom glätten (gleitendes Mittel), Flow-Rate ableiten,
   bei Flow < Schwelle (z. B. < 0,2 g/s) für N ms → Timer stoppt und trägt `yield_g`
   automatisch ein. Muss `BrewTimer.tsx` (Pull-Arc-Ring) erweitern, ohne den
@@ -244,14 +267,21 @@ driften App und Website auseinander.
 
 ---
 
-## Offene Fragen an den User
-1. **A2:** Grind Note *ersetzen* durch das allgemeine Notizfeld — oder soll die Grind
-   Note als eigenes Feld bleiben und nur umbenannt/erweitert werden?
+## Fragen an den User
+
+### Beantwortet (2026-08-25)
+- ✅ **A2 — Grind Note:** wird durch das allgemeine Notizfeld *ersetzt*.
+- ✅ **F — Waage:** zuerst **Bookoo**, langfristig alle gängigen Hersteller
+  → Adapter-Pattern von Beginn an.
+- 🔄 **C2 — Embossed vs. flach:** Entscheidung offen, Visualisierung als
+  Vergleichsseite geliefert (4 Kombinationen Light/Dark × Embossed/Flach).
+
+### Noch offen
+1. **C2:** Nach Ansicht der Vergleichsseite — Embossed aufhellen oder auf flach
+   wechseln? (Meine Empfehlung: flach, siehe Paket C2.)
 2. **B:** Sollen Rezepte auch *automatisch* aus guten Shots entstehen können
    („diesen Shot als Rezept speichern")?
-3. **C2:** Embossed-Cockpit-Look aufhellen oder auf flach/MacroFactor-ruhig wechseln?
-4. **F:** Welche Bluetooth-Waage konkret? (Acaia / Bookoo / Timemore / andere)
-5. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
+3. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
    Android/Play (25 $ einmalig) getestet werden?
 
 ---
