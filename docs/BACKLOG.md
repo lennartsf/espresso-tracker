@@ -87,20 +87,64 @@ Was an MacroFactor optisch trägt (und was wir davon übernehmen): sehr ruhige,
 flächige Karten mit viel Weißraum, kräftige Zahlen-Typo, klare Datenvisualisierung
 statt Deko, dezente Akzentfarbe nur an Interaktion. Das kollidiert teilweise mit dem
 heutigen „Embossed-Cockpit"-Look (Verläufe + Inset-Highlight, `cardClasses`).
-→ **Entscheidung nötig:** Embossed-Optik behalten und nur aufhellen, *oder* auf flach
-+ Elevation-per-Schatten wechseln. **Empfehlung: flach.**
-`docs/DESIGN.md` v3 wird dabei neu geschrieben.
+→ ✅ **ENTSCHIEDEN (User 2026-08-26): Embossed bleibt — in beiden Themes.**
+Der flache Gegenentwurf ist verworfen. `cardClasses` behält Verlauf + Inset-Highlight,
+`docs/DESIGN.md` v3 schreibt die Embossed-Signatur für Light mit fest.
 
-**Visualisierung:** `docs/mockups/2026-08-25-embossed-vs-flat.html` (im Browser öffnen)
-zeigt die Wochenansicht in allen vier Kombinationen Dark/Light × Embossed/Flach mit
-den echten Tokens, dazu die Kartenrezepte im Ausschnitt und die Token-Tabelle mit
-Light-Vorschlägen. Kernbefund: Embossed trägt in Dark, kippt aber in Light zum
-Grauschleier + Gelbstich — und zwei parallele Kartenrezepte zu pflegen ist genau die
-Design-Schuld, die Paket C beseitigen soll.
+**Visualisierung:** `docs/mockups/2026-08-25-embossed-vs-flat.html` (im Browser öffnen).
+Zeigt drei Varianten nebeneinander: Dark (heute live), Light naiv (Dark-Rezept 1:1 —
+so *nicht*) und Light getunt (Zielpalette), dazu die Kartenrezepte im Ausschnitt und
+die kontrastgeprüfte Token-Tabelle.
 
-**Wichtig für C1 (aus der Visualisierung gelernt):** `--coffee-accent` **#c9a35e fällt
-auf weißem Grund beim Kontrast durch**. Light braucht eine abgedunkelte Akzent-Variante
-(Vorschlag `#a8763a`) — der Akzent ist also *kein* theme-invariantes Token.
+#### Die vier Eingriffe, die Light-Embossed tragfähig machen
+Ein Emboss braucht eine Fläche, die **heller als ihre Umgebung** ist, und einen
+Lichtsaum, der nach *Licht* aussieht statt nach *Farbe*. In Dark ist beides geschenkt,
+in Light muss man es herstellen:
+1. **Grund absenken statt Karte aufhellen** — `--coffee-bg` wird `#e6ddcf` (warmes,
+   deutlich abgesenktes Beige). Der naive Fehler war Grund `#f7f4ef` + Karte `#ffffff`:
+   die liegen fast aufeinander, die Wölbung hat nichts zum Abheben.
+2. **Lichtsaum neutralisieren** — statt warmem Gold `rgba(233,201,135,…)` (= Gelbstich
+   auf Weiß) eine harte weiße Oberkante: `inset 0 1px 0 rgba(255,255,255,.95)`.
+3. **Verlauf zusammenziehen, Schatten strecken** — Helligkeitsdifferenz von ~20 % auf
+   ~4 % (`#fffdfa → #f6f1e8`); Tiefe kommt aus `0 10px 20px -12px` (negativer Spread).
+4. **Eingaben werden eingelassen** — Wochenleiste, Ratio-Bar, Formularfelder bekommen
+   `inset 0 2px 4px` statt Abwurfschatten. Karten steigen, Eingaben sinken → der Emboss
+   wird ein *System* statt Kartendekoration, und `--coffee-surface-2` ist damit definiert.
+
+#### Kontrast-Befund für C1 (gerechnet, nicht geschätzt)
+Das Marken-Gold **überlebt Light nicht als Textfarbe**: `#c9a35e` auf Kartenfläche =
+**2.33:1** (AA braucht 4.5:1 für kleinen Text wie Eyebrow und Button-Label). Auch mein
+erster Vorschlag `#a8763a` fällt durch (3.89 auf Karte, 2.94 auf Grund).
+→ **Zwei Akzent-Token statt einem:**
+- `--coffee-accent` = `#835526` in Light — Text/Interaktion (6.28 auf Karte, 4.74 auf
+  Grund, Button-Label `#fffaf2` darauf 6.14 — alle bestanden).
+- `--coffee-accent-deco` = `#b4863c` in Light / `#c9a35e` in Dark — **nur Flächen ohne
+  Text**: Balken, Ratio-Bar, Dial-Ringe. So bleiben Charts golden, nur Beschriftungen
+  werden dunkler.
+
+#### Light-Tokens (Zielwerte)
+| Token | Dark (bleibt) | Light (neu) |
+|---|---|---|
+| `--coffee-bg` | `#1c1714` | `#e6ddcf` |
+| `--coffee-surface` | `#25201b` | `#fffdfa` |
+| `--coffee-surface-btm` *(neu)* | *= bg* | `#f6f1e8` |
+| `--coffee-surface-2` | `#33291f` | `#dcd2c1` |
+| `--coffee-accent` | `#c9a35e` | `#835526` |
+| `--coffee-accent-deco` *(neu)* | `#c9a35e` | `#b4863c` |
+| `--coffee-text` | `#f1e9df` | `#2a221b` |
+| `--coffee-muted` | `#a89784` | `#665849` |
+| `--coffee-line` | `rgba(246,239,228,.10)` | `rgba(42,34,27,.14)` |
+
+`--coffee-surface-btm` ist neu, weil der Verlauf in Dark auf `bg` endet — in Light
+braucht er einen eigenen Endpunkt, sonst ist die Differenz zu groß.
+**In Light ist der 1px-Rand Pflicht**, nicht optional: die Flächenkontraste sind
+niedriger, der Schatten allein trägt die Kartenkante nicht.
+
+#### Noch offen in C1
+`ratingHex` (10 Stufen für dunklen Grund gewählt — die hellen Gelbtöne der Mitte
+brauchen auf Weiß eine eigene Prüfung), `intensityFill`/`intensityBadge` (Creme-Alpha
+auf Dunkel → muss in Light zu dunklem Alpha invertieren), Leaflet-Tiles
+(`dark_all` ↔ helles Set), die vier Animations-SVGs.
 
 ### C3 · Anpassbares Dashboard  — **M**
 MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
@@ -273,16 +317,16 @@ driften App und Website auseinander.
 - ✅ **A2 — Grind Note:** wird durch das allgemeine Notizfeld *ersetzt*.
 - ✅ **F — Waage:** zuerst **Bookoo**, langfristig alle gängigen Hersteller
   → Adapter-Pattern von Beginn an.
-- 🔄 **C2 — Embossed vs. flach:** Entscheidung offen, Visualisierung als
-  Vergleichsseite geliefert (4 Kombinationen Light/Dark × Embossed/Flach).
+- ✅ **C2 — Embossed vs. flach:** **Embossed**, auch in Light. Flach verworfen.
+  Getunte Light-Palette + Kontrastprüfung liegen in Paket C2 vor.
 
 ### Noch offen
-1. **C2:** Nach Ansicht der Vergleichsseite — Embossed aufhellen oder auf flach
-   wechseln? (Meine Empfehlung: flach, siehe Paket C2.)
-2. **B:** Sollen Rezepte auch *automatisch* aus guten Shots entstehen können
+1. **B:** Sollen Rezepte auch *automatisch* aus guten Shots entstehen können
    („diesen Shot als Rezept speichern")?
-3. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
+2. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
    Android/Play (25 $ einmalig) getestet werden?
+3. **C1:** Soll das Marken-Gold in Light wirklich zu `#835526` abdunkeln (AA-konform),
+   oder ist dir das Gold wichtiger als der Kontrast bei kleinen Labels?
 
 ---
 
