@@ -289,7 +289,7 @@ footer { border-top: 1px solid var(--line); padding-top: 22px; font-size: 0.85re
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">Espresso Tracker · Paket C2 · entschieden</p>
+    <p class="eyebrow">Espresso Tracker · Paket C2 · Palette gesetzt</p>
     <h1>Embossed bleibt — so trägt es auch in Light</h1>
     <div class="rule"></div>
   </header>
@@ -597,7 +597,7 @@ box-shadow:
     </div>
 
     <div class="panel">
-      <h3 style="margin-bottom: 10px;">Das Gold überlebt Light nicht als Textfarbe</h3>
+      <h3 style="margin-bottom: 10px;">Das Gold überlebt Light nicht als Textfarbe <span class="tag is-rec" style="vertical-align: 3px;">Entschieden</span></h3>
       <p class="note" style="max-width: 68ch; margin-bottom: 16px;">
         Gemessen auf der Kartenfläche und auf dem Seitengrund. Der Eyebrow („YOUR WEEK") und
         die Button-Beschriftung sind kleiner Text und brauchen 4.5:1 — nicht 3:1.
@@ -618,10 +618,19 @@ box-shadow:
       <p class="note" style="max-width: 68ch; margin-top: 16px;">
         Auch mein eigener erster Vorschlag <code>#a8763a</code> aus der letzten Fassung fällt
         durch — deshalb steht jetzt <code>#835526</code> in der Tabelle. Das ist sichtbar
-        brauner als das Marken-Gold. Damit die Marke trotzdem erhalten bleibt, gibt es
-        <code>--coffee-accent-deco</code>: das wärmere <code>#b4863c</code> für alle Flächen,
-        auf denen kein Text sitzt. Balken und Dial bleiben also golden, nur Beschriftungen
-        werden dunkler.
+        brauner als das Marken-Gold. <strong>Entscheidung: Kontrast geht vor Gold</strong> —
+        <code>#835526</code> ist gesetzt, ohne Ausnahme für Labels. Damit die Marke trotzdem
+        erhalten bleibt, gibt es <code>--coffee-accent-deco</code>: das wärmere
+        <code>#b4863c</code> für alle Flächen, auf denen kein Text sitzt. Balken und Dial
+        bleiben golden, nur Beschriftungen dunkeln ab.
+      </p>
+      <p class="note" style="max-width: 68ch; margin-top: 14px;">
+        <strong>Die Regel, die daraus folgt:</strong> Ein Token, das jemals Text oder ein Icon
+        einfärbt, ist <code>--coffee-accent</code>. <code>--coffee-accent-deco</code> darf nie
+        auf Text landen — sonst ist die AA-Zusage still wieder weg. Das gilt auch für
+        <code>ratingHex</code>: die hellen Gelbtöne der Mitte (<code>#d9a441</code>,
+        <code>#bcae49</code>) sind als <em>Ziffer im Badge</em> auf hellem Grund grenzwertig
+        und brauchen in Light eine abgedunkelte Variante — als Chart-Fläche dagegen nicht.
       </p>
     </div>
 

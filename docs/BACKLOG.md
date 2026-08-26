@@ -111,16 +111,32 @@ in Light muss man es herstellen:
    `inset 0 2px 4px` statt Abwurfschatten. Karten steigen, Eingaben sinken → der Emboss
    wird ein *System* statt Kartendekoration, und `--coffee-surface-2` ist damit definiert.
 
+#### Farbentscheidung (User 2026-08-26): **Kontrast geht vor Gold**
+`--coffee-accent` in Light ist **`#835526`** — verbindlich, keine Ausnahme für Labels.
+Damit erfüllt die App in Light durchgängig WCAG AA (4.5:1) für kleinen Text. Das
+Marken-Gold lebt in Light ausschließlich in `--coffee-accent-deco` (textfreie Flächen)
+weiter; in Dark bleibt `#c9a35e` unverändert der Akzent.
+
 #### Kontrast-Befund für C1 (gerechnet, nicht geschätzt)
 Das Marken-Gold **überlebt Light nicht als Textfarbe**: `#c9a35e` auf Kartenfläche =
 **2.33:1** (AA braucht 4.5:1 für kleinen Text wie Eyebrow und Button-Label). Auch mein
 erster Vorschlag `#a8763a` fällt durch (3.89 auf Karte, 2.94 auf Grund).
-→ **Zwei Akzent-Token statt einem:**
+→ **Zwei Akzent-Token statt einem — beschlossen:**
 - `--coffee-accent` = `#835526` in Light — Text/Interaktion (6.28 auf Karte, 4.74 auf
   Grund, Button-Label `#fffaf2` darauf 6.14 — alle bestanden).
 - `--coffee-accent-deco` = `#b4863c` in Light / `#c9a35e` in Dark — **nur Flächen ohne
   Text**: Balken, Ratio-Bar, Dial-Ringe. So bleiben Charts golden, nur Beschriftungen
   werden dunkler.
+
+**Regel für C1:** Ein Token, das jemals Text oder ein Icon einfärbt, ist
+`--coffee-accent`. `--coffee-accent-deco` darf **nie** auf Text landen — sonst ist die
+AA-Zusage still wieder weg. Beim Reskin jede Verwendung von `coffee-accent` einmal
+danach durchsehen, welche der beiden Rollen sie hat.
+
+**Folge für `ratingHex`:** wenn Kontrast vor Farbtreue geht, gilt das auch für die
+10-stufige Rating-Skala. Die hellen Gelbtöne der Mitte (`#d9a441`, `#bcae49`) sind auf
+`#fffdfa` grenzwertig — Stufe 5/6 brauchen in Light eine abgedunkelte Variante, sobald
+sie als Text/Zahl auftreten (Badge-Ziffern!), nicht nur als Chart-Fläche.
 
 #### Light-Tokens (Zielwerte)
 | Token | Dark (bleibt) | Light (neu) |
@@ -319,14 +335,17 @@ driften App und Website auseinander.
   → Adapter-Pattern von Beginn an.
 - ✅ **C2 — Embossed vs. flach:** **Embossed**, auch in Light. Flach verworfen.
   Getunte Light-Palette + Kontrastprüfung liegen in Paket C2 vor.
+- ✅ **C1 — Akzentfarbe in Light:** **`#835526`**, Kontrast geht vor Gold.
+  Marken-Gold nur noch auf textfreien Flächen (`--coffee-accent-deco`).
 
 ### Noch offen
 1. **B:** Sollen Rezepte auch *automatisch* aus guten Shots entstehen können
    („diesen Shot als Rezept speichern")?
 2. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
    Android/Play (25 $ einmalig) getestet werden?
-3. **C1:** Soll das Marken-Gold in Light wirklich zu `#835526` abdunkeln (AA-konform),
-   oder ist dir das Gold wichtiger als der Kontrast bei kleinen Labels?
+
+Beide blockieren **Paket A nicht** — das kann jederzeit starten.
+
 
 ---
 
