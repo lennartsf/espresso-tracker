@@ -1,4 +1,4 @@
-import { Input, Textarea, FieldLabel } from './ui'
+import { Input, FieldLabel } from './ui'
 import type { Coffee } from '../types'
 
 /** Draft state for the roaster's recommended recipe (strings for inputs). */
@@ -7,7 +7,6 @@ export interface RecipeDraft {
   yield: string
   temp: string
   time: string
-  grind: string
 }
 
 export function initialRecipe(coffee?: Coffee): RecipeDraft {
@@ -16,7 +15,6 @@ export function initialRecipe(coffee?: Coffee): RecipeDraft {
     yield: coffee?.rec_yield_g != null ? String(coffee.rec_yield_g) : '',
     temp: coffee?.rec_temp_c != null ? String(coffee.rec_temp_c) : '',
     time: coffee?.rec_time_s != null ? String(coffee.rec_time_s) : '',
-    grind: coffee?.rec_grind_note ?? '',
   }
 }
 
@@ -29,7 +27,6 @@ export function recipePayload(d: RecipeDraft) {
     rec_yield_g: num(d.yield),
     rec_temp_c: num(d.temp),
     rec_time_s: int(d.time),
-    rec_grind_note: d.grind.trim() || null,
   }
 }
 
@@ -46,7 +43,7 @@ export function RoasterRecipeFields({
   return (
     <div>
       <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roaster Recipe (optional)</p>
-      <p className="text-xs text-coffee-muted/70 mb-3">As recommended on the bag — used as a reference and prefill for new shots.</p>
+      <p className="text-xs text-coffee-muted/70 mb-3">As printed on the bag — reference and prefill for new shots. Grind hints belong in the coffee's notes.</p>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <FieldLabel>Dose (g)</FieldLabel>
@@ -64,10 +61,6 @@ export function RoasterRecipeFields({
           <FieldLabel>Time (s)</FieldLabel>
           <Input type="number" value={value.time} onChange={set('time')} placeholder="28" />
         </div>
-      </div>
-      <div className="mt-3">
-        <FieldLabel>Grind note</FieldLabel>
-        <Textarea rows={2} value={value.grind} onChange={set('grind')} placeholder="e.g. medium-fine, 2.5 on EK43" />
       </div>
     </div>
   )

@@ -110,6 +110,25 @@ export function NewShot() {
   const { data: allShots = [] } = useShots()
   const lastShot = allShots[0]
 
+  /** Mahlgrad ist bohnenspezifisch: neue Tüte = anderes Verhalten der Mühle,
+   *  aber innerhalb einer Bohne ist der letzte Wert der beste Startpunkt.
+   *  Deshalb NICHT aus `lastShot` (global letzter Shot) prefillen, sondern aus
+   *  dem letzten Shot genau dieser Bohne. */
+  const { data: coffeeShots = [] } = useShots(coffeeId)
+  const lastShotForCoffee = coffeeId ? coffeeShots[0] : undefined
+  /** true, sobald der User das Feld selbst angefasst hat — dann nie überschreiben
+   *  (react-query-Refetches würden sonst die Eingabe zurücksetzen). */
+  const grindTouched = useRef(false)
+  const [grindFromLast, setGrindFromLast] = useState(false)
+
+  useEffect(() => {
+    if (!coffeeId || grindTouched.current) return
+    const g = lastShotForCoffee?.grind_setting
+    if (g == null) return
+    setGrindSetting(String(g))
+    setGrindFromLast(true)
+  }, [coffeeId, lastShotForCoffee])
+
   /** Speed is craft: Routine-Shot = letzter Shot als Vorlage, nur ändern
    *  was anders war. Ratings/Notes bewusst NICHT übernommen — neuer Shot,
    *  neuer Geschmack. */
@@ -119,6 +138,8 @@ export function NewShot() {
     setCoffeeId(lastShot.coffee_id)
     setRoastDateId(lastShot.roast_date_id ?? '')
     setDrinkType(lastShot.drink_type ?? 'espresso')
+    grindTouched.current = true
+    setGrindFromLast(false)
     setGrindSetting(lastShot.grind_setting != null ? String(lastShot.grind_setting) : '')
     setDoseG(lastShot.dose_g != null ? String(lastShot.dose_g) : '')
     setYieldG(lastShot.yield_g != null ? String(lastShot.yield_g) : '')
@@ -167,6 +188,12 @@ export function NewShot() {
   function handleCoffeeChange(id: string) {
     setCoffeeId(id)
     setRoastDateId('')
+    // Andere Bohne → alter Vorschlag ist wertlos. Eine eigene Eingabe des Users
+    // bleibt aber stehen, die hat er bewusst gemacht.
+    if (!grindTouched.current) {
+      setGrindSetting('')
+      setGrindFromLast(false)
+    }
   }
 
   const selectedCoffee = coffees.find(c => c.id === coffeeId)
@@ -241,7 +268,6 @@ export function NewShot() {
         rec_yield_g: null,
         rec_temp_c: null,
         rec_time_s: null,
-        rec_grind_note: null,
       })
       resolvedCoffeeId = coffee.id
     }
@@ -395,8 +421,10 @@ export function NewShot() {
             </span>
           </button>
         )}
-        {hasRoasterRecipe && selectedCoffee?.rec_grind_note && (
-          <p className="-mt-2 text-xs text-coffee-muted">Roaster grind: {selectedCoffee.rec_grind_note}</p>
+        {selectedCoffee?.notes && (
+          <p className={`text-xs text-coffee-muted ${hasRoasterRecipe ? '-mt-2' : ''}`}>
+            Note: {selectedCoffee.notes}
+          </p>
         )}
 
         {/* Roast date */}
@@ -447,7 +475,22 @@ export function NewShot() {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <FieldLabel required>Grind Setting</FieldLabel>
-            <Input type="number" step="0.5" value={grindSetting} onChange={e => setGrindSetting(e.target.value)} placeholder="12" />
+            <Input
+              type="number"
+              step="0.5"
+              value={grindSetting}
+              onChange={e => {
+                grindTouched.current = true
+                setGrindFromLast(false)
+                setGrindSetting(e.target.value)
+              }}
+              placeholder="12"
+            />
+            {grindFromLast && (
+              <p className="mt-1 text-xs text-coffee-muted">
+                ↻ From your last shot of this coffee
+              </p>
+            )}
           </div>
           <div>
             <FieldLabel>Temp (°C)</FieldLabel>

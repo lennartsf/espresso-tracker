@@ -1,7 +1,21 @@
 import { drinkTypeLabel, milkTypeLabel, DRINK_TYPES, MILK_TYPES } from '../utils/drinkTypes'
 
-test('DRINK_TYPES has 6 entries', () => {
-  expect(DRINK_TYPES).toHaveLength(6)
+// Auf die tatsaechlichen Werte pruefen statt auf eine Zahl: der Zaehler-Test war
+// still veraltet, seit Caffe Crema dazukam.
+test('DRINK_TYPES lists every drink exactly once', () => {
+  expect(DRINK_TYPES.map(d => d.value)).toEqual([
+    'espresso',
+    'caffe_crema',
+    'cappuccino',
+    'latte_macchiato',
+    'flat_white',
+    'cortado',
+    'macchiato',
+  ])
+})
+
+test('drinkTypeLabel returns Caffe Crema', () => {
+  expect(drinkTypeLabel('caffe_crema')).toBe('Caffè Crema')
 })
 
 test('MILK_TYPES has 7 entries', () => {

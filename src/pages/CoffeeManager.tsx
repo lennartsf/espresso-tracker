@@ -8,7 +8,7 @@ import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
-import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState, PageHeader } from '../components/ui'
+import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -226,7 +226,14 @@ function CoffeeDetailView({
         </div>
       )}
 
-      {(coffee.rec_dose_g != null || coffee.rec_yield_g != null || coffee.rec_temp_c != null || coffee.rec_time_s != null || coffee.rec_grind_note) && (
+      {coffee.notes && (
+        <div className={`${cardClasses} p-3 mb-3`}>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Notes</p>
+          <p className="whitespace-pre-wrap text-sm text-coffee-cream">{coffee.notes}</p>
+        </div>
+      )}
+
+      {(coffee.rec_dose_g != null || coffee.rec_yield_g != null || coffee.rec_temp_c != null || coffee.rec_time_s != null) && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roaster Recipe</p>
           <div className="grid gap-1">
@@ -246,12 +253,6 @@ function CoffeeDetailView({
               <div className="flex justify-between text-sm">
                 <span className="text-coffee-muted">Time</span>
                 <span className="text-coffee-cream">{coffee.rec_time_s}s</span>
-              </div>
-            )}
-            {coffee.rec_grind_note && (
-              <div className="flex justify-between gap-3 text-sm">
-                <span className="text-coffee-muted">Grind</span>
-                <span className="text-coffee-cream text-right">{coffee.rec_grind_note}</span>
               </div>
             )}
           </div>
@@ -331,6 +332,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
   const [photoUrl, setPhotoUrl] = useState<string | null>(coffee.photo_url ?? null)
   const [recipe, setRecipe] = useState(initialRecipe(coffee))
+  const [notes, setNotes] = useState(coffee.notes ?? '')
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -361,6 +363,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
       photo_url: photoUrl,
+      notes: notes.trim() || null,
       ...recipePayload(recipe),
     })
     onBack()
@@ -454,6 +457,16 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
 
         <RoasterRecipeFields value={recipe} onChange={setRecipe} />
 
+        <div>
+          <FieldLabel>Notes</FieldLabel>
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder="Grind hints, flavour impressions, anything worth remembering about this bean"
+          />
+        </div>
+
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
@@ -473,6 +486,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const { data: roasters = [] } = useRoasters()
 
   const [name, setName] = useState('')
+  const [notes, setNotes] = useState('')
   const [roasterId, setRoasterId] = useState('')
   const [showNewRoaster, setShowNewRoaster] = useState(false)
   const [hasArabica, setHasArabica] = useState(false)
@@ -509,7 +523,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       roaster: selectedRoaster?.name ?? null,
       origin: null,
       roast_date: null,
-      notes: null,
+      notes: notes.trim() || null,
       arabica_pct: arabica,
       robusta_pct: robusta,
       roast_level: roastLevel,
@@ -651,6 +665,16 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <RoasterRecipeFields value={recipe} onChange={setRecipe} />
+
+        <div>
+          <FieldLabel>Notes</FieldLabel>
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder="Grind hints, flavour impressions, anything worth remembering about this bean"
+          />
+        </div>
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 

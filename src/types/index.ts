@@ -30,7 +30,6 @@ export interface Coffee {
   rec_yield_g: number | null
   rec_temp_c: number | null
   rec_time_s: number | null
-  rec_grind_note: string | null
 }
 
 export interface RoastDate {

@@ -9,11 +9,15 @@
 
 ---
 
-## Paket A — Dial-in Quick Wins (klein, zusammen erledigen)
+## Paket A — Dial-in Quick Wins ✅ ERLEDIGT (2026-08-27)
+> Beide Tasks umgesetzt, 178 Tests grün, `tsc` sauber. Offen ist nur noch das
+> Ausführen der SQL-Migration für A2 (siehe unten).
+
+
 **Aufwand gesamt: S** · Kein Design-Impact · Beide Tasks fassen dieselben Dateien an
 (`NewShot.tsx`, `CoffeeManager.tsx`, `RoasterRecipeFields.tsx`) → sinnvoll in *einem* Branch.
 
-### A1 · Mahlgrad aus letztem Shot der Bohne übernehmen  *(Task 4)* — **XS–S**
+### A1 · Mahlgrad aus letztem Shot der Bohne übernehmen  *(Task 4)* — ✅ **ERLEDIGT**
 Beim Auswählen eines Kaffees in `NewShot` den `grind_setting` des **letzten Shots
 mit genau dieser Bohne** vorbefüllen (nicht des global letzten Shots).
 - Heute: `↻ Repeat last` prefillt den letzten Shot *insgesamt* (`NewShot.tsx:116-137`),
@@ -25,13 +29,17 @@ mit genau dieser Bohne** vorbefüllen (nicht des global letzten Shots).
   aber nur wenn Feld noch unberührt.)
 - Keine Migration.
 
-### A2 · „Grind Note" bei Coffees durch Notizen ersetzen  *(Task 9)* — **XS**
+### A2 · „Grind Note" bei Coffees durch Notizen ersetzen  *(Task 9)* — ✅ **ERLEDIGT** (Migration offen)
 Das Feld `rec_grind_note` im Block *Roaster Recipe* verschwindet als eigenes
 Textarea; stattdessen läuft der Inhalt über das allgemeine `notes`-Feld des Kaffees.
 - Betroffen: `RoasterRecipeFields.tsx` (Feld raus, `recipePayload` anpassen),
   `CoffeeManager.tsx` (Detail-Anzeige), `NewShot.tsx:398-399` (Anzeige „Roaster grind:").
-- **Migration:** bestehende `rec_grind_note`-Werte nach `coffees.notes` mergen,
-  Spalte danach droppen (oder erst als deprecated stehen lassen).
+- **Migration:** `docs/migrations/2026-08-27-grind-note-to-notes.sql` — zwei Schritte
+  (mergen, prüfen, dann droppen). **Vom User noch auszuführen.** Der Code läuft schon
+  ohne die Spalte, die Reihenfolge ist also unkritisch.
+- **Beim Bauen gefunden:** `coffees.notes` existierte in DB und Typ, war aber in *keinem*
+  Formular editierbar und wurde nirgends angezeigt — „austauschen" hieß hier also erst
+  einmal, das Zielfeld überhaupt zu bauen (New + Edit + Detail-Karte).
 - ✅ **Bestätigt (User 2026-08-25):** Grind Note entfällt als eigenes Feld und
   wandert vollständig ins allgemeine `notes`-Feld des Kaffees.
 - Kollision mit **Paket B:** wenn Rezepte pro Bohne kommen, bekommt *jedes Rezept*
@@ -310,18 +318,17 @@ aber mit Kreditkarte und Kleingedrucktem.**
 
 | # | Paket | Aufwand | Warum an dieser Stelle |
 |---|---|---|---|
-| 1 | **A** — Dial-in Quick Wins (4, 9) | S | Sofort spürbar bei jedem Shot, kein Risiko, klärt nebenbei wo die Grind Note lebt |
-| 2 | **B** — Rezepte pro Bohne (5) | M | Höchster Alltagsnutzen; **Voraussetzung für den Algorithmus** |
-| 3 | **C** — Design Light/Dark + Website (1, 2) | L | Muss *vor* neuen großen UI-Flächen kommen, sonst wird alles zweimal gestylt |
-| 4 | **D** — Röstgrad-Skala + Bohnen-Visual (10) | M | Baut direkt auf dem neuen Design auf |
-| 5 | **E** — Dial-in-Algorithmus (7) | L | Braucht B + genug aufgezeichnete Shots |
-| 6 | **H** — Schönere Karte (8) | S | Jederzeit einschiebbar, gern als Pause zwischen zwei großen Paketen |
-| 7 | **G** — Native Apps (3) | XL | Eigener Meilenstein; erst wenn die App inhaltlich steht |
-| 8 | **F** — Bluetooth-Waage (6) | L | Auf dem iPhone erst *nach* G überhaupt möglich |
+| ✅ | **A** — Dial-in Quick Wins (4, 9) | S | **Erledigt 2026-08-27** |
+| 1 | **B** — Rezepte pro Bohne (5) | M | Höchster Alltagsnutzen; **Voraussetzung für den Algorithmus** |
+| 2 | **C** — Design Light/Dark + Website (1, 2) | L | Muss *vor* neuen großen UI-Flächen kommen, sonst wird alles zweimal gestylt |
+| 3 | **D** — Röstgrad-Skala + Bohnen-Visual (10) | M | Baut direkt auf dem neuen Design auf |
+| 4 | **E** — Dial-in-Algorithmus (7) | L | Braucht B + genug aufgezeichnete Shots |
+| 5 | **H** — Schönere Karte (8) | S | Jederzeit einschiebbar, gern als Pause zwischen zwei großen Paketen |
+| 6 | **G** — Native Apps (3) | XL | Eigener Meilenstein; erst wenn die App inhaltlich steht |
+| 7 | **F** — Bluetooth-Waage (6) | L | Auf dem iPhone erst *nach* G überhaupt möglich |
 
-**Vorschlag für den Start: Paket A**, direkt gefolgt von **Paket B**.
-A ist in einer Sitzung erledigt und macht das tägliche Shot-Erfassen sofort besser;
-B ist der Baustein, an dem später der Algorithmus (E) hängt. Wer lieber optisch
+**Paket A ist erledigt.** Als Nächstes **Paket B** —
+der Baustein, an dem später der Algorithmus (E) hängt. Wer lieber optisch
 startet, nimmt stattdessen C zuerst — dann aber bitte **komplett** (C1–C4), sonst
 driften App und Website auseinander.
 

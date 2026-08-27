@@ -80,10 +80,13 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | rec_yield_g | real | ⚠ Migration 2026-06-15 |
 | rec_temp_c | real | ⚠ Migration 2026-06-15 |
 | rec_time_s | int4 | ⚠ Migration 2026-06-15 |
-| rec_grind_note | text | ⚠ Migration 2026-06-15 |
 | created_at | timestamptz |
 
 > ✅ `rec_*`-Spalten live (Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` ausgeführt).
+> ⚠️ `rec_grind_note` **entfällt** (Paket A2, 2026-08-27): Inhalt wandert nach `coffees.notes`,
+> Spalte wird gedroppt. Migration `docs/migrations/2026-08-27-grind-note-to-notes.sql` —
+> **noch nicht ausgeführt?** Der App-Code liest/schreibt die Spalte bereits nicht mehr,
+> die Migration kann also jederzeit nachgezogen werden.
 
 ### `roast_dates`
 | Spalte | Typ |
@@ -213,6 +216,13 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
 - [x] NewShot: Kaffee-Dropdown (+ Mühle direkt darunter), Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Preinfusion (Checkbox + inline Sekunden), Bewertungen mit i-Button
+- [x] **Mahlgrad-Vorschlag pro Bohne** (Paket A1, 2026-08-27): Kaffeewahl prefillt `grind_setting`
+      aus dem letzten Shot **genau dieser Bohne** (`useShots(coffeeId)`), mit Hinweis
+      „↻ From your last shot of this coffee". `grindTouched`-Ref schützt eigene Eingaben
+      vor Refetch und Kaffeewechsel; „↻ Repeat last" setzt den Ref ebenfalls.
+- [x] **Notizfeld pro Kaffee** (Paket A2, 2026-08-27): `coffees.notes` ist jetzt in New/Edit
+      editierbar und wird in der Detailseite + in NewShot („Note: …") gezeigt. Ersetzt die
+      frühere „Grind note" der Röster-Empfehlung.
 - [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
 - [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
 - [x] Responsive layout: Mobile Bottom-Nav (4 primary + "⋯ More" panel), Desktop Sidebar (all 8)
