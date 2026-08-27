@@ -6,6 +6,7 @@ import { Try } from './marketing/Try'
 import { Login } from './marketing/auth/Login'
 import { Signup } from './marketing/auth/Signup'
 import { AuthProvider } from './lib/AuthContext'
+import { ThemeProvider } from './lib/ThemeContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Dashboard } from './pages/Dashboard'
 import { NewShot } from './pages/NewShot'
@@ -29,6 +30,7 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -62,6 +64,7 @@ export default function App() {
         </Routes>
       </BrowserRouter>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

@@ -6,6 +6,7 @@ import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
   BookOpen, Library, Sparkles, LogOut, MoreHorizontal,
 } from 'lucide-react'
+import { ThemeToggle } from './ThemeToggle'
 import { ROUTES } from '../lib/routes'
 
 const navItems = [
@@ -76,13 +77,16 @@ export function Layout() {
             {label}
           </NavLink>
         ))}
-        <button
-          onClick={handleLogout}
-          className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
-        >
-          <LogOut size={18} strokeWidth={1.75} />
-          Log out
-        </button>
+        <div className="mt-auto grid gap-2">
+          <ThemeToggle />
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
+          >
+            <LogOut size={18} strokeWidth={1.75} />
+            Log out
+          </button>
+        </div>
       </nav>
 
       {/* Main content */}
@@ -123,6 +127,9 @@ export function Layout() {
                 <LogOut size={22} strokeWidth={1.75} />
                 Log out
               </button>
+            </div>
+            <div className="border-t border-coffee-line px-4 py-3">
+              <ThemeToggle />
             </div>
           </div>
         </div>

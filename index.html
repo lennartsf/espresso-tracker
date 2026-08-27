@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
@@ -11,6 +11,23 @@
     <meta name="apple-mobile-web-app-title" content="Espresso" />
     <link rel="manifest" href="/manifest.json" />
     <title>Espresso Tracker</title>
+      <script>
+      // Theme VOR dem ersten Paint stempeln, sonst blitzt bei einer Light-
+      // Praeferenz kurz das Dark-Theme auf. Muss ohne Bundle laufen, deshalb
+      // inline und bewusst duplizierte Logik zu src/lib/ThemeContext.tsx.
+      (function () {
+        try {
+          var pref = localStorage.getItem('espresso-theme') || 'dark'
+          var resolved = pref === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+            : pref
+          if (resolved !== 'light' && resolved !== 'dark') resolved = 'dark'
+          document.documentElement.setAttribute('data-theme', resolved)
+        } catch (e) {
+          // Blockierte Site-Daten: das statische data-theme="dark" bleibt stehen.
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

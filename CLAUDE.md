@@ -32,6 +32,24 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - `/app/*` die Tracker-App → bestehendes `Layout` (jetzt **Dark Premium**, Reskin live seit 2026-06-08).
 - **Interne Links IMMER über `ROUTES` (`src/lib/routes.ts`)**, nie hartkodierte Pfade.
 
+**Theming (seit Paket C1a, 2026-08-27):** Zwei Paletten in `src/index.css`, umgeschaltet
+über `data-theme` am `<html>`. `src/lib/ThemeContext.tsx` (`ThemeProvider`/`useTheme`)
+löst die Präferenz `'system' | 'light' | 'dark'` auf und **stempelt `data-theme` immer** —
+ein ungestempelter Zustand fiele auf die Dark-Werte am `:root` zurück und ergäbe in Light
+eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten Paint
+(sonst blitzt Dark auf). Schalter: `components/ThemeToggle.tsx`, in Sidebar + Mobile-„More".
+**Default ist bewusst `dark`, nicht `system`** — wird erst mit Abschluss von C1b gedreht.
+- **Zwei Akzente:** `--coffee-accent` färbt alles, was Text oder Icon ist;
+  `--coffee-accent-deco` **nur textfreie Flächen** (Balken, Ratio-Bar, Dial-Ringe).
+  Grund: das Marken-Gold `#c9a35e` erreicht auf hellem Grund nur 2.33:1 und fällt für
+  kleinen Text durch. In Light ist der Akzent `#835526`. Landet `accent-deco` je auf
+  Text, ist die AA-Zusage still weg.
+- **Dark ist pixelgleich zu vorher** und per Test festgenagelt
+  (`src/__tests__/themeTokens.test.ts`). Sichtbare Änderung in Dark = Bug.
+- `cardClasses`/`buttonClasses` enthalten **keine** festen Farben mehr —
+  Verlaufsendpunkt (`--coffee-surface-btm`) und Schatten (`--coffee-card-shadow`,
+  `--coffee-glow-shadow`) sind Tokens. Embossed bleibt in beiden Themes.
+
 **Design-System (Dark Premium):** Tokens als CSS-Vars in `src/index.css` (`--coffee-*`), via `tailwind.config.ts` als `coffee.*`-Farben + `font-display` (Fraunces) / `font-grotesk` (Space Grotesk) nutzbar. Fonts self-hosted (`@fontsource*`), Import in `main.tsx`. **Dark-Theme deckt jetzt Marketing/Auth UND die ganze App-Shell ab** (Reskin = Phase 1 ✓, live 2026-06-08). Funktionsfarben (Rating: 10-stufig rot→amber→grün, **ohne Brand-Gold** — Stufe 6 = `#bcae49`, Akzent `#c9a35e` = nur Marke/Interaktion) bleiben bewusst. Motion via GSAP (`gsap` + `@gsap/react`), `prefers-reduced-motion` respektieren (Stub in Tests: `src/__tests__/setup.ts` matchMedia-Polyfill). **Verbindlicher Design-Prompt: `docs/DESIGN.md`** (Tokens, Pull-Arc-Signatur, States-Pflicht, Motion-Regeln, Backlog) — bei jeder UI-Arbeit befolgen.
 - **Seit 2026-06-10:** `EmptyState`-Primitive (`src/components/ui/EmptyState.tsx`, Copy in DESIGN.md), BrewTimer = Pull-Arc-Ring (0–40 s Fenster), Bottom-Nav `safe-area-inset-bottom`, NewShot „↻ Repeat last“ (prefillt letzten Shot ohne Ratings/Notes).
 - **Einheitliches Layout v2 (2026-06-18):** Jede Seite = `<PageHeader>` (Eyebrow + Display-Titel + glow-Action) auf Seiten-bg + Embossed-Karten (`cardClasses` = Verlauf+Inset, `rounded-2xl`); kein Home-Radial-Wrapper mehr. „+ New" überall `buttonClasses('glow')`. Home = Wochenansicht (`Dashboard.tsx`: KW-Picker, Ø-Flavor-Dial, „shots per day"-Balken, Wochen-Shots; Korrelations-Scatter raus). Analyse-Rezepte als Dial/Stat-Kacheln (`RecipeCard` + Brews-Top-Recipe). Body/Säure/Bitterness = `intensityFill`/`intensityBadge` (Stärke, kein gut/schlecht); Flavor bleibt rot→grün. NewShot mobil = 5-Step-Flow (Coffee·Prep·Pull·Milk·Rate), Desktop Ein-Seiten-Form. Mobile: `overflow-x:hidden` + `min-w-0`/`truncate` in Karten (sonst sprengen lange Namen die Breite). Details: `docs/DESIGN.md` → „Einheitliches Layout (v2)".

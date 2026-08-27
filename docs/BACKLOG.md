@@ -56,11 +56,28 @@ Mehrere benannte Rezepte pro Kaffee statt der heutigen *einen* Röster-Empfehlun
 Felder geschrieben, sondern als leuchtender Zielwert *neben* dem Eingabefeld gezeigt
 (Orientierung statt Vorbelegung). Nur Mahlgrad/Equipment dürfen weiterhin prefillen.
 
+**✅ Datenmodell entschieden (2026-08-27): Röster-Rezept bleibt getrennt.**
+Das Röster-Rezept ist **keine** Rezept-Zeile, sondern bleibt die unveränderliche
+Referenz in `coffees.rec_*`. Eigene Rezepte leben daneben und können auf die
+Referenz *zeigen* („entspricht dem Röster-Rezept"), sie aber nie ersetzen.
+→ **Kein Backfill, `rec_*` wird NICHT deprecated.** (Ersetzt die frühere Planung,
+die alle `rec_*` in die neue Tabelle migrieren und die Spalten droppen wollte.)
+
 - **Neue Tabelle `coffee_recipes`:** `id`, `coffee_id` FK, `user_id` + RLS,
-  `name` (z. B. „Röster-Vorgabe", „Mein Standard", „Ristretto"), `dose_g`, `yield_g`,
-  `temp_c`, `time_s`, `grind_hint`, `is_default`, `created_at`.
-- **Backfill:** bestehende `coffees.rec_*` → je ein Rezept „Roaster" pro Kaffee.
-  `rec_*`-Spalten danach deprecaten (erst nach verifiziertem Backfill droppen).
+  `name` (z. B. „Mein Standard", „Ristretto"), `dose_g`, `yield_g`, `temp_c`,
+  `time_s`, `grind_hint`, `is_default`, `matches_roaster boolean default false`,
+  `created_at`.
+- **`matches_roaster`** ist die gewünschte Verknüpfung: markiert ein eigenes Rezept
+  als deckungsgleich mit der Röster-Vorgabe. Bewusst ein Flag und keine FK — die
+  Referenz ist ja keine Zeile.
+  - UI zeigt das als Badge „= Röster-Rezept" am Rezept.
+  - **Drift-Fall bedenken:** ändert der User danach Dosis oder Zeit, stimmt das Flag
+    nicht mehr. Regel: beim Speichern gegen `coffees.rec_*` vergleichen und das Flag
+    automatisch löschen, wenn die Werte auseinanderlaufen. Sonst lügt das Badge.
+- **Anzeige:** Röster-Rezept steht weiterhin als eigener Block in der Kaffee-Detail-
+  seite (wie heute), die eigenen Rezepte als Liste darunter. Zwei Ebenen, klar getrennt.
+- **In NewShot:** beide sind wählbar — „Roaster recipe" und die eigenen Rezepte in
+  einem Picker, Herkunft am Eintrag erkennbar.
 - **UI:** Rezept-Liste + CRUD in der Kaffee-Detailseite; Rezept-Picker in `NewShot`;
   neue UI-Primitive **„Target-Ghost"** (Zielwert glühend neben/unter dem Input,
   Delta-Farbe wenn Ist ≠ Ziel). Gehört als Baustein in `docs/DESIGN.md`.
@@ -89,6 +106,10 @@ Website teilen die Tokens in `src/index.css` / `tailwind.config.ts`; zwei getren
 Wellen würden das Design-System zweimal umbauen.
 
 ### C1 · Theme-System: Light + Dark  — **M**
+> **C1a ✅ ERLEDIGT (2026-08-27).** Token-Layer, `ThemeProvider`, Drei-Wege-Schalter
+> (Light · Dark · System) in Sidebar und Mobile-„More". 204 Tests grün.
+> Dark-Pixelgleichheit ist per Test festgenagelt (`src/__tests__/themeTokens.test.ts`
+> vergleicht gegen die Werte von vor dem Umbau). **C1b ist der nächste Schritt.**
 - Tokens von „Dark-only" auf **semantische Paare** umstellen (`--surface`, `--fg`,
   `--muted`, `--line`, `--accent` …) mit Light-/Dark-Werten; heutige `--coffee-*`
   als Aliase behalten, damit nicht 30 Dateien gleichzeitig brechen.
@@ -111,6 +132,12 @@ Wellen würden das Design-System zweimal umbauen.
   Änderung in Dark ⇒ Fehler, nicht Geschmackssache.
 - **C1b — Light-Feinschliff Seite für Seite**, mit `npm run shoot` pro Seite.
   Erst hier darf Optik entstehen.
+  **Arbeitsliste steht** (Dateien mit fest verdrahteten Farben, Stand nach C1a —
+  Animations-SVGs bewusst ausgeklammert, die sind eigene Kunst):
+  `utils/ratingColor.ts` · `pages/Dashboard.tsx` · `pages/Analysis.tsx` ·
+  `pages/Equipment.tsx` · `components/dashboard/{DialGauge,LiquidBar,EmbossedTile,
+  CorrelationScatter}.tsx` · `components/RoasterMap.tsx` (Tiles) ·
+  `components/PhotoUpload.tsx` · `marketing/components/Hero.tsx`.
 - Grund für die Teilung: ein Big-Bang über 14 Seiten macht Regressionen unzuordenbar.
   Nach C1a ist jede Abweichung in Dark beweisbar ein Bug.
 - Schalter sitzt in `Layout` — Sidebar (Desktop) und „⋯ More"-Panel (Mobile), dort wo
@@ -201,15 +228,24 @@ MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
 - Widget-Registry (Ø-Flavor-Dial, Shots/Tag, Ratio, Wochen-Shots, Top-Rezept,
   letzte Brews …), Reihenfolge + Sichtbarkeit pro User.
 
-**✅ Umfang entschieden (2026-08-27): Stufe 1 — Ein/Aus + Hoch/Runter-Pfeile.**
-- Persistenz in **`localStorage`**, keine Tabelle. Kein Geräte-Sync — bewusst.
-- Kein Drag&Drop. Das ist auf Mobile der teure Teil und liefert bei einem
-  Ein-Personen-Dashboard kaum Mehrwert über Pfeile.
-- Aufwand fällt damit von M auf **S**.
-- Erweiterungspfad offen: Widget-Registry so bauen, dass Reihenfolge + Sichtbarkeit
-  ein serialisierbares Objekt sind. Dann ist Drag&Drop später ein Austausch der
-  Bedienung, und `dashboard_layout` (user_id PK, jsonb) ein Austausch des Speichers —
-  ohne die Widgets anzufassen.
+**✅ Umfang entschieden (2026-08-27): Stufe 1 — Ein/Aus + Hoch/Runter-Pfeile,
+aber MIT Geräte-Sync.**
+- **Persistenz in Supabase**, nicht `localStorage`: Tabelle `dashboard_layout`
+  (`user_id` PK, `layout jsonb`, `updated_at`) + RLS wie alle anderen Tabellen.
+  Mac und iPhone zeigen dasselbe Dashboard. *(Korrigiert die erste Festlegung auf
+  `localStorage` — der Sync war ausdrücklich gewünscht.)*
+- Kein Drag&Drop. Auf Mobile der teure Teil, Pfeile liefern hier dasselbe Ergebnis.
+- Aufwand dadurch **S–M** statt S.
+- **Zwei Dinge, die der Sync mitbringt:**
+  1. *Unbekannte Widget-IDs tolerieren.* Ein altes iPhone-Layout kann Widgets
+     nennen, die es nicht mehr gibt, oder neue nicht kennen. Renderer muss
+     Unbekanntes überspringen und fehlende Widgets ans Ende hängen — sonst bricht
+     das Dashboard nach jedem Release auf dem zweitgenutzten Gerät.
+  2. *Offline.* Layout-Änderungen laufen **nicht** über die Write-Queue (die kann nur
+     Creates). Ohne Verbindung also lokal anwenden und beim nächsten Load
+     serverseitig überschreiben lassen — „last write wins", bewusst simpel.
+- Widget-Registry bleibt serialisierbar, damit Drag&Drop später nur ein Austausch
+  der Bedienung ist.
 
 ### C4 · Website auf denselben Look  *(Task 2)*  — **S–M**
 `src/marketing/*` (Landing, Try, Auth) auf die neuen Tokens ziehen. Geringer Umfang,
@@ -232,6 +268,19 @@ MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
   `arabica_pct` / `robusta_pct`, die es schon gibt (`CoffeeManager.tsx:324-348`).
   Slider-Bewegung färbt die Bohne live (hell → dunkel entlang der Röstkurve) und
   schreibt gleichzeitig den feinen Röstwert.
+**✅ Qualitätsanspruch (User 2026-08-27): die Bohne muss hochwertig aussehen, nicht
+billig — Ziel ist ein 3D-Look.** 2D zuerst ist ausdrücklich erlaubt, wenn es der
+einfachere Weg ist.
+→ **Weg: 2D-SVG, aber plastisch gerendert** — Radial-Gradienten für die Wölbung,
+gerichtetes Licht, weicher Kernschatten, die Bohnenfurche als eigene Ebene mit
+Schattenkante. Das ist derselbe Werkzeugkasten wie bei den vier Animations-SVGs und
+liefert den 3D-Eindruck ohne WebGL.
+→ **Echtes 3D (three.js) bleibt bewusst draußen:** Bundle-Kosten für ein Bild, das
+in Listen als 40-px-Thumbnail erscheint. Wenn 2D-plastisch nach dem ersten Bau nicht
+überzeugt, ist das der Nachrüstweg — dann aber als eigene Entscheidung.
+→ **Vorgehen wie bei den Animationen:** Brief nach `docs/animation-brief-template.md`
++ Referenz-Stills, dann bauen und per Screenshot selbst kritisieren, bevor du es siehst.
+
 - **✅ Bohne als Fallback-Foto entschieden (2026-08-27): Laufzeit-SVG, kein Upload.**
   Die Bohne wird bei jedem Render aus `roast_level_fine` + Sortenmix gerechnet.
   Kein Storage, kein Upload, und das Bild kann nie zum gespeicherten Röstwert
@@ -382,13 +431,19 @@ driften App und Website auseinander.
   Marken-Gold nur noch auf textfreien Flächen (`--coffee-accent-deco`).
 - ✅ **C1 — Rollout:** zweistufig (C1a Token-Umbau bei pixelgleichem Dark, dann
   C1b Light-Feinschliff pro Seite).
-- ✅ **C3 — Dashboard:** Stufe 1, Ein/Aus + Pfeile, `localStorage`. Kein Drag&Drop.
+- ✅ **C3 — Dashboard:** Stufe 1, Ein/Aus + Pfeile, **mit Geräte-Sync** über
+  Tabelle `dashboard_layout`. Kein Drag&Drop.
+- ✅ **B — Datenmodell:** Röster-Rezept bleibt getrennt in `coffees.rec_*`, eigene
+  Rezepte in `coffee_recipes` mit `matches_roaster`-Flag. Kein Backfill.
+- ✅ **D — Bohne:** 3D-Look als Ziel, umgesetzt als plastisch gerendertes 2D-SVG.
 - ✅ **D — Röstwert:** neue Spalte `roast_level_fine`, `roast_level` bleibt.
 - ✅ **D — Bohnen-Bild:** Laufzeit-SVG, kein Storage.
 
 ### Noch offen
-1. **B:** „Diesen Shot als Rezept speichern" — ja oder nein? **Einziger echter
-   Blocker für B**; alles andere an dem Paket kann ich entscheiden.
+1. **B:** „Diesen Shot als Rezept speichern" (Button in `ShotDetail`) — noch nicht
+   ausdrücklich beantwortet. **Kein Blocker mehr**, weil das Datenmodell jetzt steht:
+   ein aus einem Shot erzeugtes Rezept ist einfach ein `coffee_recipes`-Eintrag mit
+   `matches_roaster = false`. Wird beim Start von B kurz bestätigt.
    (Der Prefill-Konflikt A1 ↔ B ist oben mit Vorschlag dokumentiert — Widerspruch
    nur nötig, wenn dir das Röster-Rezept wichtiger ist als dein eigener Messwert.)
 2. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
