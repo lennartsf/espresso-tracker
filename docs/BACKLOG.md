@@ -137,7 +137,37 @@ Wellen würden das Design-System zweimal umbauen.
   `utils/ratingColor.ts` · `pages/Dashboard.tsx` · `pages/Analysis.tsx` ·
   `pages/Equipment.tsx` · `components/dashboard/{DialGauge,LiquidBar,EmbossedTile,
   CorrelationScatter}.tsx` · `components/RoasterMap.tsx` (Tiles) ·
-  `components/PhotoUpload.tsx` · `marketing/components/Hero.tsx`.
+  `components/PhotoUpload.tsx` · `marketing/components/Hero.tsx` (→ gehört zu C4).
+
+  **Vorschau vor dem Bau:** `docs/mockups/2026-08-27-c1b-light-vorschau.html`.
+  Zeigt Dashboard, Rating-Rampe und Intensitäts-Badges in Dark und Light nebeneinander.
+  Drei Befunde daraus:
+
+  1. **`ratingHex` fällt in Light bei 6 von 10 Stufen durch** (Grafik-Elemente brauchen
+     3:1; Stufe 7 erreicht auf heller Karte nur 2.07). Lösung: **einheitlicher Faktor
+     0.82 auf alle zehn Stufen**, keine Einzelkorrektur. Einzeln abgedunkelt verliert
+     die Rampe ihre Form — Stufe 8 rückt an 9 heran, beide werden ununterscheidbar.
+     Mit dem Faktor bleiben Farbton und relative Abstände erhalten, die Rampe rutscht
+     nur gemeinsam ab. Werte: `#9d2f23 #ae4227 #b8652f #be8034 #b28635 #9a8f3c
+     #7f9d4a #5b9157 #47864e #3d7b47` (schwächste Stufe 3.03).
+  2. **`intensityFill`/`intensityBadge` fallen in Light komplett aus** — Creme-Alpha auf
+     cremefarbenem Grund, unsichtbar und ohne Fehler. Lösung: Grundfarbe auf
+     `rgba(58, 44, 30, α)` spiegeln, Alpha-Kurve unverändert. Schriftfarbe im Badge muss
+     ab ~Mitte umschlagen.
+  3. **Glows (`drop-shadow`) an DialGauge und Kennzahl** lesen auf hellem Grund als
+     schmutziger Rand statt als Leuchten → in Light `none`.
+
+  **Nebenbefund:** `EmbossedTile` ist eine fast wortgleiche Dublette von `cardClasses`
+  (nur der Schatten weicht um 0.05 Alpha ab) und kann ersatzlos darauf gezogen werden.
+  `ratingBadgeClasses` bleibt dagegen unverändert — dunkle Füllung mit heller Ziffer
+  trägt auf beiden Gründen.
+
+  **Drei offene Fragen an den User** (stehen am Ende der Vorschau):
+  a) Abgesenkte Rampe nur in Light — dann hat derselbe Shot je nach Theme einen anderen
+     Farbton — oder in beiden, was Dark sichtbar verändert?
+  b) Glows in Light ganz weg oder als enger dunkler Schein (liest als Tiefe statt Licht)?
+  c) Karten-Tiles mit dem Theme wechseln (Leaflet lädt den Kachelsatz neu, flackert kurz)
+     oder fest hell lassen?
 - Grund für die Teilung: ein Big-Bang über 14 Seiten macht Regressionen unzuordenbar.
   Nach C1a ist jede Abweichung in Dark beweisbar ein Bug.
 - Schalter sitzt in `Layout` — Sidebar (Desktop) und „⋯ More"-Panel (Mobile), dort wo
