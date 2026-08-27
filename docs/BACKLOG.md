@@ -68,6 +68,19 @@ Felder geschrieben, sondern als leuchtender Zielwert *neben* dem Eingabefeld gez
   `writeQueue` (nur Creates), also online-only wie Edits heute.
 - Hängt zusammen mit **A2** (wo lebt die Grind Note?) und **A1** (Prefill-Regeln).
 
+**⚠ Konflikt A1 ↔ B — beim Bauen von A1 gefunden, noch zu entscheiden.**
+Beide wollen den Mahlgrad vorbelegen: A1 füllt aus dem letzten Shot dieser Bohne
+(live seit 2026-08-27), ein B-Rezept bringt `grind_hint` mit.
+**Vorschlag: A1 gewinnt beim Prefill**, der Rezept-Grind erscheint nur als Ziel-Ghost
+daneben. Begründung: ein an deiner Mühle gemessener Wert schlägt eine Röster-Angabe,
+die eine fremde Mühle meint. Umgekehrt wäre der Vorschlag bei jeder zweiten Bohne
+falsch und müsste von Hand korrigiert werden.
+
+**Offen für B:** „Diesen Shot als Rezept speichern" — Button in `ShotDetail`, der aus
+einem guten Shot ein benanntes Rezept macht? Billig, wenn von Anfang an mitgeplant
+(Rezept-Insert aus den Shot-Werten); nachträglich teurer, weil dann Rezept-Herkunft
+und Namensvergabe nachgerüstet werden müssen.
+
 ---
 
 ## Paket C — Design-Relaunch Light/Dark im MacroFactor-Look *(Tasks 1 + 2)*
@@ -89,6 +102,19 @@ Wellen würden das Design-System zweimal umbauen.
   lösen statt hartkodiert).
 - Regressionsrisiko: hoch, weil jede Seite betroffen ist. Gegenmittel: `npm run shoot`
   + Screenshot-Vergleich Light/Dark pro Seite.
+
+**✅ Rollout entschieden (2026-08-27): zweistufig.**
+- **C1a — reiner Token-Umbau.** Semantische Token-Paare, `data-theme`-Schalter,
+  Persistenz, `prefers-color-scheme` als Default. Ziel: **Dark bleibt pixelgleich.**
+  Alle heutigen `--coffee-*` bleiben als Aliase bestehen, damit nicht 30 Dateien
+  gleichzeitig brechen. Abnahme = Screenshot-Diff gegen den Stand davor: sichtbare
+  Änderung in Dark ⇒ Fehler, nicht Geschmackssache.
+- **C1b — Light-Feinschliff Seite für Seite**, mit `npm run shoot` pro Seite.
+  Erst hier darf Optik entstehen.
+- Grund für die Teilung: ein Big-Bang über 14 Seiten macht Regressionen unzuordenbar.
+  Nach C1a ist jede Abweichung in Dark beweisbar ein Bug.
+- Schalter sitzt in `Layout` — Sidebar (Desktop) und „⋯ More"-Panel (Mobile), dort wo
+  auch Logout liegt. Eigene Settings-Seite gibt es nicht und braucht es dafür nicht.
 
 ### C2 · MacroFactor-Look übernehmen  — **M**
 Was an MacroFactor optisch trägt (und was wir davon übernehmen): sehr ruhige,
@@ -174,10 +200,16 @@ auf Dunkel → muss in Light zu dunklem Alpha invertieren), Leaflet-Tiles
 MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
 - Widget-Registry (Ø-Flavor-Dial, Shots/Tag, Ratio, Wochen-Shots, Top-Rezept,
   letzte Brews …), Reihenfolge + Sichtbarkeit pro User.
-- Persistenz: neue Tabelle `dashboard_layout` (user_id PK, jsonb) — oder erst nur
-  `localStorage`, wenn es schnell gehen soll.
-- Drag&Drop mobil ist der teure Teil; **Stufe 1 = Ein/Aus + Hoch/Runter-Pfeile**
-  reicht für 90 % des Nutzens.
+
+**✅ Umfang entschieden (2026-08-27): Stufe 1 — Ein/Aus + Hoch/Runter-Pfeile.**
+- Persistenz in **`localStorage`**, keine Tabelle. Kein Geräte-Sync — bewusst.
+- Kein Drag&Drop. Das ist auf Mobile der teure Teil und liefert bei einem
+  Ein-Personen-Dashboard kaum Mehrwert über Pfeile.
+- Aufwand fällt damit von M auf **S**.
+- Erweiterungspfad offen: Widget-Registry so bauen, dass Reihenfolge + Sichtbarkeit
+  ein serialisierbares Objekt sind. Dann ist Drag&Drop später ein Austausch der
+  Bedienung, und `dashboard_layout` (user_id PK, jsonb) ein Austausch des Speichers —
+  ohne die Widgets anzufassen.
 
 ### C4 · Website auf denselben Look  *(Task 2)*  — **S–M**
 `src/marketing/*` (Landing, Try, Auth) auf die neuen Tokens ziehen. Geringer Umfang,
@@ -189,22 +221,26 @@ MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
 **Aufwand: M** · Migration nötig · Isoliert umsetzbar, **aber nach Paket C bauen**
 (sonst wird die Bohnen-Grafik zweimal eingefärbt).
 
-- **Feinere Skala:** `coffees.roast_level` ist heute `int2` 1–10. Neu: zusätzlich
-  ein feiner Wert (Vorschlag `roast_level_fine numeric(4,2)`, 1.00–10.00) über einen
-  Schiebebalken; das grobe Feld bleibt als schnelle Eingabe erhalten und wird aus
-  dem feinen abgeleitet (Rundung), damit Badges/Filter weiterlaufen.
+- **✅ Feinere Skala entschieden (2026-08-27): neue Spalte daneben.**
+  `roast_level_fine numeric(4,2)` (1.00–10.00) kommt dazu, `roast_level int2` **bleibt**
+  und wird beim Speichern aus dem feinen Wert gerundet. Nicht-destruktiv: Badges,
+  Filter und die `RatingInput`-Eingabe laufen unverändert weiter, auch für Kaffees
+  ohne feinen Wert. Schiebebalken schreibt `roast_level_fine`, das grobe Feld bleibt
+  als schnelle Eingabe bestehen.
 - **Bohnen-Animation im Bracket:** zwei Bohnen (Arabica / Robusta) nebeneinander;
   bei 100 % einer Sorte nur diese, bei Blend beide — Datenquelle ist
   `arabica_pct` / `robusta_pct`, die es schon gibt (`CoffeeManager.tsx:324-348`).
   Slider-Bewegung färbt die Bohne live (hell → dunkel entlang der Röstkurve) und
   schreibt gleichzeitig den feinen Röstwert.
-- **Bohne als Fallback-Foto:** gerenderte Bohne wird zum Kaffee-Bild, wenn kein
-  Foto hochgeladen wurde. Zwei Wege:
-  1. **Kein Upload** — SVG zur Laufzeit aus `roast_level_fine` + Sortenmix rendern
-     (billig, immer konsistent, kein Storage). **Empfohlen.**
-  2. Als PNG rendern und in Supabase Storage legen (echtes `photo_url`) — nur nötig,
-     wenn das Bild außerhalb der App gebraucht wird. Kostet Storage-RLS-Arbeit
-     (steht ohnehin im Auth-Backlog).
+- **✅ Bohne als Fallback-Foto entschieden (2026-08-27): Laufzeit-SVG, kein Upload.**
+  Die Bohne wird bei jedem Render aus `roast_level_fine` + Sortenmix gerechnet.
+  Kein Storage, kein Upload, und das Bild kann nie zum gespeicherten Röstwert
+  driften. `photo_url` bleibt unberührt — ein echtes Foto gewinnt weiterhin.
+  Konsequenz: die Bohne ist **kein** exportierbares Bild. Falls das später gebraucht
+  wird (Teilen, Export), ist PNG-in-Storage der Nachrüstweg — kostet dann Storage-RLS.
+- **Verortung (Annahme, bestätigt durch Nicht-Widerspruch):** „Bracket" = der
+  Röstgrad-Block im Kaffee-Formular; die Bohne(n) stehen direkt neben dem
+  Schiebebalken und färben sich live mit.
 - Passt technisch zur bestehenden Self-Computed-SVG-Engine (`animationEngine.ts`),
   ist aber eine eigenständige Grafik — Brief nach `docs/animation-brief-template.md`
   wäre hier sinnvoll.
@@ -344,10 +380,17 @@ driften App und Website auseinander.
   Getunte Light-Palette + Kontrastprüfung liegen in Paket C2 vor.
 - ✅ **C1 — Akzentfarbe in Light:** **`#835526`**, Kontrast geht vor Gold.
   Marken-Gold nur noch auf textfreien Flächen (`--coffee-accent-deco`).
+- ✅ **C1 — Rollout:** zweistufig (C1a Token-Umbau bei pixelgleichem Dark, dann
+  C1b Light-Feinschliff pro Seite).
+- ✅ **C3 — Dashboard:** Stufe 1, Ein/Aus + Pfeile, `localStorage`. Kein Drag&Drop.
+- ✅ **D — Röstwert:** neue Spalte `roast_level_fine`, `roast_level` bleibt.
+- ✅ **D — Bohnen-Bild:** Laufzeit-SVG, kein Storage.
 
 ### Noch offen
-1. **B:** Sollen Rezepte auch *automatisch* aus guten Shots entstehen können
-   („diesen Shot als Rezept speichern")?
+1. **B:** „Diesen Shot als Rezept speichern" — ja oder nein? **Einziger echter
+   Blocker für B**; alles andere an dem Paket kann ich entscheiden.
+   (Der Prefill-Konflikt A1 ↔ B ist oben mit Vorschlag dokumentiert — Widerspruch
+   nur nötig, wenn dir das Röster-Rezept wichtiger ist als dein eigener Messwert.)
 2. **G:** Ist die Apple-Developer-Mitgliedschaft (99 $/Jahr) gesetzt oder soll erst
    Android/Play (25 $ einmalig) getestet werden?
 
