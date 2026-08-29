@@ -130,8 +130,11 @@ Wellen würden das Design-System zweimal umbauen.
   Alle heutigen `--coffee-*` bleiben als Aliase bestehen, damit nicht 30 Dateien
   gleichzeitig brechen. Abnahme = Screenshot-Diff gegen den Stand davor: sichtbare
   Änderung in Dark ⇒ Fehler, nicht Geschmackssache.
-- **C1b — Light-Feinschliff Seite für Seite**, mit `npm run shoot` pro Seite.
-  Erst hier darf Optik entstehen.
+- **C1b ✅ ERLEDIGT (2026-08-27).** 225 Tests grün, `tsc` sauber, Produktions-Build ok.
+  Umgesetzt: `ratingColor` auf die Zwei-Themen-Rampe, `intensityFill`/`intensityBadge`
+  theme-explizit, `chartTheme.ts` neu, `EmbossedTile` auf `cardClasses` zusammengeführt,
+  Equipment von 20 handgerollten Kartenkopien befreit, DialGauge/LiquidBar/Dashboard/
+  Analysis auf Tokens, Leaflet-Tiles + Popup-Chrome am Theme.
   **Arbeitsliste steht** (Dateien mit fest verdrahteten Farben, Stand nach C1a —
   Animations-SVGs bewusst ausgeklammert, die sind eigene Kunst):
   `utils/ratingColor.ts` · `pages/Dashboard.tsx` · `pages/Analysis.tsx` ·
@@ -161,6 +164,29 @@ Wellen würden das Design-System zweimal umbauen.
   (nur der Schatten weicht um 0.05 Alpha ab) und kann ersatzlos darauf gezogen werden.
   `ratingBadgeClasses` bleibt dagegen unverändert — dunkle Füllung mit heller Ziffer
   trägt auf beiden Gründen.
+
+  #### Beim Bauen aufgefallen (C1b)
+  - **`var()` löst in SVG-Präsentationsattributen sehr wohl auf** — in Chromium
+    nachgemessen, inklusive `rgba(var(--x), α)`. Die gegenteilige Annahme war falsch.
+    Trotzdem stehen die Chart-Farben jetzt als **literale Werte** in
+    `src/utils/chartTheme.ts`: für Safari (das Hauptgerät ist ein iPhone) ist das
+    Verhalten nicht verifiziert, und ein Ausfall wäre still — Achsentext würde schwarz
+    statt gedämpft. Der Preis ist Doppelhaltung, abgesichert durch einen Test in
+    `themeTokens.test.ts`, der `chartTheme.ts` gegen `index.css` vergleicht.
+  - **Leaflet-Popups mussten mit ins Theme.** Leaflet liefert Popup, Zoom-Buttons und
+    Attribution mit fest weißem Grund. Die Token-Umstellung des Popup-Textes allein
+    hätte in Dark hellen Text auf Weiß ergeben — unlesbar. Überschreibungen dafür
+    stehen am Ende von `src/index.css`.
+  - **`Equipment.tsx` enthielt 20 wortgleiche Kopien von `cardClasses`**, alle auf
+    Dark hartverdrahtet. Jetzt auf die Konstante gezogen.
+  - **`intensityFill`/`intensityBadge` nehmen jetzt `theme` als Pflichtparameter.**
+    Ein Default hätte den Wechsel vergessbar gemacht; so zeigt der Compiler jede
+    betroffene Stelle.
+  - **⚠ `components/dashboard/CorrelationScatter.tsx` ist toter Code** — seit dem
+    Dashboard-Redesign nirgends mehr gerendert, nur der eigene Test hängt dran.
+    Deshalb in C1b **nicht** auf Tokens gezogen. Löschen wäre eine eigene Entscheidung.
+  - **Der Röster-Pin bleibt `#f97316`** in beiden Themes: Funktionsfarbe (Standort),
+    keine Dekoration.
 
   **✅ Alle drei Fragen entschieden (User 2026-08-27):**
   a) **Eine Rampe in beiden Themes.** Dark verändert sich dadurch bewusst.

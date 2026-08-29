@@ -31,6 +31,9 @@ export default {
         card: 'var(--coffee-card-shadow)',
         glow: 'var(--coffee-glow-shadow)',
         inset: 'var(--coffee-inset-shadow)',
+        dial: 'var(--coffee-dial-shadow)',
+        track: 'var(--coffee-track-shadow)',
+        liquid: 'var(--coffee-liquid-glow)',
       },
       fontFamily: {
         // font-display (Fraunces) + font-grotesk (Space Grotesk) — Marketing & App.

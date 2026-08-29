@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { cardClasses, buttonClasses } from '../components/ui'
+import { chartColors } from '../utils/chartTheme'
 
 const css = readFileSync(resolve(__dirname, '../index.css'), 'utf-8')
 
@@ -101,4 +102,33 @@ test('the card recipe still uses gradient plus shadow (embossed stays)', () => {
   expect(cardClasses).toContain('from-coffee-surface')
   expect(cardClasses).toContain('to-coffee-surface-btm')
   expect(cardClasses).toContain('shadow-card')
+})
+
+// ── chartTheme.ts muss zu den CSS-Tokens passen ────────────────────────────
+// Recharts setzt stroke/fill als SVG-Praesentationsattribut. Dort literale
+// Werte zu benutzen ist eine bewusste Entscheidung (Safari auf dem iPhone ist
+// fuer var() in Attributen nicht verifiziert) — der Preis ist, dass die Werte
+// doppelt stehen. Dieser Test bezahlt ihn: driftet eine Seite, faellt es hier
+// auf und nicht erst als schwarzer Text im Chart.
+const PAIRS: [keyof ReturnType<typeof chartColors>, string][] = [
+  ['axis', '--coffee-muted'],
+  ['grid', '--coffee-surface-2'],
+  ['emptyBar', '--coffee-surface-2'],
+  ['bar', '--coffee-accent-deco'],
+]
+
+test.each(PAIRS)('dark chart colour %s matches %s', (key, token) => {
+  expect(chartColors('dark')[key]).toBe(dark[token])
+})
+
+test.each(PAIRS)('light chart colour %s matches %s', (key, token) => {
+  expect(chartColors('light')[key]).toBe(light[token])
+})
+
+test('chart colours are literal, never var() — SVG attributes need real values', () => {
+  for (const theme of ['dark', 'light'] as const) {
+    for (const value of Object.values(chartColors(theme))) {
+      expect(value).not.toContain('var(')
+    }
+  }
 })

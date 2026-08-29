@@ -10,6 +10,8 @@ import { buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { LiquidBar } from '../components/dashboard/LiquidBar'
+import { chartColors } from '../utils/chartTheme'
+import { useTheme } from '../lib/ThemeContext'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -39,6 +41,8 @@ function fmt(d: Date, opts: Intl.DateTimeFormatOptions) {
 
 export function Dashboard() {
   const { data: shots = [], isLoading } = useShots()
+  const { theme } = useTheme()
+  const c = chartColors(theme)
 
   const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()))
   const thisMonday = useMemo(() => mondayOf(new Date()), [])
@@ -133,9 +137,9 @@ export function Dashboard() {
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-coffee-muted">Shots per day</p>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={byDay} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
-              <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#a89784' }} axisLine={false} tickLine={false} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#a89784' }} axisLine={false} tickLine={false} width={32} />
-              <Tooltip cursor={{ fill: 'rgba(233,201,135,0.06)' }} content={({ payload, label }) => {
+              <XAxis dataKey="day" tick={{ fontSize: 11, fill: c.axis }} axisLine={false} tickLine={false} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: c.axis }} axisLine={false} tickLine={false} width={32} />
+              <Tooltip cursor={{ fill: c.cursor }} content={({ payload, label }) => {
                 if (!payload?.length) return null
                 return (
                   <div className="rounded border border-coffee-line bg-coffee-surface2 px-2 py-1 text-xs shadow">
@@ -145,7 +149,7 @@ export function Dashboard() {
               }} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {byDay.map(d => (
-                  <Cell key={d.day} fill={d.count > 0 ? '#c9a35e' : '#33291f'} />
+                  <Cell key={d.day} fill={d.count > 0 ? c.bar : c.emptyBar} />
                 ))}
               </Bar>
             </BarChart>

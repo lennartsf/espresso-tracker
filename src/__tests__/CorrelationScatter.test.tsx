@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { CorrelationScatter } from '../components/dashboard/CorrelationScatter'
+import { ratingHex } from '../utils/ratingColor'
 
 const mk = (n: number) =>
   Array.from({ length: n }, (_, i) => ({ ratio: 1.5 + i * 0.1, flavor: 4 + i, rating: 4 + i }))
@@ -24,5 +25,5 @@ test('renders regression line and r-value at/above threshold', () => {
 
 test('point fill comes from ratingHex', () => {
   render(<CorrelationScatter points={[{ ratio: 2, flavor: 8, rating: 8 }]} />)
-  expect(screen.getByTestId('scatter-point').getAttribute('fill')).toBe('#6fb16a')
+  expect(screen.getByTestId('scatter-point').getAttribute('fill')).toBe(ratingHex(8))
 })

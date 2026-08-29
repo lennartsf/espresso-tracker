@@ -11,10 +11,10 @@ export function LiquidBar({ doseG, yieldG }: { doseG: number | null; yieldG: num
           {ratio !== null ? `1 : ${ratio.toFixed(2)}` : '— : —'}
         </span>
       </div>
-      <div className="mt-2 h-3 overflow-hidden rounded-lg bg-coffee-bg shadow-[inset_0_2px_5px_rgba(0,0,0,0.7)]">
+      <div className="mt-2 h-3 overflow-hidden rounded-lg bg-coffee-surface2 shadow-track">
         <div
-          className="h-full rounded-lg bg-gradient-to-r from-[#7a4e26] to-[#e9c987] shadow-[0_0_12px_rgba(233,201,135,0.5)]"
-          style={{ width: `${fillPct}%` }}
+          className="h-full rounded-lg shadow-liquid"
+          style={{ width: `${fillPct}%`, background: 'var(--coffee-liquid)' }}
         />
       </div>
     </div>

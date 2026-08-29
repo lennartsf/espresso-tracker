@@ -46,6 +46,20 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
   Text, ist die AA-Zusage still weg.
 - **Dark ist pixelgleich zu vorher** und per Test festgenagelt
   (`src/__tests__/themeTokens.test.ts`). Sichtbare Änderung in Dark = Bug.
+  **Ausnahme seit C1b:** die Rating-Rampe (`ratingHex`) wurde bewusst neu gewählt.
+- **Rating-Skala (seit C1b, 2026-08-27):** EINE Rampe für beide Themes. Die Werte
+  liegen im Luminanz-Fenster, in dem 3:1 gegen *beide* Kartenflächen gilt
+  (L zwischen 0.145 und 0.295), und steigen monoton — dadurch ist die Bewertung
+  erstmals auch ohne Farbunterscheidung ablesbar. Werte nur mit Kontrastprüfung
+  gegen beide Flächen ändern; `ratingColor.test.ts` prüft die Eigenschaft, nicht
+  nur die Literale.
+- **Chart-Farben liegen literal in `src/utils/chartTheme.ts`**, nicht als `var()`.
+  Grund: Recharts setzt `stroke`/`fill` als SVG-Präsentationsattribut; Chromium löst
+  `var()` dort auf, für Safari (iPhone!) ist es nicht verifiziert, und ein Ausfall
+  wäre still. Ein Test hält `chartTheme.ts` und `index.css` synchron.
+- **`intensityFill`/`intensityBadge` brauchen `theme` als Pflichtparameter** — ihre
+  Grundfarbe kippt (Creme auf Dunkel, Braun auf Hell). Ohne Wechsel wäre die Skala
+  in Light unsichtbar, ohne dass irgendwo ein Fehler entstünde.
 - `cardClasses`/`buttonClasses` enthalten **keine** festen Farben mehr —
   Verlaufsendpunkt (`--coffee-surface-btm`) und Schatten (`--coffee-card-shadow`,
   `--coffee-glow-shadow`) sind Tokens. Embossed bleibt in beiden Themes.

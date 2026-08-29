@@ -7,8 +7,13 @@ vi.mock('../hooks/useShots', () => ({ useShots: () => shotsMock() }))
 vi.mock('../components/ShotCard', () => ({ ShotCard: ({ shot }: any) => <div>shot-{shot.id}</div> }))
 
 import { Dashboard } from '../pages/Dashboard'
+import { ThemeProvider } from '../lib/ThemeContext'
 
-const renderDash = () => render(<MemoryRouter><Dashboard /></MemoryRouter>)
+// ThemeProvider ist Pflicht: Dashboard liest das Theme fuer die Chart-Farben.
+// useTheme wirft ausserhalb des Providers absichtlich — das faengt eine
+// vergessene Einbindung in der App, nicht erst im Browser.
+const renderDash = () =>
+  render(<ThemeProvider><MemoryRouter><Dashboard /></MemoryRouter></ThemeProvider>)
 const now = new Date().toISOString() // this week
 
 test('renders weekly cockpit with this week shots', () => {
