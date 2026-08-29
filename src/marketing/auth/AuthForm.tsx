@@ -40,7 +40,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full rounded-xl bg-coffee-accent px-4 py-3 font-semibold text-coffee-bg transition hover:bg-coffee-accent-soft disabled:opacity-50"
+            className="w-full rounded-xl bg-coffee-accent px-4 py-3 font-semibold text-coffee-on-accent transition hover:bg-coffee-accent-soft disabled:opacity-50"
           >
             {loading ? '…' : isSignup ? 'Sign up' : 'Log in'}
           </button>

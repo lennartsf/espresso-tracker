@@ -72,7 +72,7 @@ export function Try() {
       <div className="mt-12 flex justify-center gap-3">
         <Link
           to={ROUTES.app}
-          className="rounded-full bg-coffee-accent px-6 py-3 font-semibold text-coffee-bg transition hover:bg-coffee-accent-soft"
+          className="rounded-full bg-coffee-accent px-6 py-3 font-semibold text-coffee-on-accent transition hover:bg-coffee-accent-soft"
         >
           Open the app →
         </Link>

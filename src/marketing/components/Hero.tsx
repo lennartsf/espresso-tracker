@@ -39,7 +39,7 @@ export function Hero() {
       {/* Ambient-Glow hinter dem Text */}
       <div
         className="pointer-events-none absolute -left-32 top-4 h-96 w-96 rounded-full opacity-40 blur-3xl"
-        style={{ background: 'radial-gradient(circle, rgba(201,163,94,0.22), transparent 70%)' }}
+        style={{ background: 'var(--coffee-hero-glow)' }}
       />
       <div className="relative">
         <p className="hero-eyebrow text-xs font-semibold uppercase tracking-[0.18em] text-coffee-accent">
@@ -59,7 +59,7 @@ export function Hero() {
         <div className="hero-cta mt-9 flex flex-wrap gap-3">
           <Link
             to={ROUTES.signup}
-            className="rounded-full bg-coffee-accent px-6 py-3 font-semibold text-coffee-bg transition hover:bg-coffee-accent-soft"
+            className="rounded-full bg-coffee-accent px-6 py-3 font-semibold text-coffee-on-accent transition hover:bg-coffee-accent-soft"
           >
             Kostenlos starten →
           </Link>
@@ -81,7 +81,10 @@ export function Hero() {
             className="hero-img absolute left-0 h-[124%] w-full object-cover"
             style={{ top: '-12%' }}
           />
-          {/* Gold-Glow oben + Vignette unten → Tiefe & Badge-Lesbarkeit */}
+          {/* Gold-Glow oben + Vignette unten → Tiefe & Badge-Lesbarkeit.
+              BEIDE bleiben in Light unveraendert: sie liegen auf dem Foto, und
+              das Foto ist in jedem Theme dasselbe dunkle Bild. Sie am Theme zu
+              haengen wuerde die Badge-Lesbarkeit in Light zerstoeren. */}
           <div
             className="pointer-events-none absolute inset-0"
             style={{ background: 'radial-gradient(120% 70% at 72% 6%, rgba(201,163,94,0.28), transparent 55%)' }}

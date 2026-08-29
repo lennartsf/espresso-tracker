@@ -163,7 +163,7 @@ export function MilkAnimation() {
       <p className="text-xs text-coffee-muted text-center mb-3">Air goes in early (cold milk). Stop when the jug is too hot to hold (~60–65 °C) — never above 68 °C.</p>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-on-accent text-sm font-semibold disabled:opacity-50">
         {playing ? 'Steaming…' : '↺ Replay'}
       </button>
     </div>

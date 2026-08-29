@@ -89,7 +89,7 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             headline="Add a bag to start dialling in."
             description="Every shot needs its bean."
             action={
-              <button onClick={onNew} className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-bg hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
+              <button onClick={onNew} className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-on-accent hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
                 + New Coffee
               </button>
             }
@@ -187,7 +187,7 @@ function CoffeeDetailView({
               <div
                 key={n}
                 className={`flex-1 py-1 rounded text-xs font-semibold text-center ${
-                  n === coffee.roast_level ? 'bg-coffee-accent text-coffee-bg' : 'bg-coffee-surface2 text-coffee-muted'
+                  n === coffee.roast_level ? 'bg-coffee-accent text-coffee-on-accent' : 'bg-coffee-surface2 text-coffee-muted'
                 }`}
               >
                 {n}
@@ -278,7 +278,7 @@ function CoffeeDetailView({
             <button
               type="submit"
               disabled={createRoastDate.isPending}
-              className="bg-coffee-accent text-coffee-bg text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
+              className="bg-coffee-accent text-coffee-on-accent text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
             >
               OK
             </button>

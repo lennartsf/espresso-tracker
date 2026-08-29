@@ -53,7 +53,7 @@ export function GuideDetail() {
         <div className="flex flex-col gap-3">
           {guide.steps.map((step, i) => (
             <div key={i} className="flex gap-3">
-              <span className="bg-coffee-accent text-coffee-bg rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+              <span className="bg-coffee-accent text-coffee-on-accent rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
                 {i + 1}
               </span>
               <div>

@@ -317,7 +317,7 @@ function BrewEditForm({
             {BREW_METHODS.map(m => (
               <button key={m.value} type="button" onClick={() => setBrewMethod(m.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  brewMethod === m.value ? 'bg-coffee-accent text-coffee-bg' : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
+                  brewMethod === m.value ? 'bg-coffee-accent text-coffee-on-accent' : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
                 }`}
               >
                 {m.label}

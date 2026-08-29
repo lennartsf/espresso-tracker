@@ -132,3 +132,21 @@ test('chart colours are literal, never var() — SVG attributes need real values
     }
   }
 })
+
+// ── Marketing folgt demselben Theme (Paket C4) ─────────────────────────────
+test('the hero ambient glow is a token, not a hardcoded gradient', () => {
+  // Ohne Token bliebe der goldene Schein auch in Light stehen und wuerde dort
+  // zum gelben Fleck auf hellem Grund.
+  expect(dark['--coffee-hero-glow']).toContain('radial-gradient')
+  expect(light['--coffee-hero-glow']).toContain('radial-gradient')
+  expect(light['--coffee-hero-glow']).not.toBe(dark['--coffee-hero-glow'])
+})
+
+test('no accent surface still paints its label with the page ground', () => {
+  // `text-coffee-bg` war in Dark zufaellig richtig (bg == on-accent), in Light
+  // waere es hellbeige Schrift auf braunem Button gewesen. Der Token
+  // --coffee-on-accent macht die Rolle explizit.
+  const src = readFileSync(resolve(__dirname, '../components/ui/Button.tsx'), 'utf-8')
+  expect(src).toContain('text-coffee-on-accent')
+  expect(src).not.toContain('text-coffee-bg')
+})

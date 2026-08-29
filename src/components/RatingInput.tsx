@@ -13,7 +13,7 @@ export function RatingInput({ value, onChange }: Props) {
           onClick={() => onChange(n)}
           className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
             value === n
-              ? 'bg-coffee-accent text-coffee-bg'
+              ? 'bg-coffee-accent text-coffee-on-accent'
               : 'bg-coffee-surface2 text-coffee-muted hover:bg-coffee-surface'
           }`}
         >

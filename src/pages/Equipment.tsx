@@ -70,7 +70,7 @@ function DefaultSetter({ itemId, field }: {
               onClick={() => toggle(method)}
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${
                 isActive(method)
-                  ? 'bg-coffee-accent text-coffee-bg'
+                  ? 'bg-coffee-accent text-coffee-on-accent'
                   : 'bg-coffee-surface2 text-coffee-muted hover:bg-coffee-surface'
               }`}
             >
@@ -366,7 +366,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
           className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : grinder ? 'Save Changes' : 'Save Grinder'}
         </button>
       </form>
@@ -597,7 +597,7 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
           className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : machine ? 'Save Changes' : 'Save Machine'}
         </button>
       </form>
@@ -802,7 +802,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
           className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : basket ? 'Save Changes' : 'Save Basket'}
         </button>
       </form>
@@ -1017,7 +1017,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
         </div>
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : (device ? 'Save Changes' : 'Add Device')}
         </button>
       </form>

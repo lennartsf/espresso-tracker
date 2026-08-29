@@ -60,6 +60,9 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 - **`intensityFill`/`intensityBadge` brauchen `theme` als Pflichtparameter** — ihre
   Grundfarbe kippt (Creme auf Dunkel, Braun auf Hell). Ohne Wechsel wäre die Skala
   in Light unsichtbar, ohne dass irgendwo ein Fehler entstünde.
+- **`--coffee-on-accent` ist die Schrift auf Akzentflaechen**, nicht `--coffee-bg`.
+  In Dark sind beide gleich, in Light nicht — `text-coffee-bg` auf einem Button waere
+  dort hellbeige auf Braun. Seit C4 gilt das auch fuer Marketing/Auth.
 - `cardClasses`/`buttonClasses` enthalten **keine** festen Farben mehr —
   Verlaufsendpunkt (`--coffee-surface-btm`) und Schatten (`--coffee-card-shadow`,
   `--coffee-glow-shadow`) sind Tokens. Embossed bleibt in beiden Themes.

@@ -324,7 +324,20 @@ aber MIT Geräte-Sync.**
 - Widget-Registry bleibt serialisierbar, damit Drag&Drop später nur ein Austausch
   der Bedienung ist.
 
-### C4 · Website auf denselben Look  *(Task 2)*  — **S–M**
+### C4 · Website auf denselben Look  *(Task 2)*  — ✅ **ERLEDIGT (2026-08-27)**
+> Marketing folgt jetzt demselben Theme wie die App. Der Umschalter sitzt in der
+> Website-Kopfzeile — Besucher haetten sonst keinen Zugang dazu, der App-Schalter
+> steckt hinter dem Login.
+>
+> **Gefunden und behoben:** neun Buttons faerbten ihre Beschriftung mit
+> `text-coffee-bg`. In Dark war das zufaellig richtig (dort ist `bg` == `on-accent`),
+> in Light waere es hellbeige Schrift auf braunem Button geworden — unlesbar. Alle
+> auf `--coffee-on-accent` umgestellt, ein Test haelt es fest.
+>
+> **Bewusst NICHT am Theme:** die beiden Overlays auf dem Hero-Foto (Gold-Glow oben,
+> Vignette unten). Sie liegen auf dem Bild, und das Bild ist in jedem Theme dasselbe
+> dunkle Foto — sie mitzudrehen haette die Badge-Lesbarkeit in Light zerstoert.
+> Nur der Ambient-Schein *hinter* der Headline haengt am Theme.
 `src/marketing/*` (Landing, Try, Auth) auf die neuen Tokens ziehen. Geringer Umfang,
 **aber nur sinnvoll direkt nach C1/C2** — sonst driften App und Website auseinander.
 
