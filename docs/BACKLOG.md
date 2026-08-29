@@ -162,12 +162,33 @@ Wellen würden das Design-System zweimal umbauen.
   `ratingBadgeClasses` bleibt dagegen unverändert — dunkle Füllung mit heller Ziffer
   trägt auf beiden Gründen.
 
-  **Drei offene Fragen an den User** (stehen am Ende der Vorschau):
-  a) Abgesenkte Rampe nur in Light — dann hat derselbe Shot je nach Theme einen anderen
-     Farbton — oder in beiden, was Dark sichtbar verändert?
-  b) Glows in Light ganz weg oder als enger dunkler Schein (liest als Tiefe statt Licht)?
-  c) Karten-Tiles mit dem Theme wechseln (Leaflet lädt den Kachelsatz neu, flackert kurz)
-     oder fest hell lassen?
+  **✅ Alle drei Fragen entschieden (User 2026-08-27):**
+  a) **Eine Rampe in beiden Themes.** Dark verändert sich dadurch bewusst.
+  b) **Glows in Light weg.** Dunkler Schein bleibt als spätere Ergänzung notiert.
+  c) **Karten-Tiles folgen dem Theme.** Fest auf hell hätte Dark verändert, und ein
+     weißes Kartenrechteck wäre dort das hellste Element auf dem Schirm. Das Flackern
+     tritt nur beim bewussten Umschalten auf; falls es stört, bleibt der alte
+     `TileLayer` montiert, bis der neue `load` feuert.
+
+  #### ⚠ Korrektur zu (a): die abgesenkte Rampe kann „überall" nicht
+  Nach der Entscheidung nachgerechnet — die Faktor-0.82-Rampe **fällt auf dunklem Grund
+  bei Stufe 1 und 2 durch** (2.20 und 2.77 gegen `#25201b`). Eine für Hell optimierte
+  Rampe ist auf Dunkel zwangsläufig zu dunkel. Echter Zielkonflikt, kein Feinschliff.
+
+  **Auflösung über das Luminanz-Fenster:** 3:1 gegen die dunkle Karte verlangt
+  L ≥ 0.145, 3:1 gegen die helle verlangt L ≤ 0.295. Jede Farbe in diesem Fenster trägt
+  auf *beiden* Gründen. Die neue Rampe liegt komplett darin (3.05 bis 5.21 auf beiden):
+
+  ```
+  1 #d13025   2 #c64c20   3 #b5631b   4 #a1741a   5 #90801b
+  6 #838a20   7 #6a942a   8 #4e9d31   9 #30a437  10 #2ca759
+  ```
+
+  **Nebengewinn:** die Luminanz steigt jetzt monoton von Stufe 1 zu 10 (0.158 → 0.289).
+  Die heutige Skala tut das nicht — sie ist in der Mitte am hellsten. Damit ist die
+  Bewertung erstmals auch ohne Farbunterscheidung ablesbar, was bei einer Rot-Grün-Skala
+  für Rot-Grün-Blinde der entscheidende Punkt ist.
+  **Preis:** Dark verändert sich sichtbar — direkte, gewollte Folge von (a).
 - Grund für die Teilung: ein Big-Bang über 14 Seiten macht Regressionen unzuordenbar.
   Nach C1a ist jede Abweichung in Dark beweisbar ein Bug.
 - Schalter sitzt in `Layout` — Sidebar (Desktop) und „⋯ More"-Panel (Mobile), dort wo

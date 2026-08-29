@@ -163,6 +163,11 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .ramp-bed { padding: 10px; border-radius: 10px; }
 .ramp-bed.d { background: #25201b; }
 .ramp-bed.l { background: #fffdfa; }
+.ramp-bed.split { background: linear-gradient(to right, #25201b 0 50%, #fffdfa 50% 100%); }
+.ramp2-row, .ramp2-head { display: grid; grid-template-columns: 22px 1fr 62px 62px; gap: 10px; align-items: center; }
+.ramp2-row { font-size: 0.78rem; }
+.ramp2-row .n { font-variant-numeric: tabular-nums; color: #a2917e; font-weight: 600; text-align: right; }
+.ramp2-head { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: #a2917e; font-weight: 700; }
 
 .demo { border-radius: 14px; padding: 18px; border: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .demo.d { background: #1c1714; }
@@ -366,39 +371,51 @@ footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 0.84re
       </div>
 
       <div class="col">
-        <div class="col-head"><h3>Vorschlag — Rampe global abgesenkt</h3><span class="tag new">alle ≥ 3.0</span></div>
-        <div class="ramp-bed l">
-          <div class="ramp-head"><span></span><span>Farbe</span><span>auf heller Karte</span><span>Kontrast</span></div>
+        <div class="col-head"><h3>Vorschlag — EINE Rampe für beide Themes</h3><span class="tag new">überall ≥ 3.0</span></div>
+        <div class="ramp-bed split">
+          <div class="ramp2-head"><span></span><span>Farbe</span><span>auf dunkel</span><span>auf hell</span></div>
           <div class="ramp" style="margin-top:6px">
-            <div class="ramp-row"><span class="n">1</span><div class="sw on-dark" style="background:#9d2f23">#9d2f23</div><div class="sw on-dark" style="background:#9d2f23"></div><span class="ratio" style="color:var(--good)">7.22</span></div>
-            <div class="ramp-row"><span class="n">2</span><div class="sw on-dark" style="background:#ae4227">#ae4227</div><div class="sw on-dark" style="background:#ae4227"></div><span class="ratio" style="color:var(--good)">5.73</span></div>
-            <div class="ramp-row"><span class="n">3</span><div class="sw on-dark" style="background:#b8652f">#b8652f</div><div class="sw on-dark" style="background:#b8652f"></div><span class="ratio" style="color:var(--good)">4.19</span></div>
-            <div class="ramp-row"><span class="n">4</span><div class="sw on-dark" style="background:#be8034">#be8034</div><div class="sw on-dark" style="background:#be8034"></div><span class="ratio" style="color:var(--good)">3.27</span></div>
-            <div class="ramp-row"><span class="n">5</span><div class="sw on-dark" style="background:#b28635">#b28635</div><div class="sw on-dark" style="background:#b28635"></div><span class="ratio" style="color:var(--good)">3.25</span></div>
-            <div class="ramp-row"><span class="n">6</span><div class="sw on-dark" style="background:#9a8f3c">#9a8f3c</div><div class="sw on-dark" style="background:#9a8f3c"></div><span class="ratio" style="color:var(--good)">3.25</span></div>
-            <div class="ramp-row"><span class="n">7</span><div class="sw on-dark" style="background:#7f9d4a">#7f9d4a</div><div class="sw on-dark" style="background:#7f9d4a"></div><span class="ratio" style="color:var(--good)">3.03</span></div>
-            <div class="ramp-row"><span class="n">8</span><div class="sw on-dark" style="background:#5b9157">#5b9157</div><div class="sw on-dark" style="background:#5b9157"></div><span class="ratio" style="color:var(--good)">3.67</span></div>
-            <div class="ramp-row"><span class="n">9</span><div class="sw on-dark" style="background:#47864e">#47864e</div><div class="sw on-dark" style="background:#47864e"></div><span class="ratio" style="color:var(--good)">4.32</span></div>
-            <div class="ramp-row"><span class="n">10</span><div class="sw on-dark" style="background:#3d7b47">#3d7b47</div><div class="sw on-dark" style="background:#3d7b47"></div><span class="ratio" style="color:var(--good)">5.02</span></div>
+            <div class="ramp2-row"><span class="n">1</span><div class="sw on-dark" style="background:#d13025">#d13025</div><span class="ratio" style="color:var(--good)">3.20</span><span class="ratio" style="color:var(--good)">4.97</span></div>
+            <div class="ramp2-row"><span class="n">2</span><div class="sw on-dark" style="background:#c64c20">#c64c20</div><span class="ratio" style="color:var(--good)">3.42</span><span class="ratio" style="color:var(--good)">4.64</span></div>
+            <div class="ramp2-row"><span class="n">3</span><div class="sw on-dark" style="background:#b5631b">#b5631b</div><span class="ratio" style="color:var(--good)">3.66</span><span class="ratio" style="color:var(--good)">4.34</span></div>
+            <div class="ramp2-row"><span class="n">4</span><div class="sw on-dark" style="background:#a1741a">#a1741a</div><span class="ratio" style="color:var(--good)">3.86</span><span class="ratio" style="color:var(--good)">4.11</span></div>
+            <div class="ramp2-row"><span class="n">5</span><div class="sw on-dark" style="background:#90801b">#90801b</div><span class="ratio" style="color:var(--good)">4.07</span><span class="ratio" style="color:var(--good)">3.91</span></div>
+            <div class="ramp2-row"><span class="n">6</span><div class="sw on-dark" style="background:#838a20">#838a20</div><span class="ratio" style="color:var(--good)">4.32</span><span class="ratio" style="color:var(--good)">3.68</span></div>
+            <div class="ramp2-row"><span class="n">7</span><div class="sw on-dark" style="background:#6a942a">#6a942a</div><span class="ratio" style="color:var(--good)">4.52</span><span class="ratio" style="color:var(--good)">3.52</span></div>
+            <div class="ramp2-row"><span class="n">8</span><div class="sw on-dark" style="background:#4e9d31">#4e9d31</div><span class="ratio" style="color:var(--good)">4.76</span><span class="ratio" style="color:var(--good)">3.34</span></div>
+            <div class="ramp2-row"><span class="n">9</span><div class="sw on-dark" style="background:#30a437">#30a437</div><span class="ratio" style="color:var(--good)">4.99</span><span class="ratio" style="color:var(--good)">3.19</span></div>
+            <div class="ramp2-row"><span class="n">10</span><div class="sw on-dark" style="background:#2ca759">#2ca759</div><span class="ratio" style="color:var(--good)">5.21</span><span class="ratio" style="color:var(--good)">3.05</span></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="panel flag">
-      <h3 style="margin-bottom:10px">Warum ein Faktor und nicht zehn Einzelwerte</h3>
+      <h3 style="margin-bottom:10px">Warum es nicht die einfach abgesenkte Rampe wurde</h3>
       <p class="note" style="margin-bottom:14px">
-        Mein erster Versuch war, jede durchgefallene Stufe einzeln so weit abzudunkeln,
-        bis sie 3.0 erreicht. Das Ergebnis war unbrauchbar: Stufe 3 blieb fast hell,
-        Stufe 4 sprang deutlich dunkler, und 8 rückte so nah an 9, dass die beiden nicht
-        mehr unterscheidbar waren. Die Rampe hatte ihre Form verloren.
+        Die Entscheidung „dieselbe Rampe in beiden Themes" liess sich mit der global
+        abgesenkten Variante <strong>nicht</strong> umsetzen: auf dunklem Grund fallen
+        deren Stufen 1 und 2 durch (2.20 und 2.77) — die dunklen Rottöne verschwinden
+        auf der dunklen Karte. Eine für Hell optimierte Rampe ist auf Dunkel automatisch
+        zu dunkel. Das ist kein Feinschliff, sondern ein echter Zielkonflikt.
+      </p>
+      <p class="note" style="margin-bottom:14px">
+        Auflösung über die Luminanz: 3:1 gegen die dunkle Karte verlangt L ≥ 0.145,
+        3:1 gegen die helle verlangt L ≤ 0.295. Dazwischen liegt ein schmales, aber
+        reales Fenster. Jede Farbe, die darin liegt, trägt auf <em>beiden</em> Gründen.
+        Die neue Rampe bewegt sich komplett in diesem Fenster.
       </p>
       <p class="note">
-        Stattdessen ein <strong>einheitlicher Faktor 0.82 auf alle zehn Stufen</strong>.
-        Der Farbton bleibt, die relativen Abstände bleiben, die ganze Rampe rutscht nur
-        gemeinsam nach unten. Die schwächste Stufe (7) landet bei 3.03 — knapp, aber
-        bestanden; alles darüber hat Luft. <strong>Rot bleibt rot, grün bleibt grün</strong> —
-        die Bedeutung der Skala ändert sich in keinem Punkt.
+        <strong>Nebengewinn:</strong> die Luminanz steigt jetzt monoton von Stufe 1 zu
+        Stufe 10 (0.158 → 0.289). Die heutige Skala hat das nicht — sie ist in der Mitte
+        am hellsten. Damit ist die Bewertung erstmals auch ohne Farbunterscheidung
+        ablesbar, was bei einer Rot-Grün-Skala für Rot-Grün-Blinde der entscheidende
+        Punkt ist.
+        <br><br>
+        <strong>Der Preis:</strong> Dark verändert sich sichtbar. Das war bisher die rote
+        Linie — sie gilt aber nur für C1a (den Token-Umbau), und du hast diese Änderung
+        mit „überall" ausdrücklich gewählt. Die Bedeutung bleibt in jedem Punkt gleich:
+        rot ist schlecht, grün ist gut.
       </p>
     </div>
   </section>
@@ -502,37 +519,34 @@ rgba(58, 44, 30, 0.14 … 0.90)</pre>
   <!-- ══ Fragen ══ -->
   <section>
     <div class="panel flag">
-      <p class="eyebrow">Bevor ich baue</p>
-      <h2>Drei Dinge, die ich nicht allein entscheiden sollte</h2>
+      <p class="eyebrow">Stand</p>
+      <h2>Alle drei entschieden</h2>
 
       <div class="asks">
         <div class="ask">
-          <span class="n">1</span>
+          <span class="n">✓</span>
           <div>
-            <h3>Die abgesenkte Rating-Rampe — nur in Light oder überall?</h3>
-            <p>Mein Vorschlag ist, dass Dark seine heutigen Werte behält und Light die
-              abgesenkten bekommt. Das heißt aber: derselbe Shot hat je nach Theme einen
-              leicht anderen Farbton. Alternative wäre, die abgesenkte Rampe in
-              <em>beiden</em> Themes zu nutzen — einheitlich, aber Dark verändert sich
-              sichtbar, und das war bisher die rote Linie.</p>
+            <h3>Rating-Rampe: überall dieselbe — entschieden</h3>
+            <p>Umgesetzt als die neue Rampe oben, die im Luminanz-Fenster beider Themes
+              liegt. Dark verändert sich dadurch sichtbar; das ist die bewusste Folge
+              der Entscheidung.</p>
           </div>
         </div>
         <div class="ask">
-          <span class="n">2</span>
+          <span class="n">✓</span>
           <div>
-            <h3>Glows in Light wirklich ganz weg?</h3>
-            <p>Ich halte sie auf hellem Grund für einen Schmutzeffekt. Falls dir das
-              Leuchten am Dial wichtig ist, wäre ein sehr enger, dunkler Schein statt
-              eines hellen möglich — das liest sich als Tiefe statt als Licht.</p>
+            <h3>Glows in Light: weg — entschieden</h3>
+            <p>Der dunkle Schein bleibt als spätere Ergänzung notiert.</p>
           </div>
         </div>
         <div class="ask">
-          <span class="n">3</span>
+          <span class="n">✓</span>
           <div>
-            <h3>Karten-Tiles automatisch mit dem Theme wechseln?</h3>
-            <p>Naheliegend, aber es gibt einen Haken: beim Umschalten lädt Leaflet den
-              kompletten Kachelsatz neu, das flackert kurz. Alternative: Tiles fest auf
-              hell lassen, unabhängig vom Theme — Karten sind hell gewohnt.</p>
+            <h3>Karten-Tiles folgen dem Theme — entschieden</h3>
+            <p>Fest auf hell hätte Dark verändert, und ein weisses Kartenrechteck wäre
+              dort das hellste Element auf dem Schirm. Das Flackern tritt nur beim
+              bewussten Umschalten auf; falls es stört, bleibt der alte TileLayer
+              montiert, bis der neue geladen hat.</p>
           </div>
         </div>
       </div>
