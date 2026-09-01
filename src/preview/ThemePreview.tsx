@@ -9,6 +9,7 @@ import { LiquidBar } from '../components/dashboard/LiquidBar'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { LayoutEditor } from '../components/dashboard/LayoutEditor'
+import { CoffeeBean } from '../components/CoffeeBean'
 import { DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
 import { ratingHex, intensityBadge, type ThemeName } from '../utils/ratingColor'
 import { chartColors } from '../utils/chartTheme'
@@ -166,6 +167,36 @@ export function ThemePreview({ theme }: { theme: ThemeName }) {
               onChange={() => {}}
               onDone={() => {}}
             />
+          </Section>
+
+          <Section title="Coffee bean by roast level (D)">
+            <div className={`${cardClasses} p-4`}>
+              <div className="flex flex-wrap items-end gap-3">
+                {[1, 2.5, 4, 5.5, 7, 8.5, 10].map(lv => (
+                  <div key={lv} className="text-center">
+                    <CoffeeBean roastLevel={lv} arabicaPct={100} robustaPct={null} size={72} />
+                    <span className="block text-[10px] text-coffee-muted">{lv.toFixed(1)}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wide text-coffee-muted">
+                Blend shows both · 100% shows one
+              </p>
+              <div className="flex items-end gap-6">
+                <div className="text-center">
+                  <CoffeeBean roastLevel={6} arabicaPct={70} robustaPct={30} size={96} />
+                  <span className="block text-[10px] text-coffee-muted">70/30 blend</span>
+                </div>
+                <div className="text-center">
+                  <CoffeeBean roastLevel={6} arabicaPct={100} robustaPct={null} size={96} />
+                  <span className="block text-[10px] text-coffee-muted">100% Arabica</span>
+                </div>
+                <div className="text-center">
+                  <CoffeeBean roastLevel={6} arabicaPct={null} robustaPct={100} size={96} />
+                  <span className="block text-[10px] text-coffee-muted">100% Robusta</span>
+                </div>
+              </div>
+            </div>
           </Section>
 
           <Section title="Shot cards">

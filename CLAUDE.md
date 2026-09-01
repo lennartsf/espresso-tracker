@@ -106,7 +106,8 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 | notes | text |
 | arabica_pct | int2 |
 | robusta_pct | int2 |
-| roast_level | int2 (1–10) |
+| roast_level | int2 (1–10, gerundet aus roast_level_fine) |
+| roast_level_fine | numeric(4,2) | ⚠ Migration 2026-08-30 |
 | origin_country | text |
 | origin_region | text |
 | altitude_m | int4 |

@@ -279,6 +279,7 @@ export function NewShot() {
         arabica_pct: null,
         robusta_pct: null,
         roast_level: null,
+        roast_level_fine: null,
         origin_country: null,
         origin_region: null,
         altitude_m: null,

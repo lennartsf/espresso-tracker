@@ -5,10 +5,12 @@ import {
 } from '../hooks/useCoffees'
 import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
-import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
 import { CoffeeRecipeList } from '../components/CoffeeRecipeList'
+import { CoffeeBean } from '../components/CoffeeBean'
+import { RoastSlider } from '../components/RoastSlider'
+import { coarseRoastLevel } from '../utils/beanColor'
 import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
@@ -65,6 +67,18 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             <div className="flex items-center gap-3 min-w-0">
               {c.photo_url ? (
                 <img src={c.photo_url} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+              ) : c.roast_level !== null || c.roast_level_fine !== null ? (
+                // Ohne Foto zeigt die gerechnete Bohne den Roestgrad — das ist
+                // mehr Information als ein Anfangsbuchstabe. Nur wenn auch kein
+                // Roestgrad erfasst ist, bleibt der Buchstabe.
+                <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-coffee-surface2 p-0.5">
+                  <CoffeeBean
+                    roastLevel={c.roast_level_fine ?? c.roast_level}
+                    arabicaPct={c.arabica_pct}
+                    robustaPct={c.robusta_pct}
+                    size={36}
+                  />
+                </div>
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-coffee-surface2 flex items-center justify-center flex-shrink-0">
                   <span className="text-coffee-muted font-bold text-sm">{c.name[0]}</span>
@@ -181,48 +195,19 @@ function CoffeeDetailView({
       )}
 
       {coffee.roast_level !== null && (
-        <div className={`${cardClasses} p-3 mb-3`}>
-          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roast Level</p>
-          <div className="flex gap-1">
-            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-              <div
-                key={n}
-                className={`flex-1 py-1 rounded text-xs font-semibold text-center ${
-                  n === coffee.roast_level ? 'bg-coffee-accent text-coffee-on-accent' : 'bg-coffee-surface2 text-coffee-muted'
-                }`}
-              >
-                {n}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1">
-            <span>light</span><span>dark</span>
-          </div>
-        </div>
-      )}
-
-      {(coffee.origin_country || coffee.origin_region || coffee.altitude_m) && (
-        <div className={`${cardClasses} p-3 mb-3`}>
-          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Origin</p>
-          <div className="grid gap-1">
-            {coffee.origin_country && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Country</span>
-                <span className="text-coffee-cream">{coffee.origin_country}</span>
-              </div>
-            )}
-            {coffee.origin_region && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Region</span>
-                <span className="text-coffee-cream">{coffee.origin_region}</span>
-              </div>
-            )}
-            {coffee.altitude_m && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Altitude</span>
-                <span className="text-coffee-cream">{coffee.altitude_m} m</span>
-              </div>
-            )}
+        <div className={`${cardClasses} mb-3 flex items-center gap-4 p-3`}>
+          <CoffeeBean
+            roastLevel={coffee.roast_level_fine ?? coffee.roast_level}
+            arabicaPct={coffee.arabica_pct}
+            robustaPct={coffee.robusta_pct}
+            size={72}
+          />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-coffee-muted">Roast Level</p>
+            <p className="font-display text-2xl font-bold text-coffee-cream">
+              {(coffee.roast_level_fine ?? coffee.roast_level).toFixed(1)}
+              <span className="text-sm font-normal text-coffee-muted"> / 10</span>
+            </p>
           </div>
         </div>
       )}
@@ -329,7 +314,11 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   const [hasRobusta, setHasRobusta] = useState(coffee.robusta_pct !== null)
   const [arabicaPct, setArabicaPct] = useState(String(coffee.arabica_pct ?? 100))
   const [robustaPct, setRobustaPct] = useState(String(coffee.robusta_pct ?? 0))
-  const [roastLevel, setRoastLevel] = useState<number | null>(coffee.roast_level)
+  // Feiner Wert fuehrt, der grobe wird daraus gerundet — so bleiben Badges
+  // und Filter gueltig, ohne dass es zwei Wahrheiten gibt.
+  const [roastFine, setRoastFine] = useState<number | null>(
+    coffee.roast_level_fine ?? coffee.roast_level,
+  )
   const [originCountry, setOriginCountry] = useState(coffee.origin_country ?? '')
   const [originRegion, setOriginRegion] = useState(coffee.origin_region ?? '')
   const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
@@ -361,7 +350,8 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       roaster: selectedRoaster?.name ?? null,
       arabica_pct: arabica,
       robusta_pct: robusta,
-      roast_level: roastLevel,
+      roast_level: coarseRoastLevel(roastFine),
+      roast_level_fine: roastFine,
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
@@ -438,13 +428,12 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
           )}
         </div>
 
-        <div>
-          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
-          <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
-            <span>light</span><span>dark</span>
-          </div>
-        </div>
+        <RoastSlider
+          value={roastFine}
+          onChange={setRoastFine}
+          arabicaPct={hasArabica ? parseInt(arabicaPct, 10) : null}
+          robustaPct={hasRobusta ? parseInt(robustaPct, 10) : null}
+        />
 
         <div>
           <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>
@@ -496,7 +485,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const [hasRobusta, setHasRobusta] = useState(false)
   const [arabicaPct, setArabicaPct] = useState('100')
   const [robustaPct, setRobustaPct] = useState('0')
-  const [roastLevel, setRoastLevel] = useState<number | null>(null)
+  const [roastFine, setRoastFine] = useState<number | null>(null)
   const [originCountry, setOriginCountry] = useState('')
   const [originRegion, setOriginRegion] = useState('')
   const [altitudeM, setAltitudeM] = useState('')
@@ -529,7 +518,8 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       notes: notes.trim() || null,
       arabica_pct: arabica,
       robusta_pct: robusta,
-      roast_level: roastLevel,
+      roast_level: coarseRoastLevel(roastFine),
+      roast_level_fine: roastFine,
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
@@ -646,14 +636,12 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
           )}
         </div>
 
-        <div>
-          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
-          <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
-            <span>light</span>
-            <span>dark</span>
-          </div>
-        </div>
+        <RoastSlider
+          value={roastFine}
+          onChange={setRoastFine}
+          arabicaPct={hasArabica ? parseInt(arabicaPct, 10) : null}
+          robustaPct={hasRobusta ? parseInt(robustaPct, 10) : null}
+        />
 
         <div>
           <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>

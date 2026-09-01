@@ -21,6 +21,9 @@ export interface Coffee {
   arabica_pct: number | null
   robusta_pct: number | null
   roast_level: number | null
+  /** Feiner Röstgrad 1.00–10.00 (Paket D). `roast_level` bleibt daneben als
+   *  gerundeter Wert bestehen, damit Badges und Filter weiterlaufen. */
+  roast_level_fine: number | null
   origin_country: string | null
   origin_region: string | null
   altitude_m: number | null

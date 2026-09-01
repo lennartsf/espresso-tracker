@@ -376,7 +376,20 @@ aber MIT Geräte-Sync.**
 
 ---
 
-## Paket D — Röstgrad-Feinskala + Bohnen-Visual *(Task 10)*
+## Paket D — Röstgrad-Feinskala + Bohnen-Visual *(Task 10)* — ✅ **ERLEDIGT (2026-08-30)**
+*(Migration `docs/migrations/2026-08-30-roast-level-fine.sql` noch auszuführen)*
+
+> `RoastSlider` mit lebender Bohne in beiden Kaffee-Formularen, Bohne in der
+> Detailseite und als Foto-Ersatz in der Liste. 280 Tests grün.
+>
+> **Zwei Korrekturen nach dem ersten Rendern** (deshalb war die Vorschau nötig):
+> Robusta sah bei 30×34 wie eine Kugel aus statt wie eine Bohne — jetzt 27×32,
+> Arabica 25×37. Und der Schatten lag gleich groß hinter der Bohne und wirkte als
+> Halo rundum; jetzt kleiner und nach unten rechts versetzt, damit sie aufliegt.
+>
+> **Ölglanz erst ab Stufe ~7** — eine glänzende helle Bohne wäre schlicht falsch.
+> Ein Test hält das fest, ebenso die Monotonie (dunklerer Röstgrad ⇒ dunklere
+> Bohne, ohne Ausreißer).
 **Aufwand: M** · Migration nötig · Isoliert umsetzbar, **aber nach Paket C bauen**
 (sonst wird die Bohnen-Grafik zweimal eingefärbt).
 
