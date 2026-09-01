@@ -24,6 +24,8 @@ export default {
           text: 'var(--coffee-text)',
           muted: 'var(--coffee-muted)',
           line: 'var(--coffee-line)',
+          // Kante der Eingabefelder — kraeftiger als `line`.
+          field: 'var(--coffee-field-border)',
         },
       },
       boxShadow: {

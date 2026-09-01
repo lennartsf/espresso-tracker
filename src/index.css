@@ -45,6 +45,10 @@
   /* Eingelassene Flächen (Eingaben). In Dark bewusst leer: dort trägt die
      hellere Fläche allein, ein Inset würde die Optik verändern. */
   --coffee-inset-shadow: none;
+  /* Kante der Eingabefelder. War fest `border-white/15` — in Dark eine feine
+     Lichtkante, in Light auf beigem Feld UNSICHTBAR. Der Dark-Wert ist exakt
+     der alte, damit sich dort nichts verschiebt. */
+  --coffee-field-border: rgba(255, 255, 255, 0.15);
   /* Dial-Mulde und die beiden Glows (C1b). */
   --coffee-dial-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 3px 8px rgba(233, 201, 135, 0.2);
   --coffee-ring-glow: drop-shadow(0 0 6px rgba(95, 168, 105, 0.5));
@@ -83,6 +87,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   --coffee-glow-shadow: 0 4px 12px -4px rgba(74, 54, 32, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   --coffee-inset-shadow: inset 0 2px 4px rgba(74, 54, 32, 0.10);
+  /* Kraeftiger als --coffee-line: das Feld ist eingelassen und braucht eine
+     Kante, die man auch auf beigem Grund sieht. */
+  --coffee-field-border: rgba(42, 34, 27, 0.22);
   --coffee-dial-shadow: 0 8px 20px -10px rgba(74, 54, 32, 0.35), inset 0 2px 6px rgba(255, 255, 255, 0.9);
   /* Glows aus: auf hellem Grund gibt es nichts zu überstrahlen, ein Schein
      liest dort als unscharfer Rand. Ein enger DUNKLER Schein waere die

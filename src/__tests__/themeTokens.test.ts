@@ -3,7 +3,13 @@ import { resolve } from 'node:path'
 import { cardClasses, buttonClasses } from '../components/ui'
 import { chartColors } from '../utils/chartTheme'
 
+// Kommentare RAUS, bevor irgendetwas geparst wird: in einem Kommentar wie
+// "Kraeftiger als --coffee-line: ..." sieht der Deklarations-Regex sonst den
+// Namen aus dem Kommentar und ordnet ihm den Rest des Blocks als Wert zu — das
+// echte Token dahinter faellt still unter den Tisch. Genau dieser Fall hat den
+// Test einmal falsch anschlagen lassen.
 const css = readFileSync(resolve(__dirname, '../index.css'), 'utf-8')
+  .replace(/\/\*[\s\S]*?\*\//g, '')
 
 /** Liest einen `--token: wert;`-Eintrag aus genau einem Selektor-Block. */
 function tokensOf(selector: string): Record<string, string> {

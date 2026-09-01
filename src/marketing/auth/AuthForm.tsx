@@ -73,7 +73,7 @@ function Field({
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border border-white/15 bg-coffee-surface2 px-4 py-3 text-coffee-text placeholder:text-coffee-muted focus:border-coffee-accent focus:outline-none"
+        className="mt-1.5 w-full rounded-xl border border-coffee-field bg-coffee-surface2 px-4 py-3 text-coffee-text placeholder:text-coffee-muted focus:border-coffee-accent focus:outline-none"
       />
     </label>
   )
