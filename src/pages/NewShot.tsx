@@ -10,6 +10,9 @@ import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses } from '../components/ui'
+import { TargetGhost } from '../components/TargetGhost'
+import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
+import { roasterRecipeOf } from '../utils/recipeMatch'
 
 const STEP_DEFS = [
   { key: 'coffee', title: 'Coffee' },
@@ -197,17 +200,33 @@ export function NewShot() {
   }
 
   const selectedCoffee = coffees.find(c => c.id === coffeeId)
-  const hasRoasterRecipe = !!selectedCoffee && (
-    selectedCoffee.rec_dose_g != null || selectedCoffee.rec_yield_g != null ||
-    selectedCoffee.rec_temp_c != null || selectedCoffee.rec_time_s != null
-  )
 
-  function applyRoasterRecipe() {
-    if (!selectedCoffee) return
-    if (selectedCoffee.rec_dose_g != null) setDoseG(String(selectedCoffee.rec_dose_g))
-    if (selectedCoffee.rec_yield_g != null) setYieldG(String(selectedCoffee.rec_yield_g))
-    if (selectedCoffee.rec_temp_c != null) setTempC(String(selectedCoffee.rec_temp_c))
-    if (selectedCoffee.rec_time_s != null) setBrewTimeS(String(selectedCoffee.rec_time_s))
+  /** Rezepte dieser Bohne: das Röster-Rezept (Referenz aus `coffees.rec_*`)
+   *  plus die eigenen. Beide sind wählbar, die Herkunft steht am Eintrag. */
+  const { data: ownRecipes = [] } = useCoffeeRecipes(coffeeId || undefined)
+  const roasterRecipe = roasterRecipeOf(selectedCoffee)
+  const recipeOptions = [
+    ...(roasterRecipe ? [{ id: 'roaster', ...roasterRecipe }] : []),
+    ...ownRecipes.map(r => ({
+      id: r.id, name: r.name, dose_g: r.dose_g, yield_g: r.yield_g,
+      temp_c: r.temp_c, time_s: r.time_s,
+    })),
+  ]
+  const [recipeId, setRecipeId] = useState('')
+  const activeRecipe = recipeOptions.find(r => r.id === recipeId)
+
+  // Bohne gewechselt → altes Rezept gilt nicht mehr.
+  useEffect(() => { setRecipeId('') }, [coffeeId])
+
+  /** Temperatur wird als EINZIGE Zahl aus dem Rezept übernommen.
+   *  Dosis, Menge und Zeit erscheinen nur als Ziel-Ghost: ein eingetragener
+   *  Wert liest sich wie eine Messung, aber gewogen ist noch nichts. Die
+   *  Kesseltemperatur dagegen stellt man vor dem Bezug ein — dort ist die
+   *  Vorbelegung eine Einstellung, keine Behauptung über das Ergebnis. */
+  function applyRecipeSettings(id: string) {
+    setRecipeId(id)
+    const r = recipeOptions.find(x => x.id === id)
+    if (r?.temp_c != null) setTempC(String(r.temp_c))
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
@@ -404,27 +423,29 @@ export function NewShot() {
           )}
         </div>
 
-        {/* Roaster recipe prefill */}
-        {hasRoasterRecipe && (
-          <button
-            type="button"
-            onClick={applyRoasterRecipe}
-            className="flex w-full items-center justify-between rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2 text-sm text-coffee-accent-soft hover:bg-coffee-accent/15"
-          >
-            <span>↻ Use roaster recipe</span>
-            <span className="text-xs text-coffee-muted">
-              {[
-                selectedCoffee?.rec_dose_g != null && selectedCoffee?.rec_yield_g != null && `${selectedCoffee.rec_dose_g}→${selectedCoffee.rec_yield_g}g`,
-                selectedCoffee?.rec_temp_c != null && `${selectedCoffee.rec_temp_c}°C`,
-                selectedCoffee?.rec_time_s != null && `${selectedCoffee.rec_time_s}s`,
-              ].filter(Boolean).join(' · ')}
-            </span>
-          </button>
+        {/* Rezept-Auswahl. Übernimmt bewusst NUR die Temperatur — Dosis,
+            Menge und Zeit stehen als Ziel neben den Feldern. */}
+        {coffeeId && recipeOptions.length > 0 && (
+          <div>
+            <FieldLabel>Recipe target</FieldLabel>
+            <Select value={recipeId} onChange={e => applyRecipeSettings(e.target.value)}>
+              <option value="">No target</option>
+              {recipeOptions.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.name}{r.id === 'roaster' ? '' : ' (mine)'}
+                </option>
+              ))}
+            </Select>
+            {activeRecipe && (
+              <p className="mt-1 text-xs text-coffee-muted">
+                Shown as a target next to the fields — nothing is filled in for you.
+              </p>
+            )}
+          </div>
         )}
+
         {selectedCoffee?.notes && (
-          <p className={`text-xs text-coffee-muted ${hasRoasterRecipe ? '-mt-2' : ''}`}>
-            Note: {selectedCoffee.notes}
-          </p>
+          <p className="text-xs text-coffee-muted">Note: {selectedCoffee.notes}</p>
         )}
 
         {/* Roast date */}
@@ -506,6 +527,7 @@ export function NewShot() {
         <div>
           <FieldLabel>Dose (g)</FieldLabel>
           <Input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)} placeholder="18" />
+          <TargetGhost target={activeRecipe?.dose_g} actual={parseFloat(doseG)} unit="g" decimals={1} />
         </div>
 
         {/* Prep Tools */}
@@ -580,6 +602,7 @@ export function NewShot() {
           <div className="flex flex-col items-center gap-5">
             <div className="flex items-center gap-2 self-start">
               <Input type="number" value={brewTimeS} onChange={e => setBrewTimeS(e.target.value)} placeholder="28" className="!w-20" />
+              <TargetGhost target={activeRecipe?.time_s} actual={parseFloat(brewTimeS)} unit="s" tolerance={0.5} />
               <span className="text-sm text-coffee-muted">s</span>
             </div>
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
@@ -590,6 +613,7 @@ export function NewShot() {
         <div>
           <FieldLabel>Yield (g)</FieldLabel>
           <Input type="number" step="0.1" value={yieldG} onChange={e => setYieldG(e.target.value)} placeholder="36" />
+          <TargetGhost target={activeRecipe?.yield_g} actual={parseFloat(yieldG)} unit="g" decimals={1} />
           <div className="mt-2">
             <BrewRatioBar
               doseG={doseG ? parseFloat(doseG) : null}

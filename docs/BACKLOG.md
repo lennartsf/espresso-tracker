@@ -47,8 +47,26 @@ Textarea; stattdessen läuft der Inhalt über das allgemeine `notes`-Feld des Ka
 
 ---
 
-## Paket B — Rezepte pro Bohne + Ziel-Anzeige *(Task 5)*
-**Aufwand: M** · Migration nötig · **Fundament für Paket E (Algorithmus)**
+## Paket B — Rezepte pro Bohne + Ziel-Anzeige *(Task 5)* — ✅ **ERLEDIGT (2026-08-29)**
+*(Migration `docs/migrations/2026-08-29-coffee-recipes.sql` noch auszuführen)*
+
+> Tabelle `coffee_recipes`, Hook, Rezeptliste in der Kaffee-Detailseite,
+> Rezept-Picker + Ziel-Ghosts in NewShot. 264 Tests grün.
+>
+> **Konflikt A1 ↔ B wie vorgeschlagen gelöst:** das Rezept übernimmt als einzige
+> Zahl die **Temperatur**. Dosis, Menge und Zeit erscheinen nur als Ziel neben dem
+> Feld. Begründung: ein eingetragener Wert liest sich wie eine Messung, gewogen ist
+> aber noch nichts. Die Kesseltemperatur stellt man dagegen *vor* dem Bezug ein —
+> dort ist Vorbelegung eine Einstellung, keine Behauptung übers Ergebnis. Der
+> Mahlgrad-Prefill aus A1 bleibt damit unangetastet.
+>
+> **`matches_roaster` wird beim Speichern serverseitig neu berechnet**
+> (`withRoasterFlag` im Hook), nicht vom Aufrufer übernommen. Sonst lügt das Badge
+> „= Röster", sobald jemand nach dem Markieren die Dosis ändert.
+>
+> **Noch offen:** „Diesen Shot als Rezept speichern" (Button in `ShotDetail`) ist
+> nicht gebaut — das Datenmodell trägt es, es ist ein Insert aus den Shot-Werten.
+> Kein Blocker.
 
 Mehrere benannte Rezepte pro Kaffee statt der heutigen *einen* Röster-Empfehlung
 (`coffees.rec_*`). Bei „Rezept übernehmen" werden Dose/Zeit/Yield **nicht** in die

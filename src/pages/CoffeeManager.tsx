@@ -8,6 +8,7 @@ import { RoasterForm } from './Roasters'
 import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
+import { CoffeeRecipeList } from '../components/CoffeeRecipeList'
 import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
@@ -258,6 +259,8 @@ function CoffeeDetailView({
           </div>
         </div>
       )}
+
+      <CoffeeRecipeList coffee={coffee} />
 
       <div className={`${cardClasses} p-3`}>
         <div className="flex justify-between items-center mb-2">

@@ -174,3 +174,24 @@ export interface DashboardLayoutEntry {
   id: string
   visible: boolean
 }
+
+/** Ein eigenes Rezept fuer eine Bohne.
+ *  Das ROESTER-Rezept ist keine Zeile hier — es steht in `coffees.rec_*` und
+ *  bleibt als Referenz unveraendert. `matches_roaster` markiert ein eigenes
+ *  Rezept als deckungsgleich damit. */
+export interface CoffeeRecipe {
+  id: string
+  coffee_id: string
+  user_id: string
+  name: string
+  dose_g: number | null
+  yield_g: number | null
+  temp_c: number | null
+  time_s: number | null
+  grind_hint: string | null
+  is_default: boolean
+  matches_roaster: boolean
+  created_at: string
+}
+
+export type NewCoffeeRecipe = Omit<CoffeeRecipe, 'id' | 'user_id' | 'created_at'>
