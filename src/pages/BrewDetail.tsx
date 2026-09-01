@@ -107,7 +107,7 @@ export function BrewDetail() {
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} disabled={deleteBrew.isPending} className="text-coffee-muted hover:text-red-400 text-sm disabled:opacity-50">
+          <button onClick={handleDelete} disabled={deleteBrew.isPending} className="text-coffee-muted hover:text-coffee-danger text-sm disabled:opacity-50">
             {deleteBrew.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
@@ -446,7 +446,7 @@ function BrewEditForm({
           <Textarea value={tastingNotes} onChange={e => setTastingNotes(e.target.value)} rows={2} className="resize-none" />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button type="submit" disabled={updateBrew.isPending}
           className={buttonClasses('primary', 'w-full disabled:opacity-50')}>

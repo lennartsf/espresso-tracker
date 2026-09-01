@@ -113,7 +113,7 @@ function RoasterDetail({ roaster: initial, onBack, onDelete }: { roaster: Roaste
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-coffee-muted hover:text-red-400 text-sm">Delete</button>
+          <button onClick={handleDelete} className="text-coffee-muted hover:text-coffee-danger text-sm">Delete</button>
         </div>
       </div>
 
@@ -312,7 +312,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
               </div>
             )}
           </div>
-          {lat !== null && <p className="text-green-400 text-xs mt-1">✓ Location found</p>}
+          {lat !== null && <p className="text-coffee-ok text-xs mt-1">✓ Location found</p>}
         </div>
 
         {lat !== null && lng !== null && !compact && (
@@ -338,7 +338,7 @@ export function RoasterForm({ roaster, onBack, compact = false }: { roaster?: Ro
           </div>
         )}
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"

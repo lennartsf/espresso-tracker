@@ -321,7 +321,7 @@ export function NewBrew() {
           />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"

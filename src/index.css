@@ -71,6 +71,16 @@
   --coffee-liquid-glow: 0 0 12px rgba(233, 201, 135, 0.5);
   /* Ambient-Schein hinter der Hero-Headline (Marketing). */
   --coffee-hero-glow: radial-gradient(circle, rgba(201, 163, 94, 0.22), transparent 70%);
+  /* Semantische Funktionsfarben (2026-09-01). Vorher standen an diesen Stellen
+     feste Tailwind-Werte — `text-red-400` fuer Fehler, `text-amber-200` fuer
+     Warnungen, `text-green-400` fuer Erfolg. In Dark tragen die; in Light
+     erreichen sie 1.20–2.72:1 und sind damit unlesbar. Aufgefallen ist das
+     erst, als der Theme-Default auf 'system' ging und Light zur Regel wurde.
+     Beide Werte sind gegen BEIDE Flaechen des jeweiligen Themes geprueft
+     (>= 4.6:1), siehe src/__tests__/themeTokens.test.ts. */
+  --coffee-warn: #d88b18;
+  --coffee-danger: #e6817a;
+  --coffee-ok: #34b268;
 }
 
 /* Light — kontrastgeprüft gegen WCAG AA (4.5:1) für kleinen Text.
@@ -116,6 +126,9 @@
   /* Auf hellem Grund traegt Gold kaum — deutlich zurueckgenommen und ins
      dunklere Akzentbraun gedreht, sonst wird daraus ein gelber Fleck. */
   --coffee-hero-glow: radial-gradient(circle, rgba(131, 85, 38, 0.13), transparent 70%);
+  --coffee-warn: #7c500e;
+  --coffee-danger: #a72920;
+  --coffee-ok: #1d633a;
 }
 
 /* Farbige Formularelemente/Scrollbars sollen dem Theme folgen. */

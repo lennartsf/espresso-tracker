@@ -208,3 +208,27 @@ test('no accent surface still paints its label with the page ground', () => {
   expect(src).toContain('text-coffee-on-accent')
   expect(src).not.toContain('text-coffee-bg')
 })
+
+// ── Semantische Funktionsfarben ─────────────────────────────────────────────
+
+test.each(['--coffee-warn', '--coffee-danger', '--coffee-ok'])(
+  '%s is readable in BOTH themes',
+  token => {
+    // Der Anlass: an diesen Stellen standen feste Tailwind-Werte. `text-red-400`
+    // erreicht auf heller Feldflaeche 1.85:1, `text-amber-200` 1.20:1 — eine
+    // Fehlermeldung, die man nicht lesen kann. In Dark trugen sie, deshalb ist
+    // es nie aufgefallen; mit dem Default 'system' wurde Light zur Regel.
+    for (const palette of [dark, light]) {
+      expect(contrast(palette[token], palette['--coffee-surface'])).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(palette[token], palette['--coffee-surface-2'])).toBeGreaterThanOrEqual(4.5)
+    }
+  },
+)
+
+test('the semantic colours actually differ between the themes', () => {
+  // Ein Wert, der in beiden Paletten gleich ist, kann nicht in beiden tragen —
+  // die Flaechen liegen an entgegengesetzten Enden der Helligkeitsskala.
+  for (const token of ['--coffee-warn', '--coffee-danger', '--coffee-ok']) {
+    expect(dark[token]).not.toBe(light[token])
+  }
+})

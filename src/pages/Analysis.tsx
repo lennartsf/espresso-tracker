@@ -357,7 +357,7 @@ function MilkAnalysis() {
               <p className="text-xs text-coffee-muted mt-0.5">Drinks total</p>
             </div>
             <div className="bg-coffee-surface2 border border-coffee-line rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-green-400">
+              <p className="text-2xl font-bold text-coffee-ok">
                 {(shots.reduce((s, x) => s + x.rating, 0) / shots.length).toFixed(1)}
               </p>
               <p className="text-xs text-coffee-muted mt-0.5">Avg Rating</p>

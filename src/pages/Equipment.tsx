@@ -211,10 +211,10 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-red-400 text-sm">Delete</button>
+          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-coffee-danger text-sm">Delete</button>
         </div>
       </div>
-      {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
+      {deleteError && <p className="text-coffee-danger text-sm mb-3">{deleteError}</p>}
       {grinder.brand && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
@@ -364,7 +364,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : grinder ? 'Save Changes' : 'Save Grinder'}
@@ -471,10 +471,10 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-red-400 text-sm">Delete</button>
+          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-coffee-danger text-sm">Delete</button>
         </div>
       </div>
-      {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
+      {deleteError && <p className="text-coffee-danger text-sm mb-3">{deleteError}</p>}
       {machine.brand && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
@@ -595,7 +595,7 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : machine ? 'Save Changes' : 'Save Machine'}
@@ -706,10 +706,10 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-red-400 text-sm">Delete</button>
+          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-coffee-danger text-sm">Delete</button>
         </div>
       </div>
-      {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
+      {deleteError && <p className="text-coffee-danger text-sm mb-3">{deleteError}</p>}
       {basket.brand && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
@@ -800,7 +800,7 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
           className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : basket ? 'Save Changes' : 'Save Basket'}
@@ -911,10 +911,10 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
         </div>
         <div className="flex gap-3">
           <button onClick={() => setEditing(true)} className="text-coffee-accent-soft text-sm font-semibold">Edit</button>
-          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-red-400 text-sm">Delete</button>
+          <button onClick={handleDelete} className="text-coffee-muted/60 hover:text-coffee-danger text-sm">Delete</button>
         </div>
       </div>
-      {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
+      {deleteError && <p className="text-coffee-danger text-sm mb-3">{deleteError}</p>}
       {device.brand && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
@@ -1015,7 +1015,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
             className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent"
           />
         </div>
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
           className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : (device ? 'Save Changes' : 'Add Device')}

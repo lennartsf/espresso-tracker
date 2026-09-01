@@ -103,7 +103,7 @@ export function CoffeeRecipeList({ coffee }: { coffee: Coffee }) {
               ><Pencil size={14} /></button>
               <button
                 type="button" aria-label={`Delete ${r.name}`} onClick={() => deleteRecipe.mutate(r.id)}
-                className="rounded-md p-1.5 text-coffee-muted hover:text-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+                className="rounded-md p-1.5 text-coffee-muted hover:text-coffee-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
               ><Trash2 size={14} /></button>
             </div>
             <p className="mt-0.5 text-xs text-coffee-muted">

@@ -85,7 +85,7 @@ export function ShotDetail() {
           <button
             onClick={handleDelete}
             disabled={deleteShot.isPending}
-            className="text-coffee-muted hover:text-red-400 text-sm disabled:opacity-50"
+            className="text-coffee-muted hover:text-coffee-danger text-sm disabled:opacity-50"
           >
             {deleteShot.isPending ? 'Deleting...' : 'Delete'}
           </button>
@@ -566,7 +566,7 @@ function ShotEditForm({
           <Textarea value={tastingNotes} onChange={e => setTastingNotes(e.target.value)} rows={2} className="resize-none" />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"

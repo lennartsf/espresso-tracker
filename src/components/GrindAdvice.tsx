@@ -37,7 +37,7 @@ export function GrindAdvice({
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-snug text-coffee-text">
           {warning && (
-            <span className="mr-2 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-200 ring-1 ring-amber-400/50">
+            <span className="mr-2 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-coffee-warn ring-1 ring-coffee-warn/60">
               Rough
             </span>
           )}

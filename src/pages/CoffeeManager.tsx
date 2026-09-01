@@ -168,7 +168,7 @@ function CoffeeDetailView({
           <button onClick={onEdit} className="text-coffee-accent-soft text-sm font-semibold">
             Edit
           </button>
-          <button onClick={handleDeleteCoffee} className="text-coffee-muted hover:text-red-400 text-sm">
+          <button onClick={handleDeleteCoffee} className="text-coffee-muted hover:text-coffee-danger text-sm">
             Delete
           </button>
         </div>
@@ -287,7 +287,7 @@ function CoffeeDetailView({
               </div>
               <button
                 onClick={() => deleteRoastDate.mutate({ id: rd.id, coffeeId: coffee.id })}
-                className="text-coffee-muted hover:text-red-400 text-lg leading-none px-1"
+                className="text-coffee-muted hover:text-coffee-danger text-lg leading-none px-1"
               >
                 ×
               </button>
@@ -460,7 +460,7 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
           />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"
@@ -668,7 +668,7 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
           />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"
