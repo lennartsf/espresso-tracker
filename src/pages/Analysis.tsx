@@ -10,6 +10,7 @@ import { useGrinders } from '../hooks/useEquipment'
 import { Select, PageHeader, cardClasses } from '../components/ui'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { RecipeCard } from '../components/RecipeCard'
+import { DialInPlanner } from '../components/DialInPlanner'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
 import { ratingHex, intensityFill } from '../utils/ratingColor'
@@ -20,7 +21,7 @@ import { secondsToMMSS } from '../utils/timeFormat'
 import type { ShotWithCoffee } from '../hooks/useShots'
 import type { BrewWithCoffee } from '../hooks/useBrews'
 
-type AnalysisTab = 'espresso' | 'brews' | 'milk'
+type AnalysisTab = 'espresso' | 'dial-in' | 'brews' | 'milk'
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -389,6 +390,7 @@ function MilkAnalysis() {
 
 const TABS: { key: AnalysisTab; label: string }[] = [
   { key: 'espresso', label: 'Espresso' },
+  { key: 'dial-in',  label: 'Dial-in' },
   { key: 'brews',    label: 'Brews' },
   { key: 'milk',     label: 'Milk' },
 ]
@@ -400,7 +402,7 @@ export function Analysis() {
     <div>
       <PageHeader eyebrow="Insights" title="Analysis" subtitle="What dials in your shots" />
 
-      <div className="flex border-b border-coffee-line mb-5">
+      <div className="mb-5 flex flex-wrap border-b border-coffee-line">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
@@ -414,6 +416,7 @@ export function Analysis() {
       </div>
 
       {tab === 'espresso' && <EspressoAnalysis />}
+      {tab === 'dial-in'  && <DialInPlanner />}
       {tab === 'brews'    && <BrewsAnalysis />}
       {tab === 'milk'     && <MilkAnalysis />}
     </div>

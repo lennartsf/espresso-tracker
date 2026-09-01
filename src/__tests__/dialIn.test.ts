@@ -1,4 +1,4 @@
-import { slope, suggestGrind, learnGrinder, type DialInShot } from '../utils/dialIn'
+import { slope, suggestGrind, learnGrinder, compareBaskets, type DialInShot } from '../utils/dialIn'
 
 /** Synthetische Shot-Serie: feiner (kleinerer Wert) ⇒ langsamer. */
 function series(
@@ -285,4 +285,58 @@ test('the message never contains NaN or undefined', () => {
     const r = suggestGrind({ shots, coffeeId: 'c1', grinderId: 'g1', targetTime: 28 })
     expect(r.message).not.toMatch(/NaN|undefined|null/)
   }
+})
+
+// ── Was das Sieb ausmacht ──────────────────────────────────────────────────
+
+test('a basket effect is only measured within the same coffee', () => {
+  // Sieb b2 laeuft bei GLEICHER Bohne 4 s laenger als b1.
+  const shots = [
+    ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
+    ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
+  ]
+  const [fast, slow] = compareBaskets(shots, -2)
+  expect(fast.basketId).toBe('b1')
+  expect(slow.basketId).toBe('b2')
+  expect(slow.offsetS - fast.offsetS).toBeCloseTo(4, 1)
+})
+
+test('a basket used for only one coffee is not reported', () => {
+  // Sonst misst man die Bohne und nennt es Sieb.
+  const shots = [
+    ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
+    ...series('g1', 'c2', line(14, 40, -2, [-1, 0, 1]), 'b2'),
+  ]
+  expect(compareBaskets(shots, -2)).toHaveLength(0)
+})
+
+test('the basket effect is corrected for grind before comparing', () => {
+  // Im grossen Sieb wurde durchgehend groeber gemahlen. Ohne Bereinigung
+  // wuerde dieser Mahlgradunterschied als Siebeffekt gezaehlt.
+  const shots = [
+    ...series('g1', 'c1', [[13, 30], [13.5, 29], [14, 28]], 'b1'),
+    // Selbes Verhalten, nur 2 Klicks groeber gezogen: -2 s/Klick => 4 s kuerzer
+    ...series('g1', 'c1', [[15, 26], [15.5, 25], [16, 24]], 'b2'),
+  ]
+  const effects = compareBaskets(shots, -2)
+  const spread = Math.abs(effects[0].offsetS - effects[1].offsetS)
+  expect(spread).toBeLessThan(0.5)   // kein Siebeffekt, nur Mahlgrad
+})
+
+test('the basket effect is also given in grind steps', () => {
+  const shots = [
+    ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
+    ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
+  ]
+  const [fast, slow] = compareBaskets(shots, -2)
+  // 4 s Unterschied bei 2 s pro Klick = 2 Klicks.
+  expect(slow.offsetSteps! - fast.offsetSteps!).toBeCloseTo(2, 1)
+})
+
+test('without a learned slope there are no step numbers, only seconds', () => {
+  const shots = [
+    ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
+    ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
+  ]
+  expect(compareBaskets(shots, null)[0].offsetSteps).toBeNull()
 })

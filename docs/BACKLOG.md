@@ -727,3 +727,47 @@ Aus `CLAUDE.md` / `docs/DESIGN.md`, hier nur zur Vollständigkeit:
   später geteilter Katalog-Split. *(Storage-RLS berührt Paket D Variante 2 und G.)*
 - **Mobile-Visualisierung:** 390px-Audit ist gemacht, kein akuter Mangel offen —
   wartet auf gezielte Wünsche. *(Geht in Paket C auf.)*
+
+
+---
+
+## Durchgang 2026-09-01 (zehn Punkte aus der Nutzung)
+
+| # | Wunsch | Status |
+|---|--------|--------|
+| 1 | Theme-Default auf `system` | ✅ erledigt |
+| 2 | Rezepte: Mühle + Mahlgrad statt Freitext; Rezept aus Shot; Notizfeld bleibt (umbenannt) | ✅ erledigt — **Migration offen** |
+| 3 | „API KEY REQUIRED" über der Rösterkarte | ✅ erledigt — **auf dem Gerät gegenprüfen** |
+| 4 | Reiter „Animate" raus | ✅ erledigt (Routen bleiben) |
+| 5 | Dark kontrastreicher, Bohnenfarbe beißt sich | ✅ erledigt |
+| 6 | i-Button abheben | ✅ erledigt |
+| 7 | Mahlgrad-Vorschlag rechnet Unsinn | ✅ erledigt |
+| 8 | Vorschlagsblock über volle Breite, dickerer Rand, Feldoptik | ✅ erledigt |
+| 9 | Flavor-Bewertung nicht farbig | ✅ erledigt |
+| 10 | Algorithmus in der Analyse, Sieb berücksichtigen | ✅ erledigt |
+
+### Offene Punkte aus diesem Durchgang
+1. **Migration ausführen:** `docs/migrations/2026-09-01-recipe-grinder.sql`
+   (`grinder_id` + `grind_setting` auf `coffee_recipes`). Bis dahin schlägt das
+   Speichern eines Rezepts mit Mühle fehl. `grind_hint` bleibt stehen und wird
+   NICHT migriert — aus „2.5 on the Niche" ließe sich eine Zahl ziehen, aber nicht,
+   welche Mühle gemeint ist.
+2. **Kartenkacheln auf dem Gerät prüfen.** Der Wechsel von CARTO auf Esri Gray
+   Canvas ist aus dieser Umgebung heraus **nicht verifizierbar** — der Proxy
+   blockiert alle Kachel-Hosts (`curl` liefert Code 000). Die Auswahl beruht darauf,
+   dass Esri schlüssellos mit Namensnennung nutzbar ist und beide Themes abdeckt.
+   Falls die Kacheln nicht laden: der Kachelsatz steht als einzige Konstante
+   `TILES` in `src/components/RoasterMap.tsx`, ein Wechsel ist eine Zeile.
+   Keyloser Ersatz mit nur einem Stil: `https://tile.openstreetmap.org/{z}/{x}/{y}.png`.
+3. **Alte `grind_hint`-Texte:** stehen weiter in der Rezept-Zeile und im Notizfeld.
+   Wer will, überträgt sie von Hand in Mühle + Mahlgrad. Bewusst kein Automatismus.
+
+### Was dabei NICHT gemacht wurde
+- **Dark ist nicht mehr „pixelgleich".** Die Zusage aus Paket C1a ist bewusst
+  aufgehoben (Punkt 5). `themeTokens.test.ts` prüft jetzt Eigenschaften statt nur
+  Ziffern — Flächenabstand in L*, Textkontrast auf beiden Flächen.
+- **Der Bohnen-Teller ist eine Design-Entscheidung**, keine reine Reparatur: die
+  Bohne sitzt jetzt auf heller Fläche wie auf einem Produktfoto. Nötig, weil keine
+  dunkle Karte 3:1 gegen eine fast schwarze Bohne erreichen kann (dafür müsste sie
+  heller als `#696969` sein).
+- **`CorrelationScatter.tsx` ist weiterhin toter Code** — nur gemeldet, nicht entfernt.

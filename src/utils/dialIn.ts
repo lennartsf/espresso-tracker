@@ -356,3 +356,92 @@ export function suggestGrind({
     message: `Last shot ran ${currentTime}s, target ${targetTime}s → go ${dir} to about ${grind}${why}.${capNote}${basketNote}`,
   }
 }
+
+// ── Was das Sieb ausmacht ───────────────────────────────────────────────────
+
+export interface BasketEffect {
+  basketId: string
+  /** Sekunden, die dieses Sieb bei gleichem Mahlgrad länger läuft als der
+   *  Schnitt der verglichenen Siebe. Positiv = langsamer. */
+  offsetS: number
+  /** In Mahlgrad-Klicks umgerechnet — das ist die Zahl, mit der man etwas
+   *  anfangen kann. `null`, wenn die Steigung nicht gelernt ist. */
+  offsetSteps: number | null
+  shots: number
+  /** Aus wie vielen Bohnen der Vergleich stammt. */
+  coffees: number
+}
+
+/**
+ * Misst, wie stark das Sieb die Durchlaufzeit verschiebt.
+ *
+ * **Warum nicht einfach die Durchschnittszeit je Sieb.** Die wäre wertlos: wer
+ * ein Sieb überwiegend für eine bestimmte Bohne benutzt, misst damit die
+ * Bohne, nicht das Sieb. Deshalb wird ausschließlich INNERHALB derselben Bohne
+ * verglichen — nur Bohnen, die in mindestens zwei Sieben gezogen wurden,
+ * tragen bei.
+ *
+ * Vor dem Vergleich wird die Zeit um den Mahlgrad bereinigt: wer im großen
+ * Sieb ohnehin gröber mahlt, hätte sonst den Mahlgradunterschied als
+ * Siebeffekt gezählt.
+ *
+ * Ergebnis ist eine Abweichung vom Mittel der verglichenen Siebe, keine
+ * Absolutzeit — „dieses Sieb läuft 3 s länger als das andere" ist die Aussage,
+ * die trägt.
+ */
+export function compareBaskets(
+  shots: DialInShot[],
+  secondsPerStep: number | null,
+): BasketEffect[] {
+  const valid = shots.filter(usable).filter(s => s.basket_id)
+  const perStep = secondsPerStep ?? FALLBACK_SECONDS_PER_STEP
+
+  // Pro Bohne sammeln, welche Siebe vorkommen.
+  const byCoffee = new Map<string, DialInShot[]>()
+  for (const s of valid) {
+    const g = byCoffee.get(s.coffee_id)
+    if (g) g.push(s)
+    else byCoffee.set(s.coffee_id, [s])
+  }
+
+  // basketId → Liste von (Abweichung, Gewicht) über die Bohnen hinweg.
+  const acc = new Map<string, { sum: number; shots: number; coffees: number }>()
+
+  for (const group of byCoffee.values()) {
+    const baskets = new Set(group.map(s => s.basket_id!))
+    // Eine Bohne in nur einem Sieb sagt über den Siebunterschied nichts —
+    // ihr „Offset" wäre der Offset der Bohne.
+    if (baskets.size < 2) continue
+
+    const meanGrind = group.reduce((s, x) => s + x.grind_setting!, 0) / group.length
+    // Um den Mahlgrad bereinigte Zeit: was die Zeit wäre, hätte man alle Shots
+    // dieser Bohne auf demselben Mahlgrad gezogen.
+    const adjusted = group.map(s => ({
+      basket: s.basket_id!,
+      t: s.brew_time_s! - perStep * (s.grind_setting! - meanGrind),
+    }))
+    const overall = adjusted.reduce((s, x) => s + x.t, 0) / adjusted.length
+
+    for (const b of baskets) {
+      const mine = adjusted.filter(x => x.basket === b)
+      const mean = mine.reduce((s, x) => s + x.t, 0) / mine.length
+      const cur = acc.get(b) ?? { sum: 0, shots: 0, coffees: 0 }
+      // Nach Shot-Zahl gewichtet: eine Bohne mit acht Shots im Sieb sagt mehr
+      // als eine mit einem.
+      cur.sum += (mean - overall) * mine.length
+      cur.shots += mine.length
+      cur.coffees += 1
+      acc.set(b, cur)
+    }
+  }
+
+  return [...acc.entries()]
+    .map(([basketId, { sum, shots, coffees }]) => ({
+      basketId,
+      offsetS: sum / shots,
+      offsetSteps: secondsPerStep !== null ? sum / shots / Math.abs(secondsPerStep) : null,
+      shots,
+      coffees,
+    }))
+    .sort((a, b) => a.offsetS - b.offsetS)
+}
