@@ -38,9 +38,18 @@ beforeEach(() => {
   mockSystem(false)
 })
 
-test('defaults to dark so nobody lands in the unfinished light theme', () => {
+test('defaults to system and follows the OS', () => {
+  mockSystem(true) // OS steht auf Hell
   renderToggle()
-  expect(screen.getByTestId('probe')).toHaveTextContent('dark/dark')
+  // Ohne gespeicherte Wahl folgt die App dem System — nicht mehr fest Dark.
+  expect(screen.getByTestId('probe')).toHaveTextContent('system/light')
+  expect(document.documentElement.getAttribute('data-theme')).toBe('light')
+})
+
+test('the default resolves to dark on a dark OS', () => {
+  mockSystem(false)
+  renderToggle()
+  expect(screen.getByTestId('probe')).toHaveTextContent('system/dark')
   expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
 })
 
@@ -88,8 +97,9 @@ test('exactly one option reads as selected', async () => {
   expect(checked[0]).toHaveAccessibleName('Light')
 })
 
-test('a garbage stored value falls back to dark instead of stamping junk', () => {
+test('a garbage stored value falls back to the default instead of stamping junk', () => {
   localStorage.setItem('espresso-theme', 'chartreuse')
+  mockSystem(false)
   renderToggle()
-  expect(screen.getByTestId('probe')).toHaveTextContent('dark/dark')
+  expect(screen.getByTestId('probe')).toHaveTextContent('system/dark')
 })

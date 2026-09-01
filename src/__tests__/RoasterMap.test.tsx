@@ -58,22 +58,28 @@ test('a roaster with an empty name does not crash the pin', () => {
   expect(getByTestId('marker').getAttribute('data-html')).toContain('>?<')
 })
 
-test('tiles follow the theme', () => {
-  const { getAllByTestId } = renderMap([roaster()])
-  // Default ist dark (Paket C1a).
-  expect(getAllByTestId('tiles')[0].getAttribute('data-url')).toContain('dark_all')
-})
-
-test('light uses Voyager, dark uses Dark Matter', () => {
-  // Voyager hat keine dunkle Variante — deshalb bewusst zwei verschiedene
-  // Stile statt eines kuenstlich abgedunkelten hellen.
+test('each theme gets its own tile set', () => {
+  // Beide Sätze sind eigens gebaute Stile, kein kuenstlich abgedunkelter
+  // heller — bei letzterem kippen Gruenflaechen ins Violette.
   localStorage.setItem('espresso-theme', 'light')
   const { getAllByTestId, unmount } = renderMap([roaster()])
-  expect(getAllByTestId('tiles')[0].getAttribute('data-url')).toContain('voyager')
+  expect(getAllByTestId('tiles')[0].getAttribute('data-url')).toContain('World_Light_Gray_Base')
   unmount()
 
   localStorage.setItem('espresso-theme', 'dark')
   const { getAllByTestId: dark } = renderMap([roaster()])
-  expect(dark('tiles')[0].getAttribute('data-url')).toContain('dark_all')
+  expect(dark('tiles')[0].getAttribute('data-url')).toContain('World_Dark_Gray_Base')
+  localStorage.clear()
+})
+
+test('the tiles come from a source that needs no API key', () => {
+  // CARTO stempelte anonyme Anfragen zuletzt mit „API KEY REQUIRED" mitten in
+  // die Kachel. Der Schriftzug steckt IM Bild — clientseitig nicht zu
+  // entfernen. Dieser Test haelt fest, dass wir dort weg sind.
+  localStorage.setItem('espresso-theme', 'dark')
+  const { getAllByTestId } = renderMap([roaster()])
+  const url = getAllByTestId('tiles')[0].getAttribute('data-url') ?? ''
+  expect(url).not.toContain('cartocdn')
+  expect(url).not.toMatch(/[?&](api_?key|access_?token)=/i)
   localStorage.clear()
 })

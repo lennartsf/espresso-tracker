@@ -19,6 +19,30 @@ import { beanShades, beansToShow, type BeanSpecies } from '../utils/beanColor'
  * S-förmiger Furche; Robusta runder mit gerader Furche. Das ist das echte
  * Unterscheidungsmerkmal, nicht bloß Dekoration.
  */
+/** Der Teller, auf dem die Bohne liegt, und ihre Kontur.
+ *
+ *  **Warum ueberhaupt ein Teller.** Die Bohne lag vorher direkt auf der Karte.
+ *  In Dark war die Karte warmes Braun (#25201b) — dieselbe Farbfamilie wie eine
+ *  Bohne. Gemessen: eine dunkle Roestung erreicht dort 1.03–1.72:1. Die Bohne
+ *  war schlicht nicht zu sehen, und ausgerechnet bei den Roestungen, die am
+ *  haeufigsten vorkommen.
+ *
+ *  Ein dunkleres Theme loest das NICHT: fuer 3:1 gegen eine fast schwarze
+ *  Bohne (L=0.011) muesste die Flaeche darunter L>=0.134 haben, also etwa
+ *  #696969 — heller als jede Karte, die in einem dunklen Theme sein darf.
+ *  Deshalb bekommt die Bohne ihre eigene helle Flaeche, in BEIDEN Themes
+ *  gleich. Das ist auch inhaltlich richtig: der Teller vertritt das Produktfoto
+ *  und die werden auf hellem Grund aufgenommen.
+ *
+ *  Die Werte sind literal und NICHT als Token gefuehrt: sie sind Teil des
+ *  Motivs, nicht der Oberflaeche, und duerfen beim Theme-Wechsel nicht kippen.
+ *  `CoffeeBean.test.tsx` prueft die Kontrastzusage fuer alle zehn Stufen. */
+const PLATE_TOP = '#efe8dc'
+const PLATE_BTM = '#ded4c2'
+/** Kante des Tellers — sonst verschwimmt er in Light mit der Karte. */
+const PLATE_EDGE = '#cabda6'
+const BEAN_RIM = '#3a2c1e'
+
 function Bean({
   species,
   roastLevel,
@@ -72,7 +96,17 @@ function Bean({
         fill="#000" opacity="0.16"
       />
 
-      <ellipse cx={x} cy={50} rx={rx} ry={ry} fill={`url(#body-${uid})`} />
+      <ellipse
+        cx={x} cy={50} rx={rx} ry={ry}
+        fill={`url(#body-${uid})`}
+        // Die Kontur traegt die Silhouette, NICHT die Fuellung. Eine helle
+        // Roestung (Stufe 1) erreicht auf dem Teller nur 2.1:1 — zu wenig, um
+        // die Form zu erkennen. Die Kontur steht dagegen bei 11:1 gegen den
+        // Teller, unabhaengig davon, welche Farbe die Bohne gerade hat. Damit
+        // ist jede Roeststufe umrissen, von Zimt bis Italienisch.
+        stroke={BEAN_RIM}
+        strokeWidth={1.2 * scale}
+      />
 
       {/* Furche: dunkle Rinne mit heller Oberkante darüber — das ist der
           Effekt, der die Bohne gewölbt aussehen lässt. */}
@@ -101,6 +135,7 @@ export function CoffeeBean({
   size?: number
   className?: string
 }) {
+  const plateId = useId().replace(/:/g, '')
   const species = beansToShow(arabicaPct, robustaPct)
   const level = roastLevel ?? 5
   const two = species.length === 2
@@ -116,6 +151,19 @@ export function CoffeeBean({
       role="img"
       aria-label={label}
     >
+      <defs>
+        <linearGradient id={`plate-${plateId}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={PLATE_TOP} />
+          <stop offset="100%" stopColor={PLATE_BTM} />
+        </linearGradient>
+      </defs>
+      <rect
+        x="0.6" y="0.6" width="98.8" height="98.8" rx="14"
+        fill={`url(#plate-${plateId})`}
+        stroke={PLATE_EDGE}
+        strokeWidth="1.2"
+      />
+
       {two ? (
         <>
           <Bean species={species[0]} roastLevel={level} x={33} rotate={-16} scale={0.68} />

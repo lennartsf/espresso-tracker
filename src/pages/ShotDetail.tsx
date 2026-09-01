@@ -539,19 +539,19 @@ function ShotEditForm({
         <div className="grid gap-3">
           <div>
             <FieldLabel required>Flavor</FieldLabel>
-            <RatingInput value={rating} onChange={setRating} />
+            <RatingInput value={rating} onChange={setRating} scale="quality" />
           </div>
           <div>
             <FieldLabel>Body</FieldLabel>
-            <RatingInput value={bodyScore} onChange={setBodyScore} />
+            <RatingInput value={bodyScore} onChange={setBodyScore} scale="intensity" />
           </div>
           <div>
             <FieldLabel>Acidity</FieldLabel>
-            <RatingInput value={acidityScore} onChange={setAcidityScore} />
+            <RatingInput value={acidityScore} onChange={setAcidityScore} scale="intensity" />
           </div>
           <div>
             <FieldLabel>Bitterness</FieldLabel>
-            <RatingInput value={bitternessScore} onChange={setBitternessScore} />
+            <RatingInput value={bitternessScore} onChange={setBitternessScore} scale="intensity" />
           </div>
         </div>
 

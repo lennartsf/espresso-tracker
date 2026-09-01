@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+import { ThemeProvider } from '../lib/ThemeContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { vi } from 'vitest'
 import { NewShot } from '../pages/NewShot'
@@ -52,9 +53,11 @@ function renderNewShot() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
     <QueryClientProvider client={qc}>
+      <ThemeProvider>
       <MemoryRouter>
         <NewShot />
       </MemoryRouter>
+      </ThemeProvider>
     </QueryClientProvider>,
   )
 }

@@ -65,7 +65,7 @@ export function Try() {
             <p className="text-xs font-semibold uppercase tracking-wide text-coffee-muted">Rate the shot</p>
             {rating !== null && <RatingBadge value={rating} />}
           </div>
-          <RatingInput value={rating} onChange={setRating} />
+          <RatingInput value={rating} onChange={setRating} scale="quality" />
         </div>
       </div>
 

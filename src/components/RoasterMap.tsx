@@ -5,17 +5,31 @@ import 'leaflet/dist/leaflet.css'
 import { useTheme } from '../lib/ThemeContext'
 import type { Roaster } from '../types'
 
-/** CartoDB-Kachelsätze. Der Pin bleibt in beiden Themes orange — er ist
- *  Funktionsfarbe (Standort), keine Dekoration. */
+/** Kachelsätze der Karte. Der Pin bleibt in beiden Themes orange — er ist
+ *  Funktionsfarbe (Standort), keine Dekoration.
+ *
+ *  **Weg von CARTO (2026-09-01).** Dark Matter und Voyager kamen zuletzt mit
+ *  einem eingebrannten „API KEY REQUIRED" über der Karte: CARTO stellt seine
+ *  Basemaps auf angemeldete Nutzung um und stempelt anonyme Anfragen. Der
+ *  Schriftzug steckt IM Kachelbild, es gibt also nichts, was man clientseitig
+ *  ausblenden könnte — der Anbieter musste wechseln.
+ *
+ *  Jetzt: Esris „Gray Canvas". Der Satz ist ohne Schlüssel und ohne Anmeldung
+ *  nutzbar, verlangt nur die Namensnennung, und er hat — anders als Voyager —
+ *  eine echte dunkle Variante. Ein eigens dunkler Stil schlägt einen künstlich
+ *  abgedunkelten hellen: bei letzterem kippen Grünflächen ins Violette.
+ *
+ *  Kein `{s}`-Subdomain-Platzhalter: Esri liefert über einen Host, und Leaflet
+ *  würde ein leeres `{s}` sonst als kaputte URL anfragen.
+ *  Kein `{r}` (@2x): die Gray-Canvas-Sätze haben keine Retina-Kacheln. */
 const TILES = {
-  // Dark: Dark Matter — eigens für dunkle Oberflächen gebaut.
-  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-  // Light: Voyager statt Positron (2026-09-01). Mehr Farbe, Grünflächen und
-  // POI-Beschriftung — näher am gewohnten Karten-Look, weiterhin ohne API-Key.
-  // Voyager hat KEINE dunkle Variante, deshalb bleibt Dark bei Dark Matter:
-  // ein eigens dunkler Stil schlägt einen künstlich abgedunkelten hellen.
-  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  dark: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  light: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
 } as const
+
+/** Esri verlangt die Namensnennung des Kachelsatzes. */
+const ATTRIBUTION =
+  'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Esri, DeLorme, NAVTEQ'
 
 /** Hält beim Theme-Wechsel den ALTEN Kachelsatz sichtbar, bis der neue geladen
  *  hat. Ohne das blitzt kurz der leere Kartenhintergrund durch, weil Leaflet
@@ -33,12 +47,19 @@ function ThemedTiles({ theme }: { theme: 'light' | 'dark' }) {
   return (
     <>
       {previous && previous !== shown && (
-        <TileLayer key={previous} url={TILES[previous]} />
+        <TileLayer key={previous} url={TILES[previous]} maxNativeZoom={16} maxZoom={18} />
       )}
       <TileLayer
         key={shown}
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        attribution={ATTRIBUTION}
         url={TILES[shown]}
+        // Gray Canvas hat nur bis Zoom 16 eigene Kacheln. Ohne
+        // `maxNativeZoom` fordert Leaflet darueber hinaus Kacheln an, die es
+        // nicht gibt — die Karte waere beim Reinzoomen einfach leer. So wird
+        // stattdessen die letzte echte Stufe hochskaliert: leicht weich, aber
+        // sichtbar, und man kommt bis auf Strassenniveau.
+        maxNativeZoom={16}
+        maxZoom={18}
         eventHandlers={{ load: () => setPrevious(null) }}
       />
     </>

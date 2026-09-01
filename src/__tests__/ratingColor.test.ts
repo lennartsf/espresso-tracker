@@ -1,4 +1,4 @@
-import { ratingColor, ratingBadgeClasses, ratingHex } from '../utils/ratingColor'
+import { ratingColor, ratingBadgeClasses, ratingHex, ratingInk } from '../utils/ratingColor'
 
 test('gibt Rot für 1 zurück', () => {
   expect(ratingColor(1)).toBe('bg-red-100 text-red-900')
@@ -61,7 +61,7 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-const DARK_SURFACE = '#25201b'   // --coffee-surface, Theme dark
+const DARK_SURFACE = '#26221e'   // --coffee-surface, Theme dark
 const LIGHT_SURFACE = '#fffdfa'  // --coffee-surface, Theme light
 const STEPS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -92,4 +92,18 @@ test('the rating scale never uses the brand gold', () => {
 test('ratingHex falls back to muted for out-of-range', () => {
   expect(ratingHex(0)).toBe('#7a6450')
   expect(ratingHex(11)).toBe('#7a6450')
+})
+
+test.each(STEPS)('the digit on rating step %i is readable', step => {
+  // Die Rampe liegt im Luminanz-Fenster und ist damit ueberall mittelhell —
+  // eine EINZIGE Schriftfarbe reicht nicht. `ratingInk` dreht deshalb bei
+  // Stufe 3 um. Faellt einer der zehn Werte unter 4.5:1, ist die Ziffer auf
+  // ihrer eigenen Flaeche nicht mehr lesbar, ohne dass irgendwo ein Fehler
+  // entsteht — genau das faengt dieser Test ab.
+  expect(contrast(ratingHex(step), ratingInk(step))).toBeGreaterThanOrEqual(4.5)
+})
+
+test('ratingInk actually flips — one colour would not carry the ramp', () => {
+  const inks = new Set(STEPS.map(n => ratingInk(n)))
+  expect(inks.size).toBe(2)
 })

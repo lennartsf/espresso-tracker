@@ -26,9 +26,9 @@ export interface ChartColors {
 
 const CHART: Record<ThemeName, ChartColors> = {
   dark: {
-    axis: '#a89784',
-    grid: '#33291f',
-    emptyBar: '#33291f',
+    axis: '#b0a08d',
+    grid: '#38312b',
+    emptyBar: '#38312b',
     bar: '#c9a35e',
     cursor: 'rgba(233, 201, 135, 0.06)',
   },

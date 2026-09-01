@@ -71,14 +71,15 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
                 // Ohne Foto zeigt die gerechnete Bohne den Roestgrad — das ist
                 // mehr Information als ein Anfangsbuchstabe. Nur wenn auch kein
                 // Roestgrad erfasst ist, bleibt der Buchstabe.
-                <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-coffee-surface2 p-0.5">
-                  <CoffeeBean
-                    roastLevel={c.roast_level_fine ?? c.roast_level}
-                    arabicaPct={c.arabica_pct}
-                    robustaPct={c.robusta_pct}
-                    size={36}
-                  />
-                </div>
+                // Kein Flaechen-Wrapper mehr: die Bohne bringt ihren eigenen
+                // Teller mit, ein zweiter Rahmen darum saehe doppelt gerahmt aus.
+                <CoffeeBean
+                  roastLevel={c.roast_level_fine ?? c.roast_level}
+                  arabicaPct={c.arabica_pct}
+                  robustaPct={c.robusta_pct}
+                  size={40}
+                  className="flex-shrink-0 rounded-lg"
+                />
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-coffee-surface2 flex items-center justify-center flex-shrink-0">
                   <span className="text-coffee-muted font-bold text-sm">{c.name[0]}</span>

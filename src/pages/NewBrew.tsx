@@ -51,7 +51,13 @@ function RatingField({
           </div>
         </InfoBox>
       )}
-      <RatingInput value={value} onChange={onChange} />
+      <RatingInput
+        value={value}
+        onChange={onChange}
+        // 'rating' ist die einzige Frage nach gut/schlecht; Body, Saeure und
+        // Bitterness sind Auspraegung und duerfen nicht rot/gruen erscheinen.
+        scale={infoKey === 'rating' ? 'quality' : 'intensity'}
+      />
     </div>
   )
 }

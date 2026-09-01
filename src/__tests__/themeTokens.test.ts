@@ -32,26 +32,78 @@ function tokensOf(selector: string): Record<string, string> {
 const dark = tokensOf(":root,\n:root[data-theme='dark']")
 const light = tokensOf(":root[data-theme='light']")
 
-/** Die Dark-Werte VOR dem Theme-Umbau (Paket C1a).
- *  Dark muss pixelgleich bleiben — weicht hier etwas ab, ist das ein Bug,
- *  keine Geschmacksfrage. Diese Tabelle nur mit bewusster Design-Entscheidung
- *  anfassen. */
-const DARK_BEFORE_C1A: Record<string, string> = {
-  '--coffee-bg': '#1c1714',
-  '--coffee-surface': '#25201b',
-  '--coffee-surface-2': '#33291f',
+/** Die Dark-Werte, wie sie seit dem Kontrast-Durchgang vom 2026-09-01 gelten.
+ *
+ *  Bis dahin stand hier die Tabelle „vor Paket C1a" mit der Zusage, Dark bleibe
+ *  pixelgleich. Die Zusage war für die Zeit gedacht, in der Light nachgerüstet
+ *  wurde — sie ist bewusst aufgehoben worden, weil die alten Flächen zwei
+ *  gemessene Schwächen hatten (zu enge Abstände, Kollision mit der Bohnenfarbe;
+ *  Herleitung im Kopf von src/index.css).
+ *
+ *  Diese Tabelle bleibt trotzdem nützlich: sie fängt VERSEHENTLICHE Änderungen.
+ *  Wer sie anfasst, trifft eine Design-Entscheidung — und muss die
+ *  Eigenschafts-Tests darunter mitlaufen lassen, die den eigentlichen Grund
+ *  prüfen statt der Ziffern. */
+const DARK_TOKENS: Record<string, string> = {
+  '--coffee-bg': '#171412',
+  '--coffee-surface': '#26221e',
+  '--coffee-surface-2': '#38312b',
   '--coffee-accent': '#c9a35e',
   '--coffee-accent-soft': '#d8bd86',
   '--coffee-cream': '#f6efe4',
   '--coffee-text': '#f1e9df',
-  '--coffee-muted': '#a89784',
-  '--coffee-line': 'rgba(246, 239, 228, 0.10)',
+  '--coffee-muted': '#b0a08d',
+  '--coffee-line': 'rgba(246, 239, 228, 0.14)',
 }
 
-test.each(Object.entries(DARK_BEFORE_C1A))(
-  'dark token %s is unchanged by the theme refactor',
+test.each(Object.entries(DARK_TOKENS))(
+  'dark token %s has its agreed value',
   (token, expected) => {
     expect(dark[token]).toBe(expected)
+  },
+)
+
+// ── Warum die Flächen so liegen ─────────────────────────────────────────────
+
+function srgbToLinear(x: number): number {
+  return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+}
+function relLuminance(hex: string): number {
+  const h = hex.replace('#', '')
+  const [r, g, b] = [0, 2, 4].map(i => srgbToLinear(parseInt(h.slice(i, i + 2), 16) / 255))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+/** Wahrgenommene Helligkeit. Nahe Schwarz ist das WCAG-Verhältnis als Maß
+ *  unbrauchbar — der +0.05-Term staucht dort alles auf ~1.1:1 zusammen,
+ *  obwohl der Unterschied deutlich sichtbar ist. L* misst, was das Auge tut. */
+function lStar(hex: string): number {
+  const y = relLuminance(hex)
+  return y > 216 / 24389 ? 116 * y ** (1 / 3) - 16 : (y * 24389) / 27
+}
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [relLuminance(a), relLuminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+test('the dark surfaces are far enough apart to read as layers', () => {
+  // Das war der eigentliche Mangel: bg→surface und surface→surface-2 lagen bei
+  // ~4.4 bzw. ~4.8 L*. Karten hoben sich kaum vom Seitengrund ab. Ab etwa 6 L*
+  // liest sich der Wechsel als eigene Ebene.
+  const bg = lStar(dark['--coffee-bg'])
+  const surface = lStar(dark['--coffee-surface'])
+  const surface2 = lStar(dark['--coffee-surface-2'])
+  expect(surface - bg).toBeGreaterThanOrEqual(6)
+  expect(surface2 - surface).toBeGreaterThanOrEqual(6)
+})
+
+test.each(['--coffee-text', '--coffee-cream', '--coffee-muted', '--coffee-accent-soft'])(
+  'dark %s stays readable on BOTH dark surfaces',
+  token => {
+    // Die Flächen sind heller geworden. Ohne diesen Test könnte eine spätere
+    // Aufhellung den gedämpften Text unter 4.5:1 drücken, ohne dass irgendwo
+    // ein Fehler entsteht.
+    expect(contrast(dark[token], dark['--coffee-surface'])).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(dark[token], dark['--coffee-surface-2'])).toBeGreaterThanOrEqual(4.5)
   },
 )
 
