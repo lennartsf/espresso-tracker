@@ -22,7 +22,7 @@ export function EmptyState({ headline, description, ctaLabel, ctaTo, action, cla
       {!action && ctaLabel && ctaTo && (
         <Link
           to={ctaTo}
-          className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-bg hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft"
+          className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-on-accent hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft"
         >
           {ctaLabel}
         </Link>

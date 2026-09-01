@@ -21,6 +21,9 @@ export interface Coffee {
   arabica_pct: number | null
   robusta_pct: number | null
   roast_level: number | null
+  /** Feiner Röstgrad 1.00–10.00 (Paket D). `roast_level` bleibt daneben als
+   *  gerundeter Wert bestehen, damit Badges und Filter weiterlaufen. */
+  roast_level_fine: number | null
   origin_country: string | null
   origin_region: string | null
   altitude_m: number | null
@@ -30,7 +33,6 @@ export interface Coffee {
   rec_yield_g: number | null
   rec_temp_c: number | null
   rec_time_s: number | null
-  rec_grind_note: string | null
 }
 
 export interface RoastDate {
@@ -160,3 +162,39 @@ export interface Brew {
 }
 
 export type NewBrew = Omit<Brew, 'id' | 'created_at'>
+
+/** Eine Zeile je User; `layout` ist die serialisierte Widget-Reihenfolge.
+ *  Siehe `src/utils/dashboardWidgets.ts` fuer die Bedeutung der IDs. */
+export interface DashboardLayout {
+  user_id: string
+  layout: DashboardLayoutEntry[]
+  updated_at: string
+}
+
+/** Ein Eintrag = ein Widget plus Sichtbarkeit. Die Reihenfolge im Array IST
+ *  die Reihenfolge auf dem Dashboard. */
+export interface DashboardLayoutEntry {
+  id: string
+  visible: boolean
+}
+
+/** Ein eigenes Rezept fuer eine Bohne.
+ *  Das ROESTER-Rezept ist keine Zeile hier — es steht in `coffees.rec_*` und
+ *  bleibt als Referenz unveraendert. `matches_roaster` markiert ein eigenes
+ *  Rezept als deckungsgleich damit. */
+export interface CoffeeRecipe {
+  id: string
+  coffee_id: string
+  user_id: string
+  name: string
+  dose_g: number | null
+  yield_g: number | null
+  temp_c: number | null
+  time_s: number | null
+  grind_hint: string | null
+  is_default: boolean
+  matches_roaster: boolean
+  created_at: string
+}
+
+export type NewCoffeeRecipe = Omit<CoffeeRecipe, 'id' | 'user_id' | 'created_at'>

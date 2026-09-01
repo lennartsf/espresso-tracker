@@ -7,6 +7,7 @@ import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { ratingBadgeClasses, intensityBadge } from '../utils/ratingColor'
+import { useTheme } from '../lib/ThemeContext'
 import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
 import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses } from '../components/ui'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -30,6 +31,7 @@ function fromDatetimeLocal(local: string): string {
 export function ShotDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { theme } = useTheme()
   const { data: shot, isLoading, error } = useShot(id ?? '')
   const deleteShot = useDeleteShot()
   const [editing, setEditing] = useState(false)
@@ -103,19 +105,19 @@ export function ShotDetail() {
           {shot.body_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Body</p>
-              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.body_score)}>{shot.body_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.body_score, theme)}>{shot.body_score}</p>
             </div>
           )}
           {shot.acidity_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Acidity</p>
-              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.acidity_score)}>{shot.acidity_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.acidity_score, theme)}>{shot.acidity_score}</p>
             </div>
           )}
           {shot.bitterness_score !== null && (
             <div className={`${cardClasses} flex-1 p-2 text-center`}>
               <p className="text-xs text-coffee-muted uppercase font-semibold mb-0.5">Bitterness</p>
-              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.bitterness_score)}>{shot.bitterness_score}</p>
+              <p className="font-bold text-sm px-1.5 py-0.5 rounded" style={intensityBadge(shot.bitterness_score, theme)}>{shot.bitterness_score}</p>
             </div>
           )}
         </div>
@@ -346,7 +348,7 @@ function ShotEditForm({
                 onClick={() => setDrinkType(dt.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   drinkType === dt.value
-                    ? 'bg-coffee-accent text-coffee-bg'
+                    ? 'bg-coffee-accent text-coffee-on-accent'
                     : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
                 }`}
               >

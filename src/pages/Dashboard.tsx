@@ -10,6 +10,12 @@ import { buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { LiquidBar } from '../components/dashboard/LiquidBar'
+import { chartColors } from '../utils/chartTheme'
+import { useTheme } from '../lib/ThemeContext'
+import { LayoutEditor } from '../components/dashboard/LayoutEditor'
+import { useDashboardLayout, useSaveDashboardLayout } from '../hooks/useDashboardLayout'
+import { DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
+import { SlidersHorizontal } from 'lucide-react'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -39,6 +45,14 @@ function fmt(d: Date, opts: Intl.DateTimeFormatOptions) {
 
 export function Dashboard() {
   const { data: shots = [], isLoading } = useShots()
+  const { theme } = useTheme()
+  const c = chartColors(theme)
+
+  // Layout: bis der Server geantwortet hat, die Standardreihenfolge zeigen —
+  // ein leeres Dashboard waere schlimmer als eine kurz falsche Reihenfolge.
+  const { data: layout = DEFAULT_LAYOUT } = useDashboardLayout()
+  const saveLayout = useSaveDashboardLayout()
+  const [editing, setEditing] = useState(false)
 
   const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()))
   const thisMonday = useMemo(() => mondayOf(new Date()), [])
@@ -80,6 +94,8 @@ export function Dashboard() {
     ? `${fmt(weekStart, { day: '2-digit' })}–${fmt(weekEnd, { day: '2-digit', month: 'short' })}`
     : `${fmt(weekStart, { day: '2-digit', month: 'short' })} – ${fmt(weekEnd, { day: '2-digit', month: 'short' })}`
 
+  const showWeekShots = layout.some(e => e.id === 'week-shots' && e.visible)
+
   const gridRef = useRef<HTMLDivElement>(null)
   useGSAP(() => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
@@ -92,7 +108,24 @@ export function Dashboard() {
       <PageHeader
         eyebrow="Your week"
         title="Espresso"
-        action={<Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New Shot</Link>}
+        action={
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Arrange dashboard"
+              aria-pressed={editing}
+              onClick={() => setEditing(v => !v)}
+              className={`rounded-lg p-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent ${
+                editing
+                  ? 'bg-coffee-accent/15 text-coffee-accent-soft'
+                  : 'text-coffee-muted hover:bg-coffee-surface2 hover:text-coffee-cream'
+              }`}
+            >
+              <SlidersHorizontal size={18} strokeWidth={1.75} />
+            </button>
+            <Link to={ROUTES.shotNew} className={buttonClasses('glow')}>+ New Shot</Link>
+          </div>
+        }
       />
 
       {/* Week picker */}
@@ -116,43 +149,68 @@ export function Dashboard() {
         >›</button>
       </div>
 
+      {editing && (
+        <LayoutEditor
+          layout={layout}
+          onChange={next => saveLayout.mutate(next)}
+          onDone={() => setEditing(false)}
+        />
+      )}
+
       <div ref={gridRef} className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <EmbossedTile className="flex items-center justify-center md:row-span-2">
-          <DialGauge value={avgFlavor} max={10} label="Ø Flavor · week" />
-        </EmbossedTile>
-
-        <EmbossedTile className="md:col-span-2">
-          <LiquidBar doseG={avgRatio !== null ? 1 : null} yieldG={avgRatio} />
-          <div className="mt-2 flex gap-4 text-xs text-coffee-muted">
-            <span>{weekShots.length} shot{weekShots.length !== 1 ? 's' : ''} this week</span>
-            <span>{weekShots.filter(s => s.rating >= 8).length} top (≥8)</span>
-          </div>
-        </EmbossedTile>
-
-        <EmbossedTile className="md:col-span-2">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-coffee-muted">Shots per day</p>
-          <ResponsiveContainer width="100%" height={160}>
-            <BarChart data={byDay} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
-              <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#a89784' }} axisLine={false} tickLine={false} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#a89784' }} axisLine={false} tickLine={false} width={32} />
-              <Tooltip cursor={{ fill: 'rgba(233,201,135,0.06)' }} content={({ payload, label }) => {
-                if (!payload?.length) return null
-                return (
-                  <div className="rounded border border-coffee-line bg-coffee-surface2 px-2 py-1 text-xs shadow">
-                    <p>{label}: <strong>{payload[0].value}</strong></p>
+        {layout.filter(e => e.visible).map(entry => {
+          switch (entry.id) {
+            case 'flavor-dial':
+              return (
+                <EmbossedTile key={entry.id} className="flex items-center justify-center md:row-span-2">
+                  <DialGauge value={avgFlavor} max={10} label="Ø Flavor · week" />
+                </EmbossedTile>
+              )
+            case 'ratio-bar':
+              return (
+                <EmbossedTile key={entry.id} className="md:col-span-2">
+                  <LiquidBar doseG={avgRatio !== null ? 1 : null} yieldG={avgRatio} />
+                  <div className="mt-2 flex gap-4 text-xs text-coffee-muted">
+                    <span>{weekShots.length} shot{weekShots.length !== 1 ? 's' : ''} this week</span>
+                    <span>{weekShots.filter(s => s.rating >= 8).length} top (≥8)</span>
                   </div>
-                )
-              }} />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {byDay.map(d => (
-                  <Cell key={d.day} fill={d.count > 0 ? '#c9a35e' : '#33291f'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </EmbossedTile>
+                </EmbossedTile>
+              )
+            case 'shots-per-day':
+              return (
+                <EmbossedTile key={entry.id} className="md:col-span-2">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-coffee-muted">Shots per day</p>
+                  <ResponsiveContainer width="100%" height={160}>
+                    <BarChart data={byDay} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
+                      <XAxis dataKey="day" tick={{ fontSize: 11, fill: c.axis }} axisLine={false} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: c.axis }} axisLine={false} tickLine={false} width={32} />
+                      <Tooltip cursor={{ fill: c.cursor }} content={({ payload, label }) => {
+                        if (!payload?.length) return null
+                        return (
+                          <div className="rounded border border-coffee-line bg-coffee-surface2 px-2 py-1 text-xs shadow">
+                            <p>{label}: <strong>{payload[0].value}</strong></p>
+                          </div>
+                        )
+                      }} />
+                      <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                        {byDay.map(d => (
+                          <Cell key={d.day} fill={d.count > 0 ? c.bar : c.emptyBar} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </EmbossedTile>
+              )
+            // 'week-shots' wird unterhalb des Rasters gerendert (eigene Liste),
+            // taucht hier also bewusst nicht auf.
+            default:
+              return null
+          }
+        })}
       </div>
 
+      {showWeekShots && (
+        <>
       <h2 className="mb-3 mt-6 text-xs font-semibold uppercase tracking-wide text-coffee-muted">This week's shots</h2>
       {isLoading && <p className="py-4 text-center text-sm text-coffee-muted">Loading...</p>}
       <div className="mb-6 grid gap-2 md:grid-cols-2">
@@ -167,6 +225,8 @@ export function Dashboard() {
           />
         )}
       </div>
+        </>
+      )}
 
       <Link to={ROUTES.shotNew} className={`md:hidden ${buttonClasses('glow', 'w-full')}`}>+ New Shot</Link>
     </div>

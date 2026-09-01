@@ -38,10 +38,55 @@ test('ratingBadgeClasses: ungültig = neutral', () => {
 })
 
 test('ratingHex maps the 10-step scale red -> amber -> green', () => {
-  expect(ratingHex(1)).toBe('#c0392b')   // low = red
-  expect(ratingHex(6)).toBe('#bcae49')   // mid = olive-amber (NOT brand gold #c9a35e)
-  expect(ratingHex(8)).toBe('#6fb16a')   // high = green
-  expect(ratingHex(10)).toBe('#4a9657')
+  expect(ratingHex(1)).toBe('#d13025')   // low = red
+  expect(ratingHex(6)).toBe('#838a20')   // mid = olive (NOT brand gold #c9a35e)
+  expect(ratingHex(8)).toBe('#4e9d31')   // high = green
+  expect(ratingHex(10)).toBe('#2ca759')
+})
+
+// ── Die Eigenschaften, auf die es ankommt ───────────────────────────────────
+// Die Literale oben sagen nur, DASS sich nichts unbemerkt verschiebt. Die Tests
+// hier sagen, WARUM die Werte so sind — sie ueberleben ein bewusstes Neuwaehlen
+// der Farbtoene und fangen genau die Fehler, die beim Umbau passieren.
+
+/** WCAG-Relativluminanz. */
+function luminance(hex: string): number {
+  const h = hex.replace('#', '')
+  const ch = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255)
+  const lin = ch.map(x => (x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+}
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+const DARK_SURFACE = '#25201b'   // --coffee-surface, Theme dark
+const LIGHT_SURFACE = '#fffdfa'  // --coffee-surface, Theme light
+const STEPS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+test.each(STEPS)('rating step %i is visible on BOTH surfaces', step => {
+  // 3:1 ist die WCAG-Schwelle fuer Grafik-Elemente. Eine nur fuer Hell
+  // optimierte Rampe faellt auf Dunkel durch und umgekehrt — genau deshalb
+  // liegt die Rampe im Luminanz-Fenster, das beide Bedingungen erfuellt.
+  const hex = ratingHex(step)
+  expect(contrast(hex, DARK_SURFACE)).toBeGreaterThanOrEqual(3)
+  expect(contrast(hex, LIGHT_SURFACE)).toBeGreaterThanOrEqual(3)
+})
+
+test('rating luminance rises monotonically from 1 to 10', () => {
+  // Damit ist die Bewertung auch ohne Farbunterscheidung ablesbar — bei einer
+  // Rot-Gruen-Skala der Punkt, auf den es fuer Rot-Gruen-Blinde ankommt.
+  const lums = STEPS.map(n => luminance(ratingHex(n)))
+  for (let i = 1; i < lums.length; i++) {
+    expect(lums[i]).toBeGreaterThan(lums[i - 1])
+  }
+})
+
+test('the rating scale never uses the brand gold', () => {
+  // Gold = Marke/Interaktion. Eine Bewertung in Markenfarbe waere nicht als
+  // Bewertung lesbar.
+  expect(STEPS.map(n => ratingHex(n))).not.toContain('#c9a35e')
 })
 
 test('ratingHex falls back to muted for out-of-range', () => {

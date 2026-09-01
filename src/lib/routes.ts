@@ -26,4 +26,5 @@ export const ROUTES = {
   glossary: '/app/glossary',
   animate: '/app/animate',
   animateDetail: (id: string) => `/app/animate/${id}`,
+  settings: '/app/settings',
 } as const

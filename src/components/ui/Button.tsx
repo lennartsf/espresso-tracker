@@ -8,9 +8,12 @@ export function buttonClasses(variant: Variant = 'primary', extra = ''): string 
     'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition'
   const v =
     variant === 'primary'
-      ? 'bg-coffee-accent text-coffee-bg hover:bg-coffee-accent-soft'
+      ? 'bg-coffee-accent text-coffee-on-accent hover:bg-coffee-accent-soft'
       : variant === 'glow'
-        ? 'bg-gradient-to-b from-[#e9c987] to-coffee-accent text-coffee-bg shadow-[0_4px_14px_rgba(233,201,135,0.35)] hover:to-coffee-accent-soft'
+        // Gradient-Start und Schatten als Token (C1a): in Dark exakt die alten
+        // Werte (#e9c987 / 0 4px 14px rgba(233,201,135,.35)), in Light dunkler,
+        // damit die Beschriftung auf der Flaeche AA erreicht.
+        ? 'bg-gradient-to-b from-coffee-glow-top to-coffee-accent text-coffee-on-accent shadow-glow hover:to-coffee-accent-soft'
         : 'border border-coffee-line text-coffee-cream hover:bg-coffee-surface'
   return `${base} ${v} ${extra}`.trim()
 }

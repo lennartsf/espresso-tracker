@@ -6,6 +6,7 @@ import { Try } from './marketing/Try'
 import { Login } from './marketing/auth/Login'
 import { Signup } from './marketing/auth/Signup'
 import { AuthProvider } from './lib/AuthContext'
+import { ThemeProvider } from './lib/ThemeContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Dashboard } from './pages/Dashboard'
 import { NewShot } from './pages/NewShot'
@@ -23,12 +24,14 @@ import { GuideDetail } from './pages/GuideDetail'
 import { Glossary } from './pages/Glossary'
 import { Animate } from './pages/Animate'
 import { AnimateDetail } from './pages/AnimateDetail'
+import { SettingsPage } from './pages/SettingsPage'
 
 const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -58,10 +61,12 @@ export default function App() {
             <Route path="glossary" element={<Glossary />} />
             <Route path="animate" element={<Animate />} />
             <Route path="animate/:id" element={<AnimateDetail />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
       </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

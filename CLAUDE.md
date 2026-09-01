@@ -32,6 +32,41 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - `/app/*` die Tracker-App → bestehendes `Layout` (jetzt **Dark Premium**, Reskin live seit 2026-06-08).
 - **Interne Links IMMER über `ROUTES` (`src/lib/routes.ts`)**, nie hartkodierte Pfade.
 
+**Theming (seit Paket C1a, 2026-08-27):** Zwei Paletten in `src/index.css`, umgeschaltet
+über `data-theme` am `<html>`. `src/lib/ThemeContext.tsx` (`ThemeProvider`/`useTheme`)
+löst die Präferenz `'system' | 'light' | 'dark'` auf und **stempelt `data-theme` immer** —
+ein ungestempelter Zustand fiele auf die Dark-Werte am `:root` zurück und ergäbe in Light
+eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten Paint
+(sonst blitzt Dark auf). Schalter: `components/ThemeToggle.tsx`, in Sidebar + Mobile-„More".
+**Default ist bewusst `dark`, nicht `system`** — wird erst mit Abschluss von C1b gedreht.
+- **Zwei Akzente:** `--coffee-accent` färbt alles, was Text oder Icon ist;
+  `--coffee-accent-deco` **nur textfreie Flächen** (Balken, Ratio-Bar, Dial-Ringe).
+  Grund: das Marken-Gold `#c9a35e` erreicht auf hellem Grund nur 2.33:1 und fällt für
+  kleinen Text durch. In Light ist der Akzent `#835526`. Landet `accent-deco` je auf
+  Text, ist die AA-Zusage still weg.
+- **Dark ist pixelgleich zu vorher** und per Test festgenagelt
+  (`src/__tests__/themeTokens.test.ts`). Sichtbare Änderung in Dark = Bug.
+  **Ausnahme seit C1b:** die Rating-Rampe (`ratingHex`) wurde bewusst neu gewählt.
+- **Rating-Skala (seit C1b, 2026-08-27):** EINE Rampe für beide Themes. Die Werte
+  liegen im Luminanz-Fenster, in dem 3:1 gegen *beide* Kartenflächen gilt
+  (L zwischen 0.145 und 0.295), und steigen monoton — dadurch ist die Bewertung
+  erstmals auch ohne Farbunterscheidung ablesbar. Werte nur mit Kontrastprüfung
+  gegen beide Flächen ändern; `ratingColor.test.ts` prüft die Eigenschaft, nicht
+  nur die Literale.
+- **Chart-Farben liegen literal in `src/utils/chartTheme.ts`**, nicht als `var()`.
+  Grund: Recharts setzt `stroke`/`fill` als SVG-Präsentationsattribut; Chromium löst
+  `var()` dort auf, für Safari (iPhone!) ist es nicht verifiziert, und ein Ausfall
+  wäre still. Ein Test hält `chartTheme.ts` und `index.css` synchron.
+- **`intensityFill`/`intensityBadge` brauchen `theme` als Pflichtparameter** — ihre
+  Grundfarbe kippt (Creme auf Dunkel, Braun auf Hell). Ohne Wechsel wäre die Skala
+  in Light unsichtbar, ohne dass irgendwo ein Fehler entstünde.
+- **`--coffee-on-accent` ist die Schrift auf Akzentflaechen**, nicht `--coffee-bg`.
+  In Dark sind beide gleich, in Light nicht — `text-coffee-bg` auf einem Button waere
+  dort hellbeige auf Braun. Seit C4 gilt das auch fuer Marketing/Auth.
+- `cardClasses`/`buttonClasses` enthalten **keine** festen Farben mehr —
+  Verlaufsendpunkt (`--coffee-surface-btm`) und Schatten (`--coffee-card-shadow`,
+  `--coffee-glow-shadow`) sind Tokens. Embossed bleibt in beiden Themes.
+
 **Design-System (Dark Premium):** Tokens als CSS-Vars in `src/index.css` (`--coffee-*`), via `tailwind.config.ts` als `coffee.*`-Farben + `font-display` (Fraunces) / `font-grotesk` (Space Grotesk) nutzbar. Fonts self-hosted (`@fontsource*`), Import in `main.tsx`. **Dark-Theme deckt jetzt Marketing/Auth UND die ganze App-Shell ab** (Reskin = Phase 1 ✓, live 2026-06-08). Funktionsfarben (Rating: 10-stufig rot→amber→grün, **ohne Brand-Gold** — Stufe 6 = `#bcae49`, Akzent `#c9a35e` = nur Marke/Interaktion) bleiben bewusst. Motion via GSAP (`gsap` + `@gsap/react`), `prefers-reduced-motion` respektieren (Stub in Tests: `src/__tests__/setup.ts` matchMedia-Polyfill). **Verbindlicher Design-Prompt: `docs/DESIGN.md`** (Tokens, Pull-Arc-Signatur, States-Pflicht, Motion-Regeln, Backlog) — bei jeder UI-Arbeit befolgen.
 - **Seit 2026-06-10:** `EmptyState`-Primitive (`src/components/ui/EmptyState.tsx`, Copy in DESIGN.md), BrewTimer = Pull-Arc-Ring (0–40 s Fenster), Bottom-Nav `safe-area-inset-bottom`, NewShot „↻ Repeat last“ (prefillt letzten Shot ohne Ratings/Notes).
 - **Einheitliches Layout v2 (2026-06-18):** Jede Seite = `<PageHeader>` (Eyebrow + Display-Titel + glow-Action) auf Seiten-bg + Embossed-Karten (`cardClasses` = Verlauf+Inset, `rounded-2xl`); kein Home-Radial-Wrapper mehr. „+ New" überall `buttonClasses('glow')`. Home = Wochenansicht (`Dashboard.tsx`: KW-Picker, Ø-Flavor-Dial, „shots per day"-Balken, Wochen-Shots; Korrelations-Scatter raus). Analyse-Rezepte als Dial/Stat-Kacheln (`RecipeCard` + Brews-Top-Recipe). Body/Säure/Bitterness = `intensityFill`/`intensityBadge` (Stärke, kein gut/schlecht); Flavor bleibt rot→grün. NewShot mobil = 5-Step-Flow (Coffee·Prep·Pull·Milk·Rate), Desktop Ein-Seiten-Form. Mobile: `overflow-x:hidden` + `min-w-0`/`truncate` in Karten (sonst sprengen lange Namen die Breite). Details: `docs/DESIGN.md` → „Einheitliches Layout (v2)".
@@ -71,7 +106,8 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | notes | text |
 | arabica_pct | int2 |
 | robusta_pct | int2 |
-| roast_level | int2 (1–10) |
+| roast_level | int2 (1–10, gerundet aus roast_level_fine) |
+| roast_level_fine | numeric(4,2) | ⚠ Migration 2026-08-30 |
 | origin_country | text |
 | origin_region | text |
 | altitude_m | int4 |
@@ -80,10 +116,12 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | rec_yield_g | real | ⚠ Migration 2026-06-15 |
 | rec_temp_c | real | ⚠ Migration 2026-06-15 |
 | rec_time_s | int4 | ⚠ Migration 2026-06-15 |
-| rec_grind_note | text | ⚠ Migration 2026-06-15 |
 | created_at | timestamptz |
 
 > ✅ `rec_*`-Spalten live (Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` ausgeführt).
+> ✅ `rec_grind_note` **entfernt** (Paket A2, Migration
+> `docs/migrations/2026-08-27-grind-note-to-notes.sql` ausgeführt 2026-08-27):
+> Inhalt ist nach `coffees.notes` gewandert, Spalte gedroppt.
 
 ### `roast_dates`
 | Spalte | Typ |
@@ -184,6 +222,18 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 | basket_id | uuid FK → baskets ON DELETE SET NULL |
 | brew_device_id | uuid FK → brew_devices ON DELETE SET NULL |
 
+### `dashboard_layout`
+| Spalte | Typ |
+|--------|-----|
+| user_id | uuid PK → auth.users ON DELETE CASCADE |
+| layout | jsonb (`[{id, visible}]`, Reihenfolge = Anzeigereihenfolge) |
+| updated_at | timestamptz |
+
+> ⚠️ Migration `docs/migrations/2026-08-28-dashboard-layout.sql` — **noch auszuführen.**
+> Registry + IDs in `src/utils/dashboardWidgets.ts`. **IDs nie umbenennen** — sie stehen
+> in der DB auf allen Geräten. `reconcileLayout` fängt fremde/fehlende IDs ab, damit ein
+> Layout von einem anderen Gerät das Dashboard nicht zerlegt.
+
 ### `brews`
 | Spalte | Typ |
 |--------|-----|
@@ -213,6 +263,13 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - [x] Röstereien-Seite mit Karte (Leaflet/react-leaflet, CartoDB Tiles)
 - [x] Kaffee-Detailseite: Bohnenart, Röstgrad (1–10 Skala), Herkunft, Röstdaten-Liste
 - [x] NewShot: Kaffee-Dropdown (+ Mühle direkt darunter), Röstdatum-Auswahl, Brew-Ratio Bar, BrewTimer, Mahlgrad/Temp/Druck, Preinfusion (Checkbox + inline Sekunden), Bewertungen mit i-Button
+- [x] **Mahlgrad-Vorschlag pro Bohne** (Paket A1, 2026-08-27): Kaffeewahl prefillt `grind_setting`
+      aus dem letzten Shot **genau dieser Bohne** (`useShots(coffeeId)`), mit Hinweis
+      „↻ From your last shot of this coffee". `grindTouched`-Ref schützt eigene Eingaben
+      vor Refetch und Kaffeewechsel; „↻ Repeat last" setzt den Ref ebenfalls.
+- [x] **Notizfeld pro Kaffee** (Paket A2, 2026-08-27): `coffees.notes` ist jetzt in New/Edit
+      editierbar und wird in der Detailseite + in NewShot („Note: …") gezeigt. Ersetzt die
+      frühere „Grind note" der Röster-Empfehlung.
 - [x] ShotHistory → Shot-Detail (/shots/:id) mit View- und Edit-Modus
 - [x] Kaffee- und Rösterei-Fotos (Supabase Storage)
 - [x] Responsive layout: Mobile Bottom-Nav (4 primary + "⋯ More" panel), Desktop Sidebar (all 8)
@@ -238,6 +295,14 @@ Die App wird zur **Website mit integrierter App**. Route-Split (eine Vite-App):
 - [x] **Analysis** (`/analyse`): 3 Tabs — Espresso (Scatter Mahlgrad→Bewertung, Mühlen-Filter, Best-Recipe), Brews (Methoden/Kaffee/Mühlen-Filter, Top-Rezept mit Ø-Parametern), Milch (Typ-Aufschlüsselung + Ø-Bewertung); Hinweis wenn keine Mühle gefiltert
 - [x] **Glossar** (`/glossar`): 46 Fachbegriffe alphabetisch sortiert mit Volltextsuche; Kategorien: Espresso, Brühen, Equipment, Milch; eigener Nav-Eintrag im „⋯ Mehr"-Panel
 - [x] **Animate** (`/animate`): 4 SVG explainers — Boiler Types, V60 Pour Pattern, Milk Steaming, Latte Art Heart (alle self-computed-geometry-Engine, gradient/shadow-Stil, gleich große Side/Top-Views; rebuilt 2026-05-31)
+
+## Backlog (aktuell) — `docs/BACKLOG.md`
+**Verbindliche Quelle für alle offenen Aufgaben: `docs/BACKLOG.md`** (Stand 2026-08-25).
+Dort sind die Wünsche zu Paketen A–H gebündelt (Aufwand, Abhängigkeiten, Reihenfolge):
+A Dial-in Quick Wins · B Rezepte pro Bohne · C Design Light/Dark + Website ·
+D Röstgrad-Feinskala + Bohnen-Visual · E Dial-in-Algorithmus · F Bluetooth-Waage ·
+G Native Apps (App Store) · H Schönere Röster-Karte.
+Bei neuer Feature-Arbeit dort zuerst nachsehen und den Status danach dort pflegen.
 
 ## Weitere geplante Features
 - [x] **App in English** — complete UI translation

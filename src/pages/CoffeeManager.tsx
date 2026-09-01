@@ -5,10 +5,13 @@ import {
 } from '../hooks/useCoffees'
 import { useRoasters } from '../hooks/useRoasters'
 import { RoasterForm } from './Roasters'
-import { RatingInput } from '../components/RatingInput'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components/RoasterRecipeFields'
-import { cardClasses, Badge, Input, Select, buttonClasses, EmptyState, PageHeader } from '../components/ui'
+import { CoffeeRecipeList } from '../components/CoffeeRecipeList'
+import { CoffeeBean } from '../components/CoffeeBean'
+import { RoastSlider } from '../components/RoastSlider'
+import { coarseRoastLevel } from '../utils/beanColor'
+import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -64,6 +67,18 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             <div className="flex items-center gap-3 min-w-0">
               {c.photo_url ? (
                 <img src={c.photo_url} alt={c.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+              ) : c.roast_level !== null || c.roast_level_fine !== null ? (
+                // Ohne Foto zeigt die gerechnete Bohne den Roestgrad — das ist
+                // mehr Information als ein Anfangsbuchstabe. Nur wenn auch kein
+                // Roestgrad erfasst ist, bleibt der Buchstabe.
+                <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-coffee-surface2 p-0.5">
+                  <CoffeeBean
+                    roastLevel={c.roast_level_fine ?? c.roast_level}
+                    arabicaPct={c.arabica_pct}
+                    robustaPct={c.robusta_pct}
+                    size={36}
+                  />
+                </div>
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-coffee-surface2 flex items-center justify-center flex-shrink-0">
                   <span className="text-coffee-muted font-bold text-sm">{c.name[0]}</span>
@@ -89,7 +104,7 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
             headline="Add a bag to start dialling in."
             description="Every shot needs its bean."
             action={
-              <button onClick={onNew} className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-bg hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
+              <button onClick={onNew} className="mt-2 rounded-xl bg-coffee-accent px-5 py-2.5 text-sm font-semibold text-coffee-on-accent hover:bg-coffee-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
                 + New Coffee
               </button>
             }
@@ -180,53 +195,31 @@ function CoffeeDetailView({
       )}
 
       {coffee.roast_level !== null && (
-        <div className={`${cardClasses} p-3 mb-3`}>
-          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roast Level</p>
-          <div className="flex gap-1">
-            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
-              <div
-                key={n}
-                className={`flex-1 py-1 rounded text-xs font-semibold text-center ${
-                  n === coffee.roast_level ? 'bg-coffee-accent text-coffee-bg' : 'bg-coffee-surface2 text-coffee-muted'
-                }`}
-              >
-                {n}
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1">
-            <span>light</span><span>dark</span>
+        <div className={`${cardClasses} mb-3 flex items-center gap-4 p-3`}>
+          <CoffeeBean
+            roastLevel={coffee.roast_level_fine ?? coffee.roast_level}
+            arabicaPct={coffee.arabica_pct}
+            robustaPct={coffee.robusta_pct}
+            size={72}
+          />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase text-coffee-muted">Roast Level</p>
+            <p className="font-display text-2xl font-bold text-coffee-cream">
+              {(coffee.roast_level_fine ?? coffee.roast_level).toFixed(1)}
+              <span className="text-sm font-normal text-coffee-muted"> / 10</span>
+            </p>
           </div>
         </div>
       )}
 
-      {(coffee.origin_country || coffee.origin_region || coffee.altitude_m) && (
+      {coffee.notes && (
         <div className={`${cardClasses} p-3 mb-3`}>
-          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Origin</p>
-          <div className="grid gap-1">
-            {coffee.origin_country && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Country</span>
-                <span className="text-coffee-cream">{coffee.origin_country}</span>
-              </div>
-            )}
-            {coffee.origin_region && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Region</span>
-                <span className="text-coffee-cream">{coffee.origin_region}</span>
-              </div>
-            )}
-            {coffee.altitude_m && (
-              <div className="flex justify-between text-sm">
-                <span className="text-coffee-muted">Altitude</span>
-                <span className="text-coffee-cream">{coffee.altitude_m} m</span>
-              </div>
-            )}
-          </div>
+          <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Notes</p>
+          <p className="whitespace-pre-wrap text-sm text-coffee-cream">{coffee.notes}</p>
         </div>
       )}
 
-      {(coffee.rec_dose_g != null || coffee.rec_yield_g != null || coffee.rec_temp_c != null || coffee.rec_time_s != null || coffee.rec_grind_note) && (
+      {(coffee.rec_dose_g != null || coffee.rec_yield_g != null || coffee.rec_temp_c != null || coffee.rec_time_s != null) && (
         <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Roaster Recipe</p>
           <div className="grid gap-1">
@@ -248,15 +241,11 @@ function CoffeeDetailView({
                 <span className="text-coffee-cream">{coffee.rec_time_s}s</span>
               </div>
             )}
-            {coffee.rec_grind_note && (
-              <div className="flex justify-between gap-3 text-sm">
-                <span className="text-coffee-muted">Grind</span>
-                <span className="text-coffee-cream text-right">{coffee.rec_grind_note}</span>
-              </div>
-            )}
           </div>
         </div>
       )}
+
+      <CoffeeRecipeList coffee={coffee} />
 
       <div className={`${cardClasses} p-3`}>
         <div className="flex justify-between items-center mb-2">
@@ -277,7 +266,7 @@ function CoffeeDetailView({
             <button
               type="submit"
               disabled={createRoastDate.isPending}
-              className="bg-coffee-accent text-coffee-bg text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
+              className="bg-coffee-accent text-coffee-on-accent text-sm px-3 py-1.5 rounded-lg disabled:opacity-50"
             >
               OK
             </button>
@@ -325,12 +314,17 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
   const [hasRobusta, setHasRobusta] = useState(coffee.robusta_pct !== null)
   const [arabicaPct, setArabicaPct] = useState(String(coffee.arabica_pct ?? 100))
   const [robustaPct, setRobustaPct] = useState(String(coffee.robusta_pct ?? 0))
-  const [roastLevel, setRoastLevel] = useState<number | null>(coffee.roast_level)
+  // Feiner Wert fuehrt, der grobe wird daraus gerundet — so bleiben Badges
+  // und Filter gueltig, ohne dass es zwei Wahrheiten gibt.
+  const [roastFine, setRoastFine] = useState<number | null>(
+    coffee.roast_level_fine ?? coffee.roast_level,
+  )
   const [originCountry, setOriginCountry] = useState(coffee.origin_country ?? '')
   const [originRegion, setOriginRegion] = useState(coffee.origin_region ?? '')
   const [altitudeM, setAltitudeM] = useState(coffee.altitude_m ? String(coffee.altitude_m) : '')
   const [photoUrl, setPhotoUrl] = useState<string | null>(coffee.photo_url ?? null)
   const [recipe, setRecipe] = useState(initialRecipe(coffee))
+  const [notes, setNotes] = useState(coffee.notes ?? '')
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -356,11 +350,13 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
       roaster: selectedRoaster?.name ?? null,
       arabica_pct: arabica,
       robusta_pct: robusta,
-      roast_level: roastLevel,
+      roast_level: coarseRoastLevel(roastFine),
+      roast_level_fine: roastFine,
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
       photo_url: photoUrl,
+      notes: notes.trim() || null,
       ...recipePayload(recipe),
     })
     onBack()
@@ -432,13 +428,12 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
           )}
         </div>
 
-        <div>
-          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
-          <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
-            <span>light</span><span>dark</span>
-          </div>
-        </div>
+        <RoastSlider
+          value={roastFine}
+          onChange={setRoastFine}
+          arabicaPct={hasArabica ? parseInt(arabicaPct, 10) : null}
+          robustaPct={hasRobusta ? parseInt(robustaPct, 10) : null}
+        />
 
         <div>
           <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>
@@ -453,6 +448,16 @@ function EditCoffeeForm({ coffee, onBack }: { coffee: Coffee; onBack: () => void
         </div>
 
         <RoasterRecipeFields value={recipe} onChange={setRecipe} />
+
+        <div>
+          <FieldLabel>Notes</FieldLabel>
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder="Grind hints, flavour impressions, anything worth remembering about this bean"
+          />
+        </div>
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
@@ -473,13 +478,14 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
   const { data: roasters = [] } = useRoasters()
 
   const [name, setName] = useState('')
+  const [notes, setNotes] = useState('')
   const [roasterId, setRoasterId] = useState('')
   const [showNewRoaster, setShowNewRoaster] = useState(false)
   const [hasArabica, setHasArabica] = useState(false)
   const [hasRobusta, setHasRobusta] = useState(false)
   const [arabicaPct, setArabicaPct] = useState('100')
   const [robustaPct, setRobustaPct] = useState('0')
-  const [roastLevel, setRoastLevel] = useState<number | null>(null)
+  const [roastFine, setRoastFine] = useState<number | null>(null)
   const [originCountry, setOriginCountry] = useState('')
   const [originRegion, setOriginRegion] = useState('')
   const [altitudeM, setAltitudeM] = useState('')
@@ -509,10 +515,11 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
       roaster: selectedRoaster?.name ?? null,
       origin: null,
       roast_date: null,
-      notes: null,
+      notes: notes.trim() || null,
       arabica_pct: arabica,
       robusta_pct: robusta,
-      roast_level: roastLevel,
+      roast_level: coarseRoastLevel(roastFine),
+      roast_level_fine: roastFine,
       origin_country: originCountry.trim() || null,
       origin_region: originRegion.trim() || null,
       altitude_m: altitudeM ? parseInt(altitudeM, 10) : null,
@@ -629,14 +636,12 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
           )}
         </div>
 
-        <div>
-          <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Roast Level</p>
-          <RatingInput value={roastLevel} onChange={setRoastLevel} />
-          <div className="flex justify-between text-xs text-coffee-muted/60 mt-1 px-0.5">
-            <span>light</span>
-            <span>dark</span>
-          </div>
-        </div>
+        <RoastSlider
+          value={roastFine}
+          onChange={setRoastFine}
+          arabicaPct={hasArabica ? parseInt(arabicaPct, 10) : null}
+          robustaPct={hasRobusta ? parseInt(robustaPct, 10) : null}
+        />
 
         <div>
           <p className="text-xs font-semibold text-coffee-muted uppercase mb-2">Origin</p>
@@ -651,6 +656,16 @@ function NewCoffeeForm({ onBack }: { onBack: () => void }) {
         </div>
 
         <RoasterRecipeFields value={recipe} onChange={setRecipe} />
+
+        <div>
+          <FieldLabel>Notes</FieldLabel>
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder="Grind hints, flavour impressions, anything worth remembering about this bean"
+          />
+        </div>
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
 

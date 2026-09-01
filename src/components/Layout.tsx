@@ -4,7 +4,7 @@ import { useWriteQueue } from '../hooks/useWriteQueue'
 import { useAuth } from '../lib/AuthContext'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
-  BookOpen, Library, Sparkles, LogOut, MoreHorizontal,
+  BookOpen, Library, Sparkles, LogOut, MoreHorizontal, SlidersHorizontal,
 } from 'lucide-react'
 import { ROUTES } from '../lib/routes'
 
@@ -19,6 +19,7 @@ const navItems = [
   { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
   { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
   { to: ROUTES.animate,   label: 'Animate',   Icon: Sparkles },
+  { to: ROUTES.settings,  label: 'Settings',  Icon: SlidersHorizontal },
 ]
 
 const primaryNav = navItems.slice(0, 4)
@@ -76,13 +77,15 @@ export function Layout() {
             {label}
           </NavLink>
         ))}
-        <button
-          onClick={handleLogout}
-          className="mt-auto flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
-        >
-          <LogOut size={18} strokeWidth={1.75} />
-          Log out
-        </button>
+        <div className="mt-auto grid gap-2">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
+          >
+            <LogOut size={18} strokeWidth={1.75} />
+            Log out
+          </button>
+        </div>
       </nav>
 
       {/* Main content */}

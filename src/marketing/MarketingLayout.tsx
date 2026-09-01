@@ -1,10 +1,13 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { ROUTES } from '../lib/routes'
 
 /**
- * Dunkle Shell für die öffentliche Website (Marketing + Demo + Auth).
- * Dark-Premium-Tokens (font-grotesk, coffee-*). Getrennt von der App-Shell
- * (src/components/Layout.tsx), die vorerst hell bleibt.
+ * Shell für die öffentliche Website (Marketing + Demo + Auth).
+ * Nutzt dieselben `coffee-*`-Tokens wie die App-Shell und folgt damit seit
+ * Paket C4 demselben Theme — Website und App sollen nicht auseinanderdriften.
+ * Der Umschalter sitzt hier in der Kopfzeile, weil Besucher sonst keinen
+ * Zugang dazu haetten: der App-Schalter steckt hinter dem Login.
  */
 export function MarketingLayout() {
   return (
@@ -18,9 +21,10 @@ export function MarketingLayout() {
             <TopLink to={ROUTES.home} label="Home" />
             <TopLink to={ROUTES.try} label="Ausprobieren" />
             <TopLink to={ROUTES.login} label="Login" />
+            <ThemeToggle compact />
             <Link
               to={ROUTES.signup}
-              className="ml-2 rounded-full bg-coffee-accent px-4 py-2 font-semibold text-coffee-bg transition hover:bg-coffee-accent-soft"
+              className="ml-2 rounded-full bg-coffee-accent px-4 py-2 font-semibold text-coffee-on-accent transition hover:bg-coffee-accent-soft"
             >
               Sign up
             </Link>

@@ -164,7 +164,7 @@ export function LatteHeartAnimation() {
       <p className="text-xs text-coffee-muted text-center mb-3">Common miss: pouring too high while drawing — keep the pitcher right on the surface, then lift only for the final pull.</p>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-on-accent text-sm font-semibold disabled:opacity-50">
         {playing ? 'Pouring…' : '↺ Replay'}
       </button>
     </div>

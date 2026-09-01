@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { vi } from 'vitest'
 import { ShotDetail } from '../pages/ShotDetail'
 import { useShot } from '../hooks/useShots'
+import { ThemeProvider } from '../lib/ThemeContext'
 
 vi.mock('../hooks/useShots', () => ({
   useShot: vi.fn(() => ({
@@ -61,13 +62,17 @@ vi.mock('../hooks/useEquipment', () => ({
 
 function renderDetail() {
   return render(
-    <QueryClientProvider client={new QueryClient()}>
-      <MemoryRouter initialEntries={['/shots/shot-1']}>
-        <Routes>
-          <Route path="/shots/:id" element={<ShotDetail />} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
+    // ThemeProvider ist Pflicht: die Intensitaets-Badges (Body/Saeure/Bitterness)
+    // brauchen das Theme, weil ihre Grundfarbe damit kippt.
+    <ThemeProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter initialEntries={['/shots/shot-1']}>
+          <Routes>
+            <Route path="/shots/:id" element={<ShotDetail />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 

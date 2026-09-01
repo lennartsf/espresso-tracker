@@ -13,6 +13,8 @@ import { RecipeCard } from '../components/RecipeCard'
 import { calcBestRecipe } from '../utils/recipeCalc'
 import { drinkTypeLabel } from '../utils/drinkTypes'
 import { ratingHex, intensityFill } from '../utils/ratingColor'
+import { chartColors } from '../utils/chartTheme'
+import { useTheme } from '../lib/ThemeContext'
 import { BREW_METHODS } from '../utils/brewMethods'
 import { secondsToMMSS } from '../utils/timeFormat'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -28,8 +30,11 @@ function formatDate(d: string) {
 
 // quality=true → 10-stufige Qualitäts-Skala (rot→grün, nur Flavor).
 // quality=false → Intensitäts-Creme (Body/Säure/Bitterness: Stärke, kein gut/schlecht).
-const dotColor = (y: number, quality: boolean) =>
-  quality ? ratingHex(Math.round(y)) : intensityFill(Math.round(y))
+// Die Intensitaets-Skala braucht das Theme, weil ihre Grundfarbe kippt (Creme auf
+// Dunkel, Braun auf Hell). Die Qualitaets-Skala (ratingHex) ist seit C1b in beiden
+// Themes dieselbe und braucht es nicht.
+const dotColor = (y: number, quality: boolean, theme: 'light' | 'dark') =>
+  quality ? ratingHex(Math.round(y)) : intensityFill(Math.round(y), theme)
 
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
@@ -46,6 +51,8 @@ function ScatterPlot({ data, xLabel, yLabel, quality }: {
   yLabel: string
   quality: boolean
 }) {
+  const { theme } = useTheme()
+  const c = chartColors(theme)
   if (data.length === 0) {
     return <p className="text-center text-coffee-muted text-sm py-6">No data yet for {yLabel} rating.</p>
   }
@@ -53,12 +60,12 @@ function ScatterPlot({ data, xLabel, yLabel, quality }: {
     <>
       <ResponsiveContainer width="100%" height={220}>
         <ScatterChart margin={{ top: 10, right: 10, bottom: 24, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#33291f" />
+          <CartesianGrid strokeDasharray="3 3" stroke={c.grid} />
           <XAxis dataKey="x" type="number" name={xLabel} domain={['auto', 'auto']}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10, fontSize: 11, fill: '#a89784' }}
-            tick={{ fontSize: 11, fill: '#a89784' }} />
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, fontSize: 11, fill: c.axis }}
+            tick={{ fontSize: 11, fill: c.axis }} />
           <YAxis dataKey="y" type="number" name={yLabel} domain={[0, 10]}
-            tick={{ fontSize: 11, fill: '#a89784' }} width={24} />
+            tick={{ fontSize: 11, fill: c.axis }} width={24} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} content={({ payload }) => {
             if (!payload?.length) return null
             const { x, y } = payload[0].payload
@@ -71,7 +78,7 @@ function ScatterPlot({ data, xLabel, yLabel, quality }: {
           }} />
           <Scatter data={data}>
             {data.map(entry => (
-              <Cell key={entry.id} fill={dotColor(entry.y, quality)} fillOpacity={0.85} />
+              <Cell key={entry.id} fill={dotColor(entry.y, quality, theme)} fillOpacity={0.85} />
             ))}
           </Scatter>
         </ScatterChart>
@@ -82,7 +89,7 @@ function ScatterPlot({ data, xLabel, yLabel, quality }: {
           className="inline-block h-2 w-28 rounded-full"
           style={{
             background: `linear-gradient(to right, ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-              .map(n => (quality ? ratingHex(n) : intensityFill(n)))
+              .map(n => (quality ? ratingHex(n) : intensityFill(n, theme)))
               .join(', ')})`,
           }}
         />

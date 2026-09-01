@@ -7,7 +7,7 @@ import {
   useBrewDevices, useCreateBrewDevice, useUpdateBrewDevice, useDeleteBrewDevice,
   useEquipmentDefaults, useSetEquipmentDefault,
 } from '../hooks/useEquipment'
-import { PageHeader, buttonClasses } from '../components/ui'
+import { PageHeader, buttonClasses, cardClasses } from '../components/ui'
 import type { Grinder, Machine, Basket, BrewDevice, NewBrewDevice } from '../types'
 
 type Tab = 'grinders' | 'machines' | 'baskets' | 'brew_devices'
@@ -70,7 +70,7 @@ function DefaultSetter({ itemId, field }: {
               onClick={() => toggle(method)}
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${
                 isActive(method)
-                  ? 'bg-coffee-accent text-coffee-bg'
+                  ? 'bg-coffee-accent text-coffee-on-accent'
                   : 'bg-coffee-surface2 text-coffee-muted hover:bg-coffee-surface'
               }`}
             >
@@ -150,7 +150,7 @@ function GrinderList({ onSelect, onNew }: { onSelect: (g: Grinder) => void; onNe
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {grinders.map(g => (
-          <div key={g.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
+          <div key={g.id} className={`${cardClasses} p-3 flex items-start gap-3`}>
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -216,19 +216,19 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {grinder.brand && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{grinder.brand}</p>
         </div>
       )}
       {grinder.grinder_type && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Burr Type</p>
           <p className="text-sm text-coffee-cream">{grinderTypeLabel(grinder.grinder_type)}</p>
         </div>
       )}
       {(grinder.burr_size_mm !== null || grinder.motor_watt !== null) && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Specs</p>
           <div className="grid gap-1">
             {grinder.burr_size_mm !== null && (
@@ -257,7 +257,7 @@ function GrinderDetail({ grinder, onBack, onDelete }: { grinder: Grinder; onBack
         </div>
       )}
       {grinder.notes && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
+        <div className={`${cardClasses} p-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{grinder.notes}</p>
         </div>
@@ -319,13 +319,13 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <select
           value={grinderType}
           onChange={e => setGrinderType(e.target.value)}
-          className="w-full border border-white/15 bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+          className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
         >
           <option value="">Burr type (optional)</option>
           {GRINDER_TYPES.map(gt => (
@@ -338,7 +338,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
               type="number" step="0.5" value={burrSizeMm}
               onChange={e => setBurrSizeMm(e.target.value)}
               placeholder="Burr size"
-              className="flex-1 border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+              className="flex-1 border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
             />
             <span className="text-sm text-coffee-muted">mm</span>
           </div>
@@ -347,7 +347,7 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
               type="number" step="1" value={motorWatt}
               onChange={e => setMotorWatt(e.target.value)}
               placeholder="Motor"
-              className="flex-1 border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+              className="flex-1 border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
             />
             <span className="text-sm text-coffee-muted">W</span>
           </div>
@@ -363,10 +363,10 @@ function GrinderForm({ grinder, onBack }: { grinder?: Grinder; onBack: () => voi
           </label>
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : grinder ? 'Save Changes' : 'Save Grinder'}
         </button>
       </form>
@@ -410,7 +410,7 @@ function MachineList({ onSelect, onNew }: { onSelect: (m: Machine) => void; onNe
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {machines.map(m => (
-          <div key={m.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
+          <div key={m.id} className={`${cardClasses} p-3 flex items-start gap-3`}>
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -476,19 +476,19 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {machine.brand && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{machine.brand}</p>
         </div>
       )}
       {machine.funktionsweise && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Boiler Type</p>
           <p className="text-sm text-coffee-cream">{funktionsweiseLabel(machine.funktionsweise)}</p>
         </div>
       )}
       {(machine.brew_group_type || machine.brew_group_size_mm !== null) && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Group Head</p>
           <div className="grid gap-1">
             {machine.brew_group_type && (
@@ -507,7 +507,7 @@ function MachineDetail({ machine, onBack, onDelete }: { machine: Machine; onBack
         </div>
       )}
       {machine.notes && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
+        <div className={`${cardClasses} p-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{machine.notes}</p>
         </div>
@@ -565,13 +565,13 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <select
           value={funktionsweise}
           onChange={e => setFunktionsweise(e.target.value)}
-          className="w-full border border-white/15 bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+          className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
         >
           <option value="">Boiler type (optional)</option>
           {FUNKTIONSWEISE_TYPES.map(ft => (
@@ -582,22 +582,22 @@ function MachineForm({ machine, onBack }: { machine?: Machine; onBack: () => voi
           value={brewGroupType}
           onChange={e => setBrewGroupType(e.target.value)}
           placeholder="Group head (e.g. E61)"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
         />
         <div className="flex items-center gap-2">
           <input
             type="number" step="0.5" value={brewGroupSizeMm}
             onChange={e => setBrewGroupSizeMm(e.target.value)}
             placeholder="Group head Ø"
-            className="flex-1 border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+            className="flex-1 border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
           />
           <span className="text-sm text-coffee-muted">mm</span>
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : machine ? 'Save Changes' : 'Save Machine'}
         </button>
       </form>
@@ -641,7 +641,7 @@ function BasketList({ onSelect, onNew }: { onSelect: (b: Basket) => void; onNew:
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {baskets.map(b => (
-          <div key={b.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
+          <div key={b.id} className={`${cardClasses} p-3 flex items-start gap-3`}>
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -711,25 +711,25 @@ function BasketDetail({ basket, onBack, onDelete }: { basket: Basket; onBack: ()
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {basket.brand && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{basket.brand}</p>
         </div>
       )}
       {basket.diameter_mm !== null && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Diameter</p>
           <p className="text-sm text-coffee-cream">{basket.diameter_mm} mm</p>
         </div>
       )}
       {basket.size_g !== null && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Rated Dose</p>
           <p className="text-sm text-coffee-cream">{basket.size_g} g</p>
         </div>
       )}
       {basket.notes && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
+        <div className={`${cardClasses} p-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{basket.notes}</p>
         </div>
@@ -785,24 +785,24 @@ function BasketForm({ basket, onBack }: { basket?: Basket; onBack: () => void })
       </div>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input autoFocus value={name} onChange={e => setName(e.target.value)} placeholder="Name *"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <input value={brand} onChange={e => setBrand(e.target.value)} placeholder="Brand"
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
         <div className="flex items-center gap-2">
           <input type="number" step="1" value={diameterMm} onChange={e => setDiameterMm(e.target.value)} placeholder="Diameter"
-            className="flex-1 border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+            className="flex-1 border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
           <span className="text-sm text-coffee-muted">mm</span>
         </div>
         <div className="flex items-center gap-2">
           <input type="number" step="0.5" value={sizeG} onChange={e => setSizeG(e.target.value)} placeholder="Rated dose"
-            className="flex-1 border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
+            className="flex-1 border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent" />
           <span className="text-sm text-coffee-muted">g</span>
         </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes" rows={2}
-          className="border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
+          className="border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent" />
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : basket ? 'Save Changes' : 'Save Basket'}
         </button>
       </form>
@@ -846,7 +846,7 @@ function BrewDeviceList({ onSelect, onNew }: { onSelect: (d: BrewDevice) => void
       {isLoading && <p className="text-coffee-muted text-sm text-center py-6">Loading...</p>}
       <div className="grid gap-2">
         {devices.map(d => (
-          <div key={d.id} className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 flex items-start gap-3">
+          <div key={d.id} className={`${cardClasses} p-3 flex items-start gap-3`}>
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 aria-label="Favorite"
@@ -916,23 +916,23 @@ function BrewDeviceDetail({ device, onBack, onDelete }: { device: BrewDevice; on
       </div>
       {deleteError && <p className="text-red-400 text-sm mb-3">{deleteError}</p>}
       {device.brand && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Brand</p>
           <p className="text-sm text-coffee-cream">{device.brand}</p>
         </div>
       )}
       {device.device_type && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+        <div className={`${cardClasses} p-3 mb-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Type</p>
           <p className="text-sm text-coffee-cream">{deviceTypeLabel(device.device_type)}</p>
         </div>
       )}
-      <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3 mb-3">
+      <div className={`${cardClasses} p-3 mb-3`}>
         <p className="text-xs text-coffee-muted uppercase font-semibold mb-2">Default for</p>
         <DefaultSetter itemId={device.id} field="brew_device_id" />
       </div>
       {device.notes && (
-        <div className="rounded-2xl border border-coffee-line bg-gradient-to-b from-coffee-surface to-coffee-bg shadow-[0_6px_16px_rgba(0,0,0,0.45),inset_0_2px_8px_rgba(233,201,135,0.06)] p-3">
+        <div className={`${cardClasses} p-3`}>
           <p className="text-xs text-coffee-muted uppercase font-semibold mb-1">Notes</p>
           <p className="text-sm text-coffee-cream">{device.notes}</p>
         </div>
@@ -987,7 +987,7 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
           <input
             value={name} onChange={e => setName(e.target.value)} required
             placeholder="Hario V60 02"
-            className="w-full border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+            className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
           />
         </div>
         <div>
@@ -995,14 +995,14 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
           <input
             value={brand} onChange={e => setBrand(e.target.value)}
             placeholder="Hario"
-            className="w-full border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+            className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
           />
         </div>
         <div>
           <label className="block text-xs font-semibold text-coffee-muted uppercase mb-1">Type</label>
           <select
             value={deviceType} onChange={e => setDeviceType(e.target.value)}
-            className="w-full border border-white/15 bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
+            className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-cream rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-coffee-accent"
           >
             <option value="">Select type...</option>
             {DEVICE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
@@ -1012,12 +1012,12 @@ function BrewDeviceForm({ device, onBack }: { device?: BrewDevice; onBack: () =>
           <label className="block text-xs font-semibold text-coffee-muted uppercase mb-1">Notes</label>
           <textarea
             value={notes} onChange={e => setNotes(e.target.value)} rows={2}
-            className="w-full border border-white/15 bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent"
+            className="w-full border border-coffee-field bg-coffee-surface2 text-coffee-text placeholder:text-coffee-muted rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-coffee-accent"
           />
         </div>
         {error && <p className="text-red-400 text-sm">{error}</p>}
         <button type="submit" disabled={isPending}
-          className="w-full bg-coffee-accent text-coffee-bg font-semibold py-3 rounded-xl disabled:opacity-50">
+          className="w-full bg-coffee-accent text-coffee-on-accent font-semibold py-3 rounded-xl disabled:opacity-50">
           {isPending ? 'Saving...' : (device ? 'Save Changes' : 'Add Device')}
         </button>
       </form>

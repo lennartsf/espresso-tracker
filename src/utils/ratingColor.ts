@@ -15,31 +15,73 @@ export function ratingColor(v: number): string {
 }
 
 /** Hex der 10-stufigen Rating-Skala (rot→amber→grün) — für SVG-fills (Charts).
- *  Bewusst OHNE Brand-Gold #c9a35e: Akzent = Marke/Interaktion, nie Rating. */
+ *
+ *  EINE Rampe für beide Themes (Paket C1b, 2026-08-27). Die Werte davor waren für
+ *  dunklen Grund gewählt und erreichten auf heller Karte nur 2.07–3.57; für
+ *  Grafik-Elemente verlangt WCAG 3:1. Eine einfach abgedunkelte Variante löst das
+ *  nicht — sie fällt dann auf DUNKLEM Grund bei Stufe 1 und 2 durch. Der Ausweg ist
+ *  das Luminanz-Fenster, in dem beide Bedingungen zugleich gelten:
+ *    3:1 gegen `--coffee-surface` dark  (#25201b) → L ≥ 0.145
+ *    3:1 gegen `--coffee-surface` light (#fffdfa) → L ≤ 0.295
+ *  Alle zehn Stufen liegen darin und erreichen auf beiden Gründen 3.05–5.21.
+ *
+ *  Zusätzlich steigt die Luminanz jetzt MONOTON von Stufe 1 (0.158) zu Stufe 10
+ *  (0.289). Die alte Skala war in der Mitte am hellsten und damit ohne
+ *  Farbunterscheidung nicht ablesbar — bei einer Rot-Grün-Skala genau der Punkt,
+ *  auf den es für Rot-Grün-Blinde ankommt.
+ *
+ *  Bewusst OHNE Brand-Gold #c9a35e: Akzent = Marke/Interaktion, nie Rating.
+ *  Werte nur mit Kontrastprüfung gegen BEIDE Kartenflächen ändern. */
 export function ratingHex(v: number): string {
   const map: Record<number, string> = {
-    1: '#c0392b', 2: '#d4502f', 3: '#e07b39', 4: '#e89c3f', 5: '#d9a441',
-    6: '#bcae49', 7: '#9bbf5a', 8: '#6fb16a', 9: '#57a35f', 10: '#4a9657',
+    1: '#d13025', 2: '#c64c20', 3: '#b5631b', 4: '#a1741a', 5: '#90801b',
+    6: '#838a20', 7: '#6a942a', 8: '#4e9d31', 9: '#30a437', 10: '#2ca759',
   }
   return map[v] ?? '#7a6450'
 }
 
-/** Intensitäts-Fill (Creme, blass→satt) für NICHT-Qualitäts-Scores
- *  (Body/Säure/Bitterness): zeigt Stärke der Ausprägung, kein gut/schlecht.
- *  Bewusst nicht die rot→grün-Skala und nicht Brand-Gold. Für SVG-fills. */
-export function intensityFill(v: number): string {
-  const t = Math.min(1, Math.max(0, (v - 1) / 9))
-  return `rgba(246, 239, 228, ${(0.28 + t * 0.67).toFixed(2)})`
+/** Grundfarbe der Intensitäts-Skala je Theme.
+ *  Dark: Creme auf dunklem Grund. Light: dunkles Braun auf hellem — gespiegelt,
+ *  gleiche Aussage. Ohne diesen Wechsel wäre die Skala in Light unsichtbar
+ *  (Creme auf cremefarbenem Grund), ohne dass irgendwo ein Fehler entstünde.
+ *
+ *  Bewusst ein TS-Wert und kein CSS-Token: die Farbe landet in Recharts als
+ *  SVG-`fill`-ATTRIBUT, und dort löst `var(--x)` nicht auf — der Punkt wäre
+ *  schwarz, ohne Fehlermeldung. */
+export type ThemeName = 'light' | 'dark'
+
+const INTENSITY_RGB: Record<ThemeName, string> = {
+  dark: '246, 239, 228',
+  light: '58, 44, 30',
 }
 
-/** Inline-Style fürs Intensitäts-Badge auf dunklem Grund (Body/Säure/Bitterness). */
-export function intensityBadge(v: number): { backgroundColor: string; color: string } {
+/** Intensitäts-Fill (blass→satt) für NICHT-Qualitäts-Scores
+ *  (Body/Säure/Bitterness): zeigt Stärke der Ausprägung, kein gut/schlecht.
+ *  Bewusst nicht die rot→grün-Skala und nicht Brand-Gold.
+ *  `theme` ist Pflicht, damit kein Aufrufer den Wechsel vergessen kann. */
+export function intensityFill(v: number, theme: ThemeName): string {
+  const t = Math.min(1, Math.max(0, (v - 1) / 9))
+  return `rgba(${INTENSITY_RGB[theme]}, ${(0.28 + t * 0.67).toFixed(2)})`
+}
+
+/** Inline-Style fürs Intensitäts-Badge (Body/Säure/Bitterness).
+ *  Die Schrift schlägt ab der Mitte um, sonst wird die Ziffer auf den satten
+ *  Stufen unlesbar — in beiden Themes, nur spiegelbildlich. */
+export function intensityBadge(v: number, theme: ThemeName): { backgroundColor: string; color: string } {
   const t = Math.min(1, Math.max(0, (v - 1) / 9))
   const alpha = 0.16 + t * 0.76
-  return { backgroundColor: `rgba(246, 239, 228, ${alpha.toFixed(2)})`, color: t > 0.5 ? '#1c1714' : '#f1e9df' }
+  const ink = theme === 'dark'
+    ? { on: '#1c1714', off: '#f1e9df' }   // satte Creme-Fläche → dunkle Ziffer
+    : { on: '#fffaf2', off: '#2a221b' }   // satte Braun-Fläche → helle Ziffer
+  return {
+    backgroundColor: `rgba(${INTENSITY_RGB[theme]}, ${alpha.toFixed(2)})`,
+    color: t > 0.5 ? ink.on : ink.off,
+  }
 }
 
-/** Gefüllte Dark-Klassen fürs Rating-Badge (Funktionsfarbe, für dunklen Grund). */
+/** Gefüllte Klassen fürs Rating-Badge (Funktionsfarbe).
+ *  Bleibt themeunabhängig: dunkle Füllung mit heller Ziffer trägt auf beiden
+ *  Gründen, deshalb hier bewusst keine Token. */
 export function ratingBadgeClasses(v: number): string {
   if (v >= 8 && v <= 10) return 'bg-green-600/90 text-green-50 ring-1 ring-green-400/40 shadow-lg shadow-green-900/30'
   if (v >= 6) return 'bg-lime-600/90 text-lime-50 ring-1 ring-lime-400/40 shadow-lg shadow-lime-900/30'

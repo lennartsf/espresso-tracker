@@ -65,7 +65,7 @@ export function BrewTimer({ onTime }: Props) {
             ▶ Start
           </button>
         ) : (
-          <button type="button" onClick={stop} className="rounded-xl bg-coffee-accent px-4 py-2 text-sm font-semibold text-coffee-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
+          <button type="button" onClick={stop} className="rounded-xl bg-coffee-accent px-4 py-2 text-sm font-semibold text-coffee-on-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent-soft">
             ■ Stop
           </button>
         )}

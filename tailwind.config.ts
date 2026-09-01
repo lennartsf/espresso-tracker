@@ -11,14 +11,31 @@ export default {
         coffee: {
           bg: 'var(--coffee-bg)',
           surface: 'var(--coffee-surface)',
+          'surface-btm': 'var(--coffee-surface-btm)',
           surface2: 'var(--coffee-surface-2)',
           accent: 'var(--coffee-accent)',
           'accent-soft': 'var(--coffee-accent-soft)',
+          // NUR textfreie Flaechen (Balken, Dial-Ringe). Nie auf Text.
+          'accent-deco': 'var(--coffee-accent-deco)',
+          'glow-top': 'var(--coffee-glow-top)',
+          // Schrift auf Akzent-Flaechen — nicht mit `bg` verwechseln.
+          'on-accent': 'var(--coffee-on-accent)',
           cream: 'var(--coffee-cream)',
           text: 'var(--coffee-text)',
           muted: 'var(--coffee-muted)',
           line: 'var(--coffee-line)',
+          // Kante der Eingabefelder — kraeftiger als `line`.
+          field: 'var(--coffee-field-border)',
         },
+      },
+      boxShadow: {
+        // Embossed-Signatur + Glow-Button als Token — pro Theme in index.css.
+        card: 'var(--coffee-card-shadow)',
+        glow: 'var(--coffee-glow-shadow)',
+        inset: 'var(--coffee-inset-shadow)',
+        dial: 'var(--coffee-dial-shadow)',
+        track: 'var(--coffee-track-shadow)',
+        liquid: 'var(--coffee-liquid-glow)',
       },
       fontFamily: {
         // font-display (Fraunces) + font-grotesk (Space Grotesk) — Marketing & App.

@@ -182,7 +182,7 @@ export function V60Animation() {
       </div>
 
       <button onClick={replay} disabled={playing}
-        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-bg text-sm font-semibold disabled:opacity-50">
+        className="w-full py-2 rounded-xl bg-coffee-accent text-coffee-on-accent text-sm font-semibold disabled:opacity-50">
         {playing ? 'Brewing…' : '↺ Replay'}
       </button>
     </div>

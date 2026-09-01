@@ -10,6 +10,11 @@ import { RatingInput } from '../components/RatingInput'
 import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses } from '../components/ui'
+import { TargetGhost } from '../components/TargetGhost'
+import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
+import { roasterRecipeOf } from '../utils/recipeMatch'
+import { suggestGrind } from '../utils/dialIn'
+import { suggestStartingGrind } from '../utils/roastPrior'
 
 const STEP_DEFS = [
   { key: 'coffee', title: 'Coffee' },
@@ -110,6 +115,25 @@ export function NewShot() {
   const { data: allShots = [] } = useShots()
   const lastShot = allShots[0]
 
+  /** Mahlgrad ist bohnenspezifisch: neue Tüte = anderes Verhalten der Mühle,
+   *  aber innerhalb einer Bohne ist der letzte Wert der beste Startpunkt.
+   *  Deshalb NICHT aus `lastShot` (global letzter Shot) prefillen, sondern aus
+   *  dem letzten Shot genau dieser Bohne. */
+  const { data: coffeeShots = [] } = useShots(coffeeId)
+  const lastShotForCoffee = coffeeId ? coffeeShots[0] : undefined
+  /** true, sobald der User das Feld selbst angefasst hat — dann nie überschreiben
+   *  (react-query-Refetches würden sonst die Eingabe zurücksetzen). */
+  const grindTouched = useRef(false)
+  const [grindFromLast, setGrindFromLast] = useState(false)
+
+  useEffect(() => {
+    if (!coffeeId || grindTouched.current) return
+    const g = lastShotForCoffee?.grind_setting
+    if (g == null) return
+    setGrindSetting(String(g))
+    setGrindFromLast(true)
+  }, [coffeeId, lastShotForCoffee])
+
   /** Speed is craft: Routine-Shot = letzter Shot als Vorlage, nur ändern
    *  was anders war. Ratings/Notes bewusst NICHT übernommen — neuer Shot,
    *  neuer Geschmack. */
@@ -119,6 +143,8 @@ export function NewShot() {
     setCoffeeId(lastShot.coffee_id)
     setRoastDateId(lastShot.roast_date_id ?? '')
     setDrinkType(lastShot.drink_type ?? 'espresso')
+    grindTouched.current = true
+    setGrindFromLast(false)
     setGrindSetting(lastShot.grind_setting != null ? String(lastShot.grind_setting) : '')
     setDoseG(lastShot.dose_g != null ? String(lastShot.dose_g) : '')
     setYieldG(lastShot.yield_g != null ? String(lastShot.yield_g) : '')
@@ -167,20 +193,67 @@ export function NewShot() {
   function handleCoffeeChange(id: string) {
     setCoffeeId(id)
     setRoastDateId('')
+    // Andere Bohne → alter Vorschlag ist wertlos. Eine eigene Eingabe des Users
+    // bleibt aber stehen, die hat er bewusst gemacht.
+    if (!grindTouched.current) {
+      setGrindSetting('')
+      setGrindFromLast(false)
+    }
   }
 
   const selectedCoffee = coffees.find(c => c.id === coffeeId)
-  const hasRoasterRecipe = !!selectedCoffee && (
-    selectedCoffee.rec_dose_g != null || selectedCoffee.rec_yield_g != null ||
-    selectedCoffee.rec_temp_c != null || selectedCoffee.rec_time_s != null
-  )
 
-  function applyRoasterRecipe() {
-    if (!selectedCoffee) return
-    if (selectedCoffee.rec_dose_g != null) setDoseG(String(selectedCoffee.rec_dose_g))
-    if (selectedCoffee.rec_yield_g != null) setYieldG(String(selectedCoffee.rec_yield_g))
-    if (selectedCoffee.rec_temp_c != null) setTempC(String(selectedCoffee.rec_temp_c))
-    if (selectedCoffee.rec_time_s != null) setBrewTimeS(String(selectedCoffee.rec_time_s))
+  /** Rezepte dieser Bohne: das Röster-Rezept (Referenz aus `coffees.rec_*`)
+   *  plus die eigenen. Beide sind wählbar, die Herkunft steht am Eintrag. */
+  const { data: ownRecipes = [] } = useCoffeeRecipes(coffeeId || undefined)
+  const roasterRecipe = roasterRecipeOf(selectedCoffee)
+  const recipeOptions = [
+    ...(roasterRecipe ? [{ id: 'roaster', ...roasterRecipe }] : []),
+    ...ownRecipes.map(r => ({
+      id: r.id, name: r.name, dose_g: r.dose_g, yield_g: r.yield_g,
+      temp_c: r.temp_c, time_s: r.time_s,
+    })),
+  ]
+  const [recipeId, setRecipeId] = useState('')
+  const activeRecipe = recipeOptions.find(r => r.id === recipeId)
+
+  // Bohne gewechselt → altes Rezept gilt nicht mehr.
+  useEffect(() => { setRecipeId('') }, [coffeeId])
+
+  /** Dial-in-Vorschlag: braucht ein Ziel (Rezeptzeit) und die Shot-Historie.
+   *  Ohne Ziel gibt es nichts zu treffen, dann bleibt der Block aus. */
+  const targetTime = activeRecipe?.time_s ?? null
+  const dialIn = targetTime != null && coffeeId
+    ? suggestGrind({ shots: allShots, coffeeId, grinderId: grinderId || null, targetTime })
+    : null
+
+  /** Für eine Bohne ohne eigenen Shot kann `suggestGrind` nichts sagen — ihm
+   *  fehlt der Offset. Dann übernimmt der Röst-Prior: er leitet den Startwert
+   *  aus dem Röstgrad und den bereits eingestellten Bohnen ab. */
+  const startPrior = dialIn?.confidence === 'none' && selectedCoffee && targetTime != null
+    ? suggestStartingGrind({
+        shots: allShots, coffees, grinderId: grinderId || null,
+        targetTime, newCoffee: selectedCoffee,
+      })
+    : null
+
+  /** Was aus dem Rezept übernommen wird — und was nicht.
+   *
+   *  **Übernommen: Dosis und Temperatur.** Beides stellt man VOR dem Bezug
+   *  ein: die Dosis wiegt man ohnehin gegen einen Zielwert ab, die Temperatur
+   *  an der Maschine. Eine Vorbelegung ist hier eine Einstellung.
+   *
+   *  **Nicht übernommen: Menge (Yield) und Zeit.** Beides ist Ergebnis, nicht
+   *  Einstellung — vorgetragen läse es sich wie eine Messung, die noch gar
+   *  nicht stattgefunden hat.
+   *
+   *  Der Ziel-Ghost bleibt in ALLEN vier Feldern stehen, auch bei den
+   *  übernommenen: so sieht man beim Abweichen sofort, wie weit man weg ist. */
+  function applyRecipeSettings(id: string) {
+    setRecipeId(id)
+    const r = recipeOptions.find(x => x.id === id)
+    if (r?.temp_c != null) setTempC(String(r.temp_c))
+    if (r?.dose_g != null) setDoseG(String(r.dose_g))
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
@@ -233,6 +306,7 @@ export function NewShot() {
         arabica_pct: null,
         robusta_pct: null,
         roast_level: null,
+        roast_level_fine: null,
         origin_country: null,
         origin_region: null,
         altitude_m: null,
@@ -241,7 +315,6 @@ export function NewShot() {
         rec_yield_g: null,
         rec_temp_c: null,
         rec_time_s: null,
-        rec_grind_note: null,
       })
       resolvedCoffeeId = coffee.id
     }
@@ -323,7 +396,7 @@ export function NewShot() {
                 onClick={() => setDrinkType(dt.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   drinkType === dt.value
-                    ? 'bg-coffee-accent text-coffee-bg'
+                    ? 'bg-coffee-accent text-coffee-on-accent'
                     : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
                 }`}
               >
@@ -378,25 +451,29 @@ export function NewShot() {
           )}
         </div>
 
-        {/* Roaster recipe prefill */}
-        {hasRoasterRecipe && (
-          <button
-            type="button"
-            onClick={applyRoasterRecipe}
-            className="flex w-full items-center justify-between rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2 text-sm text-coffee-accent-soft hover:bg-coffee-accent/15"
-          >
-            <span>↻ Use roaster recipe</span>
-            <span className="text-xs text-coffee-muted">
-              {[
-                selectedCoffee?.rec_dose_g != null && selectedCoffee?.rec_yield_g != null && `${selectedCoffee.rec_dose_g}→${selectedCoffee.rec_yield_g}g`,
-                selectedCoffee?.rec_temp_c != null && `${selectedCoffee.rec_temp_c}°C`,
-                selectedCoffee?.rec_time_s != null && `${selectedCoffee.rec_time_s}s`,
-              ].filter(Boolean).join(' · ')}
-            </span>
-          </button>
+        {/* Rezept-Auswahl. Übernimmt bewusst NUR die Temperatur — Dosis,
+            Menge und Zeit stehen als Ziel neben den Feldern. */}
+        {coffeeId && recipeOptions.length > 0 && (
+          <div>
+            <FieldLabel>Recipe target</FieldLabel>
+            <Select value={recipeId} onChange={e => applyRecipeSettings(e.target.value)}>
+              <option value="">No target</option>
+              {recipeOptions.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.name}{r.id === 'roaster' ? '' : ' (mine)'}
+                </option>
+              ))}
+            </Select>
+            {activeRecipe && (
+              <p className="mt-1 text-xs text-coffee-muted">
+                Dose and temperature are filled in; yield and time stay as targets.
+              </p>
+            )}
+          </div>
         )}
-        {hasRoasterRecipe && selectedCoffee?.rec_grind_note && (
-          <p className="-mt-2 text-xs text-coffee-muted">Roaster grind: {selectedCoffee.rec_grind_note}</p>
+
+        {selectedCoffee?.notes && (
+          <p className="text-xs text-coffee-muted">Note: {selectedCoffee.notes}</p>
         )}
 
         {/* Roast date */}
@@ -447,11 +524,73 @@ export function NewShot() {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <FieldLabel required>Grind Setting</FieldLabel>
-            <Input type="number" step="0.5" value={grindSetting} onChange={e => setGrindSetting(e.target.value)} placeholder="12" />
+            <Input
+              type="number"
+              step="0.5"
+              value={grindSetting}
+              onChange={e => {
+                grindTouched.current = true
+                setGrindFromLast(false)
+                setGrindSetting(e.target.value)
+              }}
+              placeholder="12"
+            />
+            {grindFromLast && (
+              <p className="mt-1 text-xs text-coffee-muted">
+                ↻ From your last shot of this coffee
+              </p>
+            )}
+            {startPrior && startPrior.grind !== null && (
+              <div className={`mt-2 rounded-lg border px-3 py-2 ${
+                startPrior.extrapolating
+                  ? 'border-amber-500/40 bg-amber-500/10'
+                  : 'border-coffee-accent/30 bg-coffee-accent/10'
+              }`}>
+                <p className={`text-xs ${startPrior.extrapolating ? 'text-amber-200' : 'text-coffee-accent-soft'}`}>
+                  {startPrior.message}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    grindTouched.current = true
+                    setGrindFromLast(false)
+                    setGrindSetting(String(startPrior.grind))
+                  }}
+                  className="mt-1.5 text-xs font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+                >
+                  Start at {startPrior.grind}
+                </button>
+              </div>
+            )}
+            {dialIn && dialIn.grind !== null && (
+              <div className="mt-2 rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2">
+                <p className="text-xs text-coffee-accent-soft">{dialIn.message}</p>
+                {dialIn.secondsPerStep !== null && dialIn.confidence !== 'low' && (
+                  <p className="mt-0.5 text-xs text-coffee-muted">
+                    Your grinder: ~{Math.abs(dialIn.secondsPerStep).toFixed(1)}s per step
+                    {' · '}{dialIn.grinderShots} shots learned
+                  </p>
+                )}
+                {dialIn.grind !== parseFloat(grindSetting) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      grindTouched.current = true
+                      setGrindFromLast(false)
+                      setGrindSetting(String(dialIn.grind))
+                    }}
+                    className="mt-1.5 text-xs font-semibold text-coffee-accent-soft underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+                  >
+                    Use {dialIn.grind}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <div>
             <FieldLabel>Temp (°C)</FieldLabel>
             <Input type="number" value={tempC} onChange={e => setTempC(e.target.value)} placeholder="93" />
+            <TargetGhost target={activeRecipe?.temp_c} actual={parseFloat(tempC)} unit="°C" tolerance={0.5} />
           </div>
           <div>
             <FieldLabel>Pressure (bar)</FieldLabel>
@@ -463,6 +602,7 @@ export function NewShot() {
         <div>
           <FieldLabel>Dose (g)</FieldLabel>
           <Input type="number" step="0.1" value={doseG} onChange={e => setDoseG(e.target.value)} placeholder="18" />
+          <TargetGhost target={activeRecipe?.dose_g} actual={parseFloat(doseG)} unit="g" decimals={1} />
         </div>
 
         {/* Prep Tools */}
@@ -537,6 +677,7 @@ export function NewShot() {
           <div className="flex flex-col items-center gap-5">
             <div className="flex items-center gap-2 self-start">
               <Input type="number" value={brewTimeS} onChange={e => setBrewTimeS(e.target.value)} placeholder="28" className="!w-20" />
+              <TargetGhost target={activeRecipe?.time_s} actual={parseFloat(brewTimeS)} unit="s" tolerance={0.5} />
               <span className="text-sm text-coffee-muted">s</span>
             </div>
             <BrewTimer onTime={s => setBrewTimeS(String(s))} />
@@ -547,6 +688,7 @@ export function NewShot() {
         <div>
           <FieldLabel>Yield (g)</FieldLabel>
           <Input type="number" step="0.1" value={yieldG} onChange={e => setYieldG(e.target.value)} placeholder="36" />
+          <TargetGhost target={activeRecipe?.yield_g} actual={parseFloat(yieldG)} unit="g" decimals={1} />
           <div className="mt-2">
             <BrewRatioBar
               doseG={doseG ? parseFloat(doseG) : null}

@@ -163,7 +163,7 @@ export function NewBrew() {
                 onClick={() => setBrewMethod(m.value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   brewMethod === m.value
-                    ? 'bg-coffee-accent text-coffee-bg'
+                    ? 'bg-coffee-accent text-coffee-on-accent'
                     : 'border border-coffee-line text-coffee-muted hover:bg-coffee-surface2'
                 }`}
               >

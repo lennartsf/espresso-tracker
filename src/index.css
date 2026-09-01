@@ -2,20 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design-Tokens: Dark Premium ──────────────────────────────────
-   Genutzt von Marketing/Auth UND der gesamten App-Shell (Reskin live
-   seit 2026-06-08). Funktionsfarben (Rating grün/gold/rot) bleiben. */
-:root {
+/* ── Design-Tokens ────────────────────────────────────────────────
+   Genutzt von Marketing/Auth UND der gesamten App-Shell.
+   Funktionsfarben (Rating grün/gold/rot) bleiben ausserhalb.
+
+   Zwei Paletten, umgeschaltet über `data-theme` am <html>. Das Attribut
+   wird IMMER gesetzt (ThemeProvider löst 'system' vorher in dark|light
+   auf) — deshalb reicht hier ein Attribut-Selektor, kein Media-Query.
+
+   WICHTIG (Paket C1a): die Dark-Werte sind Zeichen für Zeichen die von
+   vor dem Theme-Umbau. Dark muss pixelgleich bleiben; jede sichtbare
+   Abweichung in Dark ist ein Bug, keine Geschmacksfrage. Abgesichert
+   durch src/__tests__/themeTokens.test.ts.
+
+   Rollen der beiden Akzente:
+   - `--coffee-accent`     alles, was Text oder ein Icon einfärbt.
+   - `--coffee-accent-deco` NUR textfreie Flächen (Balken, Ratio-Bar,
+     Dial-Ringe). Landet dieser Wert je auf Text, ist die AA-Zusage in
+     Light still wieder weg. */
+:root,
+:root[data-theme='dark'] {
   --coffee-bg: #1c1714;
   --coffee-surface: #25201b;
+  /* Endpunkt des Karten-Verlaufs. In Dark == bg (der Verlauf lief schon
+     immer auf den Seitengrund aus), in Light braucht er einen eigenen. */
+  --coffee-surface-btm: #1c1714;
   --coffee-surface-2: #33291f;
   --coffee-accent: #c9a35e;
   --coffee-accent-soft: #d8bd86;
+  --coffee-accent-deco: #c9a35e;
+  --coffee-glow-top: #e9c987;
+  /* Schrift auf Akzent-Flaechen. In Dark == --coffee-bg, also exakt das,
+     was vorher als `text-coffee-bg` an den Buttons stand. */
+  --coffee-on-accent: #1c1714;
   --coffee-cream: #f6efe4;
   --coffee-text: #f1e9df;
   --coffee-muted: #a89784;
   --coffee-line: rgba(246, 239, 228, 0.10);
+  /* Embossed-Signatur als Token, damit cardClasses eine Konstante bleibt. */
+  --coffee-card-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 2px 8px rgba(233, 201, 135, 0.06);
+  --coffee-glow-shadow: 0 4px 14px rgba(233, 201, 135, 0.35);
+  /* Eingelassene Flächen (Eingaben). In Dark bewusst leer: dort trägt die
+     hellere Fläche allein, ein Inset würde die Optik verändern. */
+  --coffee-inset-shadow: none;
+  /* Kante der Eingabefelder. War fest `border-white/15` — in Dark eine feine
+     Lichtkante, in Light auf beigem Feld UNSICHTBAR. Der Dark-Wert ist exakt
+     der alte, damit sich dort nichts verschiebt. */
+  --coffee-field-border: rgba(255, 255, 255, 0.15);
+  /* Dial-Mulde und die beiden Glows (C1b). */
+  --coffee-dial-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 3px 8px rgba(233, 201, 135, 0.2);
+  --coffee-ring-glow: drop-shadow(0 0 6px rgba(95, 168, 105, 0.5));
+  --coffee-num-glow: drop-shadow(0 0 16px rgba(233, 201, 135, 0.5));
+  --coffee-track-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7);
+  --coffee-liquid: linear-gradient(to right, #7a4e26, #e9c987);
+  --coffee-liquid-glow: 0 0 12px rgba(233, 201, 135, 0.5);
+  /* Ambient-Schein hinter der Hero-Headline (Marketing). */
+  --coffee-hero-glow: radial-gradient(circle, rgba(201, 163, 94, 0.22), transparent 70%);
 }
+
+/* Light — kontrastgeprüft gegen WCAG AA (4.5:1) für kleinen Text.
+   Herleitung + Messwerte: docs/mockups/2026-08-25-embossed-vs-flat.html */
+:root[data-theme='light'] {
+  --coffee-bg: #e6ddcf;
+  --coffee-surface: #fffdfa;
+  --coffee-surface-btm: #f6f1e8;
+  --coffee-surface-2: #dcd2c1;
+  --coffee-accent: #835526;
+  /* Betonungsrichtung dreht sich: in Dark ist "soft" heller, in Light dunkler.
+     #7a4f22 traegt alle drei Rollen (Text auf Karte 6.97, Text auf Grund 5.26,
+     Schrift darauf 6.81) — ein helleres Braun fiel als Text auf dem Grund durch. */
+  --coffee-accent-soft: #7a4f22;
+  --coffee-accent-deco: #b4863c;
+  /* Verlaufsstart des Glow-Buttons. Muss dunkel genug bleiben, dass die
+     Beschriftung auch auf der HELLSTEN Stelle des Verlaufs AA erreicht (5.42). */
+  --coffee-glow-top: #8f5c29;
+  --coffee-on-accent: #fffaf2;
+  --coffee-cream: #221c16;
+  --coffee-text: #2a221b;
+  --coffee-muted: #665849;
+  --coffee-line: rgba(42, 34, 27, 0.14);
+  --coffee-card-shadow:
+    0 1px 2px rgba(74, 54, 32, 0.07),
+    0 10px 20px -12px rgba(74, 54, 32, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --coffee-glow-shadow: 0 4px 12px -4px rgba(74, 54, 32, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --coffee-inset-shadow: inset 0 2px 4px rgba(74, 54, 32, 0.10);
+  /* Kraeftiger als --coffee-line: das Feld ist eingelassen und braucht eine
+     Kante, die man auch auf beigem Grund sieht. */
+  --coffee-field-border: rgba(42, 34, 27, 0.22);
+  --coffee-dial-shadow: 0 8px 20px -10px rgba(74, 54, 32, 0.35), inset 0 2px 6px rgba(255, 255, 255, 0.9);
+  /* Glows aus: auf hellem Grund gibt es nichts zu überstrahlen, ein Schein
+     liest dort als unscharfer Rand. Ein enger DUNKLER Schein waere die
+     Alternative — bewusst vertagt. */
+  --coffee-ring-glow: none;
+  --coffee-num-glow: none;
+  --coffee-track-shadow: inset 0 2px 4px rgba(74, 54, 32, 0.16);
+  /* Verlauf gedreht: das Ende muss auf hellem Grund das Kraeftige sein. */
+  --coffee-liquid: linear-gradient(to right, #c8a05a, #6d451e);
+  --coffee-liquid-glow: none;
+  /* Auf hellem Grund traegt Gold kaum — deutlich zurueckgenommen und ins
+     dunklere Akzentbraun gedreht, sonst wird daraus ein gelber Fleck. */
+  --coffee-hero-glow: radial-gradient(circle, rgba(131, 85, 38, 0.13), transparent 70%);
+}
+
+/* Farbige Formularelemente/Scrollbars sollen dem Theme folgen. */
+:root[data-theme='dark'] { color-scheme: dark; }
+:root[data-theme='light'] { color-scheme: light; }
 
 /* Paint the page background (incl. iOS safe-area / overscroll) dark so no
    white bar shows above the app at the top on mobile. */
@@ -44,4 +136,38 @@ body {
        specificity); otherwise the 14px utility wins and iOS still zooms. */
     font-size: 16px !important;
   }
+}
+
+/* ── Leaflet folgt dem Theme (Paket C1b) ──────────────────────────
+   Leaflet liefert Popup, Zoom-Buttons und Attribution mit fest weissem
+   Grund aus. Ohne diese Ueberschreibungen waere der Popup-Text nach der
+   Token-Umstellung in Dark hell auf weiss — also unlesbar. Selektoren
+   bewusst mit `.leaflet-container` davor, damit sie leaflet.css schlagen,
+   unabhaengig von der Reihenfolge im Bundle. */
+.leaflet-container .leaflet-popup-content-wrapper,
+.leaflet-container .leaflet-popup-tip {
+  background: var(--coffee-surface);
+  color: var(--coffee-text);
+  box-shadow: var(--coffee-card-shadow);
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--coffee-muted);
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--coffee-cream);
+}
+.leaflet-container .leaflet-control-zoom a {
+  background: var(--coffee-surface);
+  color: var(--coffee-text);
+  border-color: var(--coffee-line);
+}
+.leaflet-container .leaflet-control-zoom a:hover {
+  background: var(--coffee-surface-2);
+}
+.leaflet-container .leaflet-control-attribution {
+  background: var(--coffee-surface);
+  color: var(--coffee-muted);
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--coffee-accent);
 }

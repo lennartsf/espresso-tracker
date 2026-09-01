@@ -40,7 +40,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
           <button
             type="submit"
             disabled={loading || !email || !password}
-            className="w-full rounded-xl bg-coffee-accent px-4 py-3 font-semibold text-coffee-bg transition hover:bg-coffee-accent-soft disabled:opacity-50"
+            className="w-full rounded-xl bg-coffee-accent px-4 py-3 font-semibold text-coffee-on-accent transition hover:bg-coffee-accent-soft disabled:opacity-50"
           >
             {loading ? '…' : isSignup ? 'Sign up' : 'Log in'}
           </button>
@@ -73,7 +73,7 @@ function Field({
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border border-white/15 bg-coffee-surface2 px-4 py-3 text-coffee-text placeholder:text-coffee-muted focus:border-coffee-accent focus:outline-none"
+        className="mt-1.5 w-full rounded-xl border border-coffee-field bg-coffee-surface2 px-4 py-3 text-coffee-text placeholder:text-coffee-muted focus:border-coffee-accent focus:outline-none"
       />
     </label>
   )
