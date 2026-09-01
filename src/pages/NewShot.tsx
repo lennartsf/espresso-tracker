@@ -215,10 +215,15 @@ export function NewShot() {
   const { data: ownRecipes = [] } = useCoffeeRecipes(coffeeId || undefined)
   const roasterRecipe = roasterRecipeOf(selectedCoffee)
   const recipeOptions = [
-    ...(roasterRecipe ? [{ id: 'roaster', ...roasterRecipe }] : []),
+    // Das Röster-Rezept kennt keine Mühle — die Angabe auf der Tüte meint eine
+    // fremde. Deshalb hier ausdrücklich null und kein geratener Wert.
+    ...(roasterRecipe
+      ? [{ id: 'roaster', ...roasterRecipe, grinder_id: null as string | null, grind_setting: null as number | null }]
+      : []),
     ...ownRecipes.map(r => ({
       id: r.id, name: r.name, dose_g: r.dose_g, yield_g: r.yield_g,
       temp_c: r.temp_c, time_s: r.time_s,
+      grinder_id: r.grinder_id, grind_setting: r.grind_setting,
     })),
   ]
   const [recipeId, setRecipeId] = useState('')
@@ -270,6 +275,15 @@ export function NewShot() {
     const r = recipeOptions.find(x => x.id === id)
     if (r?.temp_c != null) setTempC(String(r.temp_c))
     if (r?.dose_g != null) setDoseG(String(r.dose_g))
+
+    // Mahlgrad nur, wenn das Rezept ihn auf DERSELBEN Mühle festgehalten hat.
+    // Mahlgradzahlen sind zwischen Mühlen nicht vergleichbar: „2.5" von der
+    // einen auf die andere zu übertragen, ergäbe stillschweigend Unsinn.
+    if (r?.grind_setting != null && r.grinder_id && r.grinder_id === grinderId) {
+      grindTouched.current = true
+      setGrindFromLast(false)
+      setGrindSetting(String(r.grind_setting))
+    }
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.

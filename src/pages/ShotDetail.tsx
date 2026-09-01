@@ -6,6 +6,7 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
+import { SaveShotAsRecipe } from '../components/SaveShotAsRecipe'
 import { ratingBadgeClasses, intensityBadge } from '../utils/ratingColor'
 import { useTheme } from '../lib/ThemeContext'
 import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
@@ -215,6 +216,10 @@ export function ShotDetail() {
           </div>
         </div>
       )}
+      {/* Aus einem gelungenen Shot wird ein Rezept — der uebliche Weg, wie
+          Rezepte tatsaechlich entstehen. */}
+      <SaveShotAsRecipe shot={shot} />
+
       {/* Timestamp */}
       <p className="text-xs text-coffee-muted text-center mt-4">{formatDate(shot.pulled_at)}</p>
       {(shot.used_rdt || shot.used_wdt || shot.used_leveler) && (
