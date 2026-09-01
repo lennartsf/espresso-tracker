@@ -40,21 +40,63 @@ function ThemedTiles({ theme }: { theme: 'light' | 'dark' }) {
   )
 }
 
-// Custom orange pin icon (SVG-based, no external image dependency)
-const orangePin = L.divIcon({
-  className: '',
-  html: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
-    <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="#f97316"/>
-    <circle cx="14" cy="14" r="6" fill="white"/>
-  </svg>`,
-  iconSize: [28, 36],
-  iconAnchor: [14, 36],
-  popupAnchor: [0, -36],
-})
+/** HTML-Escape fuer Werte, die in das divIcon-Markup wandern.
+ *  Roesternamen kommen aus Nutzereingaben; ohne Escape wuerde ein Name mit
+ *  Anfuehrungszeichen das Attribut sprengen. */
+function esc(v: string): string {
+  return v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
 
+/** Pin mit dem Foto der Rösterei, wenn es eins gibt — sonst der Anfangs-
+ *  buchstabe. Bei mehreren Röstereien auf einer Karte sind uniforme Punkte
+ *  nicht zuzuordnen; das Foto macht sie auf einen Blick unterscheidbar.
+ *  Die Pin-Farbe bleibt orange: sie ist Funktionsfarbe (Standort) und in
+ *  beiden Themes dieselbe. */
+function roasterPin(r: Roaster): L.DivIcon {
+  const inner = r.photo_url
+    ? `<image href="${esc(r.photo_url)}" x="5" y="5" width="18" height="18"
+              clip-path="circle(9px at 9px 9px)" preserveAspectRatio="xMidYMid slice"/>`
+    : `<text x="14" y="18" text-anchor="middle" font-size="11" font-weight="700"
+             font-family="system-ui, sans-serif" fill="#f97316">${esc((r.name[0] ?? '?').toUpperCase())}</text>`
+
+  return L.divIcon({
+    className: '',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="38" viewBox="0 0 28 36">
+      <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="#f97316"/>
+      <circle cx="14" cy="14" r="9.5" fill="white"/>
+      ${inner}
+    </svg>`,
+    iconSize: [30, 38],
+    iconAnchor: [15, 38],
+    popupAnchor: [0, -38],
+  })
+}
+
+/** Sanfter Flug statt Sprung: beim Auswählen einer Rösterei soll erkennbar
+ *  bleiben, WOHIN die Karte sich bewegt. `prefers-reduced-motion` schaltet
+ *  auf den harten Sprung zurück. */
 function RecenterMap({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
-  useEffect(() => { map.setView([lat, lng], map.getZoom()) }, [lat, lng, map])
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    if (reduce) map.setView([lat, lng], map.getZoom())
+    else map.flyTo([lat, lng], map.getZoom(), { duration: 0.7 })
+  }, [lat, lng, map])
+  return null
+}
+
+/** Zoomt so, dass ALLE Pins ins Bild passen. Der feste Zoom 6 zeigte je nach
+ *  Verteilung entweder halb Europa oder schnitt Röstereien ab. */
+function FitToMarkers({ points }: { points: [number, number][] }) {
+  const map = useMap()
+  useEffect(() => {
+    if (points.length < 2) return
+    map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 12 })
+    // Nur auf die Punkte reagieren, nicht auf jede Karteninteraktion — sonst
+    // springt die Ansicht zurück, sobald der User selbst gezoomt hat.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(points), map])
   return null
 }
 
@@ -82,9 +124,12 @@ export function RoasterMap({ roasters, center, zoom = 12, height = '220px' }: Pr
       scrollWheelZoom={false}
     >
       <ThemedTiles theme={theme} />
+      {!center && mapped.length > 1 && (
+        <FitToMarkers points={mapped.map(r => [r.lat!, r.lng!] as [number, number])} />
+      )}
       {center && <RecenterMap lat={center.lat} lng={center.lng} />}
       {mapped.map(r => (
-        <Marker key={r.id} position={[r.lat!, r.lng!]} icon={orangePin}>
+        <Marker key={r.id} position={[r.lat!, r.lng!]} icon={roasterPin(r)}>
           <Popup>
             <div className="text-sm">
               <strong>{r.name}</strong>

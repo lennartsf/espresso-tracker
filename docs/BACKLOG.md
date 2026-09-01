@@ -533,7 +533,22 @@ gekippt. Empfehlung: **kein Rewrite**, sondern die bestehende React-App verpacke
 
 ---
 
-## Paket H — Schönere Röster-Karte *(Task 8)*
+## Paket H — Schönere Röster-Karte *(Task 8)* — 🟡 **TEILWEISE (2026-08-31)**
+> **Gebaut, keylos:** Pins zeigen das Röster-Foto statt uniformer Punkte (bei
+> mehreren Röstereien sind gleiche Punkte nicht zuzuordnen), Fallback ist der
+> Anfangsbuchstabe; sanftes Fly-To beim Auswählen statt hartem Sprung
+> (`prefers-reduced-motion` schaltet zurück); Auto-Fit auf alle Pins statt festem
+> Zoom 6, der je nach Verteilung halb Europa zeigte oder Röstereien abschnitt.
+> Tiles folgen seit C1b dem Theme.
+>
+> **Sicherheitsdetail:** Rösternamen sind Nutzereingabe und landen im
+> `divIcon`-Markup. Ohne Escape würde ein Anführungszeichen das Attribut sprengen.
+> `esc()` + Test dagegen.
+>
+> **Offen und von dir abhängig:** hübscheres Tileset (MapTiler / Stadia /
+> Protomaps) braucht einen API-Key. Marker-Clustering braucht
+> `react-leaflet-cluster` als neue Abhängigkeit — bei deiner Zahl an Röstereien
+> noch kein echtes Problem.
 **Aufwand: S** · Vollständig isoliert · Guter Lückenfüller
 
 **Frage „Geht Google Maps kostenfrei?" — kurze Antwort: für deine Größenordnung ja,
