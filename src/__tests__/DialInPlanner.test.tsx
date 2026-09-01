@@ -19,13 +19,16 @@ const shots = [
 ]
 
 vi.mock('../hooks/useCoffees', () => ({ useCoffees: () => ({ data: [coffee] }) }))
-vi.mock('../hooks/useShots', () => ({ useShots: () => ({ data: shots }) }))
+vi.mock('../hooks/useDialInShots', () => ({ useDialInShots: () => shots }))
 vi.mock('../hooks/useEquipment', () => ({
   useGrinders: () => ({ data: [{ id: 'g1', name: 'Niche' }] }),
   useBaskets: () => ({ data: [
     { id: 'b1', name: 'Stock', size_g: 18 },
     { id: 'b2', name: 'VST', size_g: 20 },
   ] }),
+  // Keine Standards hinterlegt und keine Favoriten -> nichts wird vorbelegt,
+  // die bestehenden Tests waehlen selbst aus.
+  useEquipmentDefaults: () => ({ data: [] }),
 }))
 vi.mock('../hooks/useCoffeeRecipes', () => ({
   useCoffeeRecipes: () => ({ data: [
@@ -44,7 +47,7 @@ async function pickCoffeeAndRecipe() {
 
 test('asks for a coffee before saying anything', () => {
   render(<DialInPlanner />)
-  expect(screen.getByText(/Pick a coffee and a target recipe/)).toBeInTheDocument()
+  expect(screen.getByText(/Pick a coffee and a target time/)).toBeInTheDocument()
 })
 
 test('works out a grind setting for the chosen target', async () => {
@@ -105,4 +108,39 @@ test('names the basket when the slope came from that basket alone', async () => 
   await user.selectOptions(screen.getByLabelText('Basket'), 'b1')
   await user.click(screen.getByRole('button', { name: /How this is worked out/ }))
   expect(screen.getByText('Stock only')).toBeInTheDocument()
+})
+
+// ── Zielzeit als eigenes Feld ───────────────────────────────────────────────
+
+test('picking a recipe fills the target time', async () => {
+  await pickCoffeeAndRecipe()
+  expect(screen.getByLabelText(/Target time/)).toHaveValue(34)
+})
+
+test('a target time can be set without any recipe at all', async () => {
+  // Der Fall, der vorher in einer Sackgasse endete: kein Rezept mit Zeit,
+  // also kein Ergebnis — obwohl alles Noetige vorlag.
+  const user = userEvent.setup()
+  render(<DialInPlanner />)
+  await user.selectOptions(screen.getByLabelText('Coffee'), 'c1')
+  await user.type(screen.getByLabelText(/Target time/), '34')
+  expect(screen.getByText(/Set the grinder to/)).toBeInTheDocument()
+  expect(screen.getByText('12')).toBeInTheDocument()
+})
+
+test('a typed target time overrides the one from the recipe', async () => {
+  const user = await pickCoffeeAndRecipe()
+  const field = screen.getByLabelText(/Target time/)
+  await user.clear(field)
+  await user.type(field, '26')
+  // Ziel jetzt schneller als der letzte Shot (30s) -> groeber statt feiner.
+  expect(screen.getByText(/coarser/)).toBeInTheDocument()
+})
+
+test('an empty or nonsense target time asks for one instead of guessing', async () => {
+  const user = await pickCoffeeAndRecipe()
+  await user.clear(screen.getByLabelText(/Target time/))
+  expect(screen.getByText('Set a target time to aim at.')).toBeInTheDocument()
+  await user.type(screen.getByLabelText(/Target time/), '0')
+  expect(screen.getByText('Set a target time to aim at.')).toBeInTheDocument()
 })

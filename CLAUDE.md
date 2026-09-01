@@ -397,7 +397,23 @@ gezählt. Sonst misst man die Bohne und nennt es Sieb.
 
 **UI:** `components/GrindAdvice.tsx` (Hinweis in NewShot, volle Zeilenbreite,
 Optik der Eingabefelder) und `components/DialInPlanner.tsx` (Analyse-Tab
-„Dial-in": Zielrezept wählen → Mahlgrad, Siebeffekt, aufklappbare Herleitung).
+„Dial-in": Zielzeit setzen → Mahlgrad, Siebeffekt, aufklappbare Herleitung).
+
+**Beide Einstiege füttern den Algorithmus aus `hooks/useDialInShots.ts` — und
+nur daraus.** Vorher holte NewShot alle Shots und der Analyse-Tab nur
+`drink_type in ('espresso','caffe_crema')`; bei gleicher Bohne, gleichem Rezept
+und gleichem Sieb kamen zwei verschiedene Zahlen heraus. Milchgetränke gehören
+dazu: ein Cappuccino ist ein Espresso mit Milch obendrauf, Mahlgrad und Zeit
+entstehen beim Bezug. Zweite Ursache derselben Abweichung war die Vorauswahl —
+NewShot hatte eine Mühle gesetzt, der Planner stand auf „All grinders" und
+mittelte über nicht vergleichbare Skalen. Der Planner belegt Mühle und Sieb
+jetzt aus den Equipment-Standards vor und warnt, wenn wirklich gemischt wird.
+`dialInConsistency.test.ts` hält beides fest.
+
+**Die Zielzeit ist ein eigenes Feld, kein Rezeptfeld.** Ein Röster-Rezept trägt
+meistens keine Sekundenzahl (auf der Tüte stehen Dosis, Menge, Temperatur), und
+vorher endete der Tab dann in „add a time to the recipe". Ein Rezept füllt das
+Feld nur vor.
 
 ## Backlog (aktuell) — `docs/BACKLOG.md`
 **Verbindliche Quelle für alle offenen Aufgaben: `docs/BACKLOG.md`** (Stand 2026-08-25).
