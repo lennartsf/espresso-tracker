@@ -82,3 +82,27 @@ test('the derivation is available but folded away', async () => {
   // Die gelernte Steigung wird beziffert, nicht behauptet.
   expect(screen.getByText(/-2\.00 s per step/)).toBeInTheDocument()
 })
+
+test('lists the step size per basket, because flow differs between them', async () => {
+  await pickCoffeeAndRecipe()
+  expect(screen.getByText(/Step size per basket/)).toBeInTheDocument()
+  // Das Stock-Sieb hat genug Shots fuer eine eigene Steigung...
+  expect(screen.getByText('-2.00 s/step')).toBeInTheDocument()
+  // ...das VST nicht. Das gehoert dann auch so dagestanden, statt still eine
+  // fremde Zahl zu uebernehmen.
+  expect(screen.getByText('not enough shots yet')).toBeInTheDocument()
+})
+
+test('says when the step size had to be pooled across baskets', async () => {
+  const user = await pickCoffeeAndRecipe()
+  await user.selectOptions(screen.getByLabelText('Basket'), 'b2')
+  await user.click(screen.getByRole('button', { name: /How this is worked out/ }))
+  expect(screen.getByText(/all baskets pooled/)).toBeInTheDocument()
+})
+
+test('names the basket when the slope came from that basket alone', async () => {
+  const user = await pickCoffeeAndRecipe()
+  await user.selectOptions(screen.getByLabelText('Basket'), 'b1')
+  await user.click(screen.getByRole('button', { name: /How this is worked out/ }))
+  expect(screen.getByText('Stock only')).toBeInTheDocument()
+})

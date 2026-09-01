@@ -6,7 +6,9 @@ import { useGrinders, useBaskets } from '../hooks/useEquipment'
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { Select, FieldLabel, cardClasses } from './ui'
 import { roasterRecipeOf } from '../utils/recipeMatch'
-import { learnGrinder, suggestGrind, compareBaskets, type DialInShot } from '../utils/dialIn'
+import {
+  learnGrinder, learnPerBasket, suggestGrind, compareBaskets, type DialInShot,
+} from '../utils/dialIn'
 
 /** Die Shot-Zeilen auf das reduzieren, womit der Algorithmus rechnet. */
 function toDialInShots(shots: {
@@ -86,10 +88,25 @@ export function DialInPlanner() {
     () => (grinderId ? dialShots.filter(s => s.grinder_id === grinderId) : dialShots),
     [dialShots, grinderId],
   )
-  const model = useMemo(() => learnGrinder(grinderShots), [grinderShots])
+  const model = useMemo(
+    () => learnGrinder(grinderShots, basketId || null),
+    [grinderShots, basketId],
+  )
+  /** Was jedes Sieb FÜR SICH gelernt hat. Zwei deutlich verschiedene Steigungen
+   *  sind der Beleg dafür, dass die Körbe unterschiedlichen Durchfluss haben. */
+  const perBasket = useMemo(() => learnPerBasket(grinderShots), [grinderShots])
+  const slopeFor = useMemo(() => {
+    const map = new Map(
+      perBasket.filter(m => m.basis === 'learned').map(m => [m.basketId!, m.secondsPerStep!]),
+    )
+    // Ein Sieb ohne eigene Schätzung bekommt die gepoolte — besser als nichts,
+    // und `perBasket` weist unten aus, welche das betrifft.
+    const pooled = learnGrinder(grinderShots).secondsPerStep
+    return (id: string) => map.get(id) ?? pooled
+  }, [perBasket, grinderShots])
   const basketEffects = useMemo(
-    () => compareBaskets(grinderShots, model.basis === 'learned' ? model.secondsPerStep : null),
-    [grinderShots, model],
+    () => compareBaskets(grinderShots, slopeFor),
+    [grinderShots, slopeFor],
   )
 
   const targetTime = recipe?.time_s ?? null
@@ -225,6 +242,26 @@ export function DialInPlanner() {
             Measured within the same coffee and corrected for grind, so this is the
             basket alone — not the bean you happen to use it for.
           </p>
+          {perBasket.length > 1 && (
+            <p className="mb-3 rounded-lg bg-coffee-surface2 p-2.5 text-xs leading-snug text-coffee-muted">
+              <span className="font-semibold text-coffee-text">Step size per basket. </span>
+              A basket with different flow reacts differently to one grind step, so
+              each one gets its own slope — pooling them would average two different
+              lines into one that fits neither.
+              <span className="mt-1.5 block">
+                {perBasket.map(m => (
+                  <span key={m.basketId} className="mr-3 inline-block">
+                    {basketName(m.basketId!)}:{' '}
+                    <span className="font-semibold text-coffee-text">
+                      {m.basis === 'learned'
+                        ? `${m.secondsPerStep!.toFixed(2)} s/step`
+                        : 'not enough shots yet'}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </p>
+          )}
           {basketEffects.map(e => (
             <Row
               key={e.basketId}
@@ -269,13 +306,18 @@ export function DialInPlanner() {
               shifts that offset too.
             </p>
             <p>
-              So the slope is learned from all your shots on this grinder, and the
-              starting point comes from your last shot of this coffee in this basket.
+              The basket matters twice over, and the two are separate. It shifts the
+              offset — one basket simply runs slower than another. But it also changes
+              the <em>slope</em>: a basket with different flow reacts less, or more, to
+              the same grind step. So the slope is learned from your shots in this
+              basket, and the starting point comes from your last shot of this coffee
+              in this basket.
               Crucially, each coffee-and-basket combination is first centred on its own
               average before the slope is fitted. Without that, the fit mostly sees the
               differences <em>between</em> your bags and washes the slope out towards
               zero — which is exactly how an earlier version came up with impossible
-              numbers.
+              numbers. Fitting across baskets goes wrong the same way: two lines of
+              different steepness average into one that describes neither.
             </p>
 
             <div className="rounded-lg bg-coffee-surface2 p-3">
@@ -288,6 +330,16 @@ export function DialInPlanner() {
                 }
               />
               <Row label="Points in the fit" value={String(model.points)} />
+              <Row
+                label="Learned from"
+                value={
+                  model.scope === 'basket' && model.basketId
+                    ? `${basketName(model.basketId)} only`
+                    : basketId
+                      ? 'all baskets pooled — too few shots in the chosen one'
+                      : 'all baskets pooled (no basket chosen)'
+                }
+              />
               <Row
                 label="Grind range you use"
                 value={model.range ? `${model.range.min} – ${model.range.max}` : '—'}

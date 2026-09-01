@@ -346,10 +346,23 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 ## Dial-in-Algorithmus (`src/utils/dialIn.ts`, überarbeitet 2026-09-01)
 
 **Modell.** Über den kleinen Dial-in-Bereich ist Mahlgrad→Durchlaufzeit linear.
-Die *Steigung* (Sekunden pro Klick) gehört zur Mühle und ist über Bohnen hinweg
-stabil; der *Offset* wechselt mit jeder Tüte — und mit dem **Sieb**.
-Deshalb: Steigung aus allen Shots der Mühle, Offset aus dem letzten Shot dieser
-Bohne **in diesem Sieb**.
+Der *Offset* wechselt mit jeder Tüte — und mit dem Sieb. Die *Steigung*
+(Sekunden pro Klick) ist über Bohnen hinweg stabil, **aber nicht über Siebe**:
+ein Korb mit anderem Durchfluss reagiert anders stark auf einen Klick.
+Deshalb: Steigung aus den Shots dieser Mühle **in diesem Sieb**, Offset aus dem
+letzten Shot dieser Bohne in diesem Sieb.
+
+**Das Sieb wirkt zweimal, und beides muss raus** (Ergänzung 2026-09-01):
+1. *Offset* — erledigt die Zentrierung je `(coffee_id, basket_id)`-Gruppe.
+2. *Steigung* — erledigt die Zentrierung NICHT. Wer über mehrere Siebe hinweg
+   eine Gerade legt, mittelt zwei unterschiedlich steile Geraden zu einer, die
+   zu keiner passt. Nachgerechnet: wahre −1.6 (enger Korb) und −0.7 (offener)
+   ergeben gepoolt −1.15; bei 4 s Lücke also −3.5 Klicks statt korrekt −2.5
+   bzw. −5.7. `learnGrinder(shots, basketId)` schätzt deshalb nur aus diesem
+   Sieb und fällt auf „alle Siebe gepoolt" nur zurück, wenn das Sieb allein zu
+   wenig hergibt — sichtbar über `scope: 'all-baskets'`, damit die UI dazusagt,
+   dass die Zahl ein Mittel über verschiedene Körbe ist.
+   `learnPerBasket` liefert die Steigung je Sieb für den Vergleich.
 
 **Die zwei Fehler der ersten Fassung** (gemeldet: Mahlgrad 10.1 → Vorschlag −3):
 1. Die Steigung wurde in EINER Regression über alle Bohnen geschätzt. Jede Bohne
@@ -378,7 +391,9 @@ Bohne **in diesem Sieb**.
 
 **`compareBaskets`** misst den Siebeffekt ausschließlich INNERHALB derselben
 Bohne (nur Bohnen, die in ≥2 Sieben gezogen wurden) und bereinigt vorher um den
-Mahlgrad. Sonst misst man die Bohne und nennt es Sieb.
+Mahlgrad — mit der Steigung **des jeweiligen Siebs**, nicht einer gemeinsamen;
+sonst bliebe ein Rest des Mahlgradunterschieds stehen und würde als Siebeffekt
+gezählt. Sonst misst man die Bohne und nennt es Sieb.
 
 **UI:** `components/GrindAdvice.tsx` (Hinweis in NewShot, volle Zeilenbreite,
 Optik der Eingabefelder) und `components/DialInPlanner.tsx` (Analyse-Tab

@@ -747,10 +747,9 @@ Aus `CLAUDE.md` / `docs/DESIGN.md`, hier nur zur Vollständigkeit:
 | 10 | Algorithmus in der Analyse, Sieb berücksichtigen | ✅ erledigt |
 
 ### Offene Punkte aus diesem Durchgang
-1. **Migration ausführen:** `docs/migrations/2026-09-01-recipe-grinder.sql`
-   (`grinder_id` + `grind_setting` auf `coffee_recipes`). Bis dahin schlägt das
-   Speichern eines Rezepts mit Mühle fehl. `grind_hint` bleibt stehen und wird
-   NICHT migriert — aus „2.5 on the Niche" ließe sich eine Zahl ziehen, aber nicht,
+1. ~~**Migration ausführen:** `docs/migrations/2026-09-01-recipe-grinder.sql`~~
+   ✅ **ausgeführt am 2026-09-01.** `grind_hint` blieb stehen und wurde NICHT
+   migriert — aus „2.5 on the Niche" ließe sich eine Zahl ziehen, aber nicht,
    welche Mühle gemeint ist.
 2. **Kartenkacheln auf dem Gerät prüfen.** Der Wechsel von CARTO auf Esri Gray
    Canvas ist aus dieser Umgebung heraus **nicht verifizierbar** — der Proxy
@@ -771,3 +770,20 @@ Aus `CLAUDE.md` / `docs/DESIGN.md`, hier nur zur Vollständigkeit:
   dunkle Karte 3:1 gegen eine fast schwarze Bohne erreichen kann (dafür müsste sie
   heller als `#696969` sein).
 - **`CorrelationScatter.tsx` ist weiterhin toter Code** — nur gemeldet, nicht entfernt.
+
+
+### Nachtrag 2: Steigung je Sieb (2026-09-01)
+Gemeldet: „der Algorithmus muss es je Basket betrachten, da andere Baskets einen
+anderen Flow haben und das die Regression verfälscht." Zutreffend, und der erste
+Durchgang hatte es nur halb gelöst: das Sieb steckte im Gruppenschlüssel und
+entfernte damit den **Offset**, die **Steigung** wurde aber weiter über alle Siebe
+gepoolt. Nachgerechnet: wahre −1.6 (enger Korb) und −0.7 (offener) ergeben
+gepoolt −1.15 — bei 4 s Lücke −3.5 Klicks statt korrekt −2.5 bzw. −5.7.
+
+Jetzt schätzt `learnGrinder(shots, basketId)` nur aus dem gewählten Sieb und
+fällt auf „alle Siebe gepoolt" nur zurück, wenn das Sieb allein zu wenig hergibt
+— dann steht `scope: 'all-baskets'` im Modell und die Meldung sagt es dazu.
+`learnPerBasket` listet die Steigung je Sieb im Analyse-Tab; zwei deutlich
+verschiedene Werte sind der Beleg, dass die Körbe unterschiedlichen Durchfluss
+haben. `compareBaskets` bereinigt den Mahlgrad ebenfalls mit der Steigung des
+jeweiligen Siebs statt mit einer gemeinsamen.

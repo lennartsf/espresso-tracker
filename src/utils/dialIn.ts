@@ -70,6 +70,16 @@ export interface GrinderModel {
   rejected: 'too-few' | 'no-spread' | 'noisy' | 'wrong-sign' | 'implausible' | null
   /** Der Mahlgradbereich, den diese Mühle je gesehen hat. */
   range: { min: number; max: number } | null
+  /** Aus welchen Daten die Steigung stammt.
+   *
+   *  `basket` — nur aus Shots mit DIESEM Sieb. Der Normalfall und der einzige,
+   *  bei dem die Zahl den Flow dieses Korbs beschreibt.
+   *  `all-baskets` — über alle Siebe gepoolt, weil das gewählte allein zu wenig
+   *  hergab. Brauchbar als Näherung, aber die Zahl ist ein Mittelwert über
+   *  Körbe mit unterschiedlichem Durchfluss und gehört so beschriftet. */
+  scope: 'basket' | 'all-baskets'
+  /** Das Sieb, auf das sich `scope: 'basket'` bezieht. */
+  basketId: string | null
 }
 
 export interface DialInSuggestion {
@@ -159,13 +169,46 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 /**
- * Lernt aus den Shots EINER Mühle, was ein Mahlgrad-Klick bewirkt.
+ * Lernt aus den Shots einer Mühle IN EINEM SIEB, was ein Mahlgrad-Klick bewirkt.
  *
- * Zentriert jede (Bohne, Sieb)-Gruppe auf ihren eigenen Mittelwert, damit der
- * Offset der Bohne und der des Siebs herausfallen — sonst misst die Regression
- * vor allem den Unterschied zwischen den Tüten.
+ * Zwei getrennte Wirkungen des Siebs, und beide müssen raus:
+ *
+ * 1. **Der Offset** — ein anderer Korb läuft grundsätzlich schneller oder
+ *    langsamer. Das erledigt die Zentrierung je (Bohne, Sieb)-Gruppe.
+ * 2. **Die Steigung** — ein anderer Korb hat anderen Durchfluss und reagiert
+ *    deshalb ANDERS STARK auf einen Klick. Das erledigt die Zentrierung NICHT:
+ *    wer über mehrere Siebe hinweg eine Gerade legt, mittelt zwei
+ *    unterschiedlich steile Geraden zu einer, die zu keiner passt.
+ *    Nachgerechnet: wahre −1.6 (enger Korb) und −0.7 (offener Korb) ergeben
+ *    gepoolt −1.15 — bei 4 s Lücke also −3.5 Klicks statt korrekt −2.5 bzw.
+ *    −5.7.
+ *
+ * Deshalb wird die Steigung, wenn ein Sieb genannt ist, ausschließlich aus
+ * dessen Shots geschätzt. Reichen die nicht, fällt die Schätzung auf alle
+ * Siebe zusammen zurück — aber sichtbar, über `scope: 'all-baskets'`, damit
+ * die UI dazusagen kann, dass die Zahl ein Mittel über verschiedene Körbe ist.
  */
-export function learnGrinder(shots: DialInShot[]): GrinderModel {
+export function learnGrinder(shots: DialInShot[], basketId: string | null = null): GrinderModel {
+  if (basketId) {
+    const own = shots.filter(s => s.basket_id === basketId)
+    const model = fitGrinder(own, 'basket', basketId)
+    if (model.basis === 'learned') return model
+    // Zu wenig Eigenes: lieber die gepoolte Näherung als gar nichts — aber
+    // der Aufrufer erfährt, dass sie gepoolt ist.
+    const pooled = fitGrinder(shots, 'all-baskets', basketId)
+    // Der abgelehnte Grund des SIEBS ist die interessantere Auskunft: „zu
+    // wenige Shots in diesem Korb" erklärt die Lage besser als der Grund, aus
+    // dem auch die gepoolte Schätzung scheiterte.
+    return pooled.basis === 'learned' ? pooled : { ...pooled, rejected: model.rejected }
+  }
+  return fitGrinder(shots, 'all-baskets', null)
+}
+
+function fitGrinder(
+  shots: DialInShot[],
+  scope: GrinderModel['scope'],
+  basketId: string | null,
+): GrinderModel {
   const valid = shots.filter(usable)
   const settings = valid.map(s => s.grind_setting!)
   const range = settings.length
@@ -178,6 +221,8 @@ export function learnGrinder(shots: DialInShot[]): GrinderModel {
     points: valid.length,
     rejected: reason,
     range,
+    scope,
+    basketId,
   })
 
   if (valid.length < 4) return reject('too-few')
@@ -231,7 +276,23 @@ export function learnGrinder(shots: DialInShot[]): GrinderModel {
     points: centred.length,
     rejected: null,
     range,
+    scope,
+    basketId,
   }
+}
+
+/** Was jedes Sieb für sich gelernt hat — für die Analyse.
+ *
+ *  Der Sinn ist der Vergleich: stehen dort zwei deutlich verschiedene
+ *  Steigungen, ist belegt, dass die Körbe unterschiedlichen Durchfluss haben
+ *  und man sie nicht über einen Kamm scheren darf. Siebe ohne eigene
+ *  brauchbare Schätzung kommen mit `basis: 'fallback'` und dem Grund zurück,
+ *  statt zu fehlen — „zu wenig Daten" ist auch eine Auskunft. */
+export function learnPerBasket(shots: DialInShot[]): GrinderModel[] {
+  const ids = [...new Set(shots.filter(usable).map(s => s.basket_id).filter(Boolean))] as string[]
+  return ids
+    .map(id => fitGrinder(shots.filter(s => s.basket_id === id), 'basket', id))
+    .sort((a, b) => (a.secondsPerStep ?? 0) - (b.secondsPerStep ?? 0))
 }
 
 /** Auf welchen Bereich ein Vorschlag zurückgeholt wird.
@@ -266,7 +327,9 @@ export function suggestGrind({
 }): DialInSuggestion {
   const valid = shots.filter(usable)
   const grinderShots = grinderId ? valid.filter(s => s.grinder_id === grinderId) : valid
-  const model = learnGrinder(grinderShots)
+  // Das Sieb geht in die STEIGUNG ein, nicht nur in den Offset: ein Korb mit
+  // anderem Durchfluss reagiert anders stark auf einen Klick.
+  const model = learnGrinder(grinderShots, basketId)
 
   const coffeeShots = grinderShots.filter(s => s.coffee_id === coffeeId)
   // Anker: gleiche Bohne UND gleiches Sieb ist der saubere Fall. Sonst die
@@ -344,6 +407,12 @@ export function suggestGrind({
   const basketNote = !sameBasket && basketId
     ? ' Heads up: your last shot of this coffee used a different basket.'
     : ''
+  // Eine gepoolte Steigung ist ein Mittel ueber Koerbe mit unterschiedlichem
+  // Durchfluss. Sie ist brauchbar, aber sie darf sich nicht als Kennzahl
+  // dieses Siebs ausgeben.
+  const scopeNote = basketId && model.basis === 'learned' && model.scope === 'all-baskets'
+    ? ' Not enough shots in this basket yet, so the step size is averaged over all your baskets.'
+    : ''
   const capNote = clamped
     ? ' Capped to the range you actually use — take it one step at a time.'
     : ''
@@ -353,7 +422,7 @@ export function suggestGrind({
     grind,
     confidence,
     clamped,
-    message: `Last shot ran ${currentTime}s, target ${targetTime}s → go ${dir} to about ${grind}${why}.${capNote}${basketNote}`,
+    message: `Last shot ran ${currentTime}s, target ${targetTime}s → go ${dir} to about ${grind}${why}.${capNote}${basketNote}${scopeNote}`,
   }
 }
 
@@ -391,10 +460,9 @@ export interface BasketEffect {
  */
 export function compareBaskets(
   shots: DialInShot[],
-  secondsPerStep: number | null,
+  slopeFor: (basketId: string) => number | null,
 ): BasketEffect[] {
   const valid = shots.filter(usable).filter(s => s.basket_id)
-  const perStep = secondsPerStep ?? FALLBACK_SECONDS_PER_STEP
 
   // Pro Bohne sammeln, welche Siebe vorkommen.
   const byCoffee = new Map<string, DialInShot[]>()
@@ -418,7 +486,11 @@ export function compareBaskets(
     // dieser Bohne auf demselben Mahlgrad gezogen.
     const adjusted = group.map(s => ({
       basket: s.basket_id!,
-      t: s.brew_time_s! - perStep * (s.grind_setting! - meanGrind),
+      // Mit der Steigung DIESES Siebs bereinigen. Mit einer gemeinsamen Zahl
+      // bliebe ein Rest des Mahlgradunterschieds stehen und würde als
+      // Siebeffekt gezählt — genau der Fehler, den die Funktion vermeiden soll.
+      t: s.brew_time_s! - (slopeFor(s.basket_id!) ?? FALLBACK_SECONDS_PER_STEP)
+        * (s.grind_setting! - meanGrind),
     }))
     const overall = adjusted.reduce((s, x) => s + x.t, 0) / adjusted.length
 
@@ -436,12 +508,17 @@ export function compareBaskets(
   }
 
   return [...acc.entries()]
-    .map(([basketId, { sum, shots, coffees }]) => ({
-      basketId,
-      offsetS: sum / shots,
-      offsetSteps: secondsPerStep !== null ? sum / shots / Math.abs(secondsPerStep) : null,
-      shots,
-      coffees,
-    }))
+    .map(([basketId, { sum, shots, coffees }]) => {
+      const own = slopeFor(basketId)
+      return {
+        basketId,
+        offsetS: sum / shots,
+        // In Klicks DIESES Siebs: derselbe Zeitunterschied bedeutet bei einem
+        // traegen Korb mehr Klicks als bei einem reaktionsfreudigen.
+        offsetSteps: own !== null ? sum / shots / Math.abs(own) : null,
+        shots,
+        coffees,
+      }
+    })
     .sort((a, b) => a.offsetS - b.offsetS)
 }

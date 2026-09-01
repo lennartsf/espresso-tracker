@@ -1,4 +1,6 @@
-import { slope, suggestGrind, learnGrinder, compareBaskets, type DialInShot } from '../utils/dialIn'
+import {
+  slope, suggestGrind, learnGrinder, learnPerBasket, compareBaskets, type DialInShot,
+} from '../utils/dialIn'
 
 /** Synthetische Shot-Serie: feiner (kleinerer Wert) ⇒ langsamer. */
 function series(
@@ -295,7 +297,7 @@ test('a basket effect is only measured within the same coffee', () => {
     ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
     ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
   ]
-  const [fast, slow] = compareBaskets(shots, -2)
+  const [fast, slow] = compareBaskets(shots, () => -2)
   expect(fast.basketId).toBe('b1')
   expect(slow.basketId).toBe('b2')
   expect(slow.offsetS - fast.offsetS).toBeCloseTo(4, 1)
@@ -307,7 +309,7 @@ test('a basket used for only one coffee is not reported', () => {
     ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
     ...series('g1', 'c2', line(14, 40, -2, [-1, 0, 1]), 'b2'),
   ]
-  expect(compareBaskets(shots, -2)).toHaveLength(0)
+  expect(compareBaskets(shots, () => -2)).toHaveLength(0)
 })
 
 test('the basket effect is corrected for grind before comparing', () => {
@@ -318,7 +320,7 @@ test('the basket effect is corrected for grind before comparing', () => {
     // Selbes Verhalten, nur 2 Klicks groeber gezogen: -2 s/Klick => 4 s kuerzer
     ...series('g1', 'c1', [[15, 26], [15.5, 25], [16, 24]], 'b2'),
   ]
-  const effects = compareBaskets(shots, -2)
+  const effects = compareBaskets(shots, () => -2)
   const spread = Math.abs(effects[0].offsetS - effects[1].offsetS)
   expect(spread).toBeLessThan(0.5)   // kein Siebeffekt, nur Mahlgrad
 })
@@ -328,7 +330,7 @@ test('the basket effect is also given in grind steps', () => {
     ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
     ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
   ]
-  const [fast, slow] = compareBaskets(shots, -2)
+  const [fast, slow] = compareBaskets(shots, () => -2)
   // 4 s Unterschied bei 2 s pro Klick = 2 Klicks.
   expect(slow.offsetSteps! - fast.offsetSteps!).toBeCloseTo(2, 1)
 })
@@ -338,5 +340,112 @@ test('without a learned slope there are no step numbers, only seconds', () => {
     ...series('g1', 'c1', line(14, 28, -2, [-1, 0, 1]), 'b1'),
     ...series('g1', 'c1', line(14, 32, -2, [-1, 0, 1]), 'b2'),
   ]
-  expect(compareBaskets(shots, null)[0].offsetSteps).toBeNull()
+  expect(compareBaskets(shots, () => null)[0].offsetSteps).toBeNull()
+})
+
+// ── Das Sieb aendert nicht nur den Offset, sondern die Steigung ────────────
+
+/** Zwei Siebe mit unterschiedlichem Durchfluss, gleiche Bohnen. */
+function twoBaskets(): DialInShot[] {
+  const out: DialInShot[] = []
+  const beans: [number, number][] = [[10, 26], [11, 29], [12, 25], [10.5, 31]]
+  beans.forEach(([g0, t0], i) => {
+    // Enger Korb: steil. Offener Korb: traege.
+    out.push(...series('g1', `bean-${i}`, line(g0, t0, -1.6, [-2, -1, 0, 1, 2]), 'tight'))
+    out.push(...series('g1', `bean-${i}`, line(g0, t0 + 3, -0.7, [-2, -1, 0, 1, 2]), 'open'))
+  })
+  return out
+}
+
+test('the slope is learned per basket, not pooled across them', () => {
+  const shots = twoBaskets()
+  // Gepoolt kaeme ein Mittelwert heraus, der zu keinem der beiden Koerbe passt.
+  const pooled = learnGrinder(shots).secondsPerStep!
+  expect(pooled).toBeGreaterThan(-1.6)
+  expect(pooled).toBeLessThan(-0.7)
+
+  expect(learnGrinder(shots, 'tight').secondsPerStep).toBeCloseTo(-1.6, 1)
+  expect(learnGrinder(shots, 'open').secondsPerStep).toBeCloseTo(-0.7, 1)
+})
+
+test('a per-basket model says which basket it came from', () => {
+  const m = learnGrinder(twoBaskets(), 'tight')
+  expect(m.scope).toBe('basket')
+  expect(m.basketId).toBe('tight')
+})
+
+test('the suggestion differs between baskets for the same gap', () => {
+  // Derselbe Rueckstand, aber der traege Korb braucht mehr Klicks. Genau das
+  // ging verloren, solange eine gemeinsame Steigung benutzt wurde.
+  const shots = twoBaskets()
+  const anchorTight = series('g1', 'c-new', [[11, 26]], 'tight')
+  const anchorOpen = series('g1', 'c-new', [[11, 26]], 'open')
+
+  const tight = suggestGrind({
+    shots: [...anchorTight, ...shots], coffeeId: 'c-new',
+    grinderId: 'g1', basketId: 'tight', targetTime: 28,
+  })
+  const open = suggestGrind({
+    shots: [...anchorOpen, ...shots], coffeeId: 'c-new',
+    grinderId: 'g1', basketId: 'open', targetTime: 28,
+  })
+  // 2 s Rueckstand: der steile Korb braucht ~1.25 Klicks, der traege ~2.9.
+  expect(tight.grind!).toBeCloseTo(9.8, 1)
+  expect(open.grind!).toBeCloseTo(8.1, 1)
+  expect(open.grind!).toBeLessThan(tight.grind!)
+})
+
+test('too little data in the chosen basket falls back — and says so', () => {
+  const shots = [
+    ...series('g1', 'c1', line(14, 28, -2, [-2, -1, 0, 1, 2]), 'b1'),
+    ...series('g1', 'c1', line(14, 33, -2, [-2, -1, 0, 1, 2]), 'b2'),
+    // Neuer Korb, ein einziger Shot — daraus ist keine Steigung zu lernen.
+    ...series('g1', 'c1', [[14, 31]], 'brand-new'),
+  ]
+  const m = learnGrinder(shots, 'brand-new')
+  expect(m.basis).toBe('learned')       // die gepoolte Schaetzung traegt
+  expect(m.scope).toBe('all-baskets')   // aber sie ist als gepoolt markiert
+
+  const r = suggestGrind({
+    shots, coffeeId: 'c1', grinderId: 'g1', basketId: 'brand-new', targetTime: 35,
+  })
+  // Eine gepoolte Steigung darf sich nicht als Kennzahl dieses Siebs ausgeben.
+  expect(r.message).toMatch(/averaged over all your baskets/)
+})
+
+test('a fully learned basket model does not claim to be pooled', () => {
+  const r = suggestGrind({
+    shots: [...series('g1', 'c-new', [[11, 26]], 'tight'), ...twoBaskets()],
+    coffeeId: 'c-new', grinderId: 'g1', basketId: 'tight', targetTime: 30,
+  })
+  expect(r.model.scope).toBe('basket')
+  expect(r.message).not.toMatch(/averaged over all your baskets/)
+})
+
+test('learnPerBasket reports every basket, including the ones it could not learn', () => {
+  const shots = [
+    ...twoBaskets(),
+    ...series('g1', 'c1', [[14, 31]], 'brand-new'),
+  ]
+  const models = learnPerBasket(shots)
+  expect(models.map(m => m.basketId).sort()).toEqual(['brand-new', 'open', 'tight'])
+  // „Zu wenig Daten" ist auch eine Auskunft und darf nicht einfach fehlen.
+  const thin = models.find(m => m.basketId === 'brand-new')!
+  expect(thin.basis).toBe('fallback')
+  expect(thin.rejected).toBe('too-few')
+})
+
+test('the basket offset is corrected with each basket own slope', () => {
+  // Beide Koerbe laufen bei gleichem Mahlgrad gleich lang, aber sie wurden auf
+  // verschiedenen Mahlgraden gezogen UND reagieren unterschiedlich stark.
+  // Mit EINER gemeinsamen Steigung bliebe ein Rest stehen und wuerde als
+  // Siebeffekt gezaehlt.
+  const shots = [
+    ...series('g1', 'c1', [[13, 28 + 1.6], [14, 28], [15, 28 - 1.6]], 'tight'),
+    ...series('g1', 'c1', [[13, 28 + 0.7], [14, 28], [15, 28 - 0.7]], 'open'),
+  ]
+  const slopeFor = (id: string) => (id === 'tight' ? -1.6 : -0.7)
+  const effects = compareBaskets(shots, slopeFor)
+  const spread = Math.abs(effects[0].offsetS - effects[1].offsetS)
+  expect(spread).toBeLessThan(0.2)
 })
