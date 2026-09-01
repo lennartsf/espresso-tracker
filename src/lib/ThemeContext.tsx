@@ -7,14 +7,18 @@ export type ResolvedTheme = 'light' | 'dark'
 
 const STORAGE_KEY = 'espresso-theme'
 
-/** Default seit Abschluss von C1b (2026-09-01): 'system'.
- *  Beide Paletten sind fertig und auf Kontrast geprüft, also folgt die App der
- *  Betriebssystem-Einstellung — auf dem Mac abends dunkel, morgens hell, ohne
- *  dass man etwas umstellt. Wer das nicht will, wählt in den Einstellungen
- *  fest Light oder Dark; diese Wahl liegt in localStorage und schlägt den
- *  Default. Vorher stand hier bewusst 'dark', damit niemand ungefragt in einem
- *  halbfertigen Light-Theme landet — dieser Grund ist entfallen. */
-export const DEFAULT_PREFERENCE: ThemePreference = 'system'
+/** Default ist 'light' (2026-09-01) — für App UND Marketing-Website.
+ *
+ *  Der Weg dahin: erst bewusst 'dark' (solange der Light-Feinschliff lief),
+ *  dann kurz 'system'. 'system' klingt zwar am höflichsten, hat aber einen
+ *  Haken: die Seite sieht bei jedem Besucher anders aus, je nachdem, wie sein
+ *  Gerät eingestellt ist — für eine öffentliche Website heißt das, dass der
+ *  erste Eindruck nicht mehr festgelegt ist. Ein fester Default legt ihn fest.
+ *
+ *  Das ist ausdrücklich nur der ANFANGSWERT. Wer in den Einstellungen Dark oder
+ *  System wählt, überschreibt ihn; die Wahl liegt in localStorage und wird beim
+ *  nächsten Start wieder gelesen. */
+export const DEFAULT_PREFERENCE: ThemePreference = 'light'
 
 function readStored(): ThemePreference {
   try {

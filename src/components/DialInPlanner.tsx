@@ -191,7 +191,11 @@ export function DialInPlanner() {
         </p>
       )}
 
-      {result && (
+      {/* `recipe &&` steht hier nicht nur fuer TypeScript: der Block liest die
+          Zielwerte direkt aus dem Rezept, haengt also wirklich an beidem.
+          `result` allein zu pruefen war eine Annahme ueber den Zusammenhang
+          („result gibt es nur mit Rezept"), die der Code nicht ausdrueckt. */}
+      {result && recipe && (
         <>
           <div className={`${cardClasses} mb-3 p-4`}>
             <p className="text-xs font-semibold uppercase tracking-wide text-coffee-muted">

@@ -38,7 +38,7 @@ löst die Präferenz `'system' | 'light' | 'dark'` auf und **stempelt `data-them
 ein ungestempelter Zustand fiele auf die Dark-Werte am `:root` zurück und ergäbe in Light
 eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten Paint
 (sonst blitzt Dark auf). Schalter: `components/ThemeToggle.tsx`, in Sidebar + Mobile-„More".
-**Default ist seit 2026-09-01 `system`** (vorher bewusst `dark`, solange der Light-Feinschliff lief). Inline-Skript und `ThemeContext` stempeln zusätzlich `<meta name="theme-color">` mit — sonst hätte die iOS-PWA im Light-Theme einen schwarzen Balken über der hellen Seite.
+**Default ist `light`** — für App UND Marketing-Website. Der Weg dahin: erst bewusst `dark` (solange der Light-Feinschliff lief), dann kurz `system`, seit 2026-09-01 `light`. Gegen `system` sprach, dass die Seite dann bei jedem Besucher anders aussieht — für eine öffentliche Website ist der erste Eindruck damit nicht mehr festgelegt. Es ist nur der ANFANGSWERT: die Wahl in den Einstellungen liegt in localStorage und schlägt ihn. Inline-Skript und `ThemeContext` stempeln zusätzlich `<meta name="theme-color">` mit — sonst hätte die iOS-PWA einen Balken in der falschen Farbe. **Die beiden Defaults (index.html und ThemeContext) sind dupliziert und werden von `ThemeContext.test.tsx` gegeneinander geprüft** — liefen sie auseinander, blitzte die Seite lautlos im falschen Theme auf.
 - **Zwei Akzente:** `--coffee-accent` färbt alles, was Text oder Icon ist;
   `--coffee-accent-deco` **nur textfreie Flächen** (Balken, Ratio-Bar, Dial-Ringe).
   Grund: das Marken-Gold `#c9a35e` erreicht auf hellem Grund nur 2.33:1 und fällt für
@@ -451,3 +451,11 @@ Bei neuer Feature-Arbeit dort zuerst nachsehen und den Status danach dort pflege
 - **Alle 4 Animationen** (inkl. Boiler) nutzen jetzt die self-computed-Engine — `animejs` wurde entfernt (war nur für Boiler). Boiler zeichnet die Flow-Linien per `useRamp` + `pathLength="1"`/`strokeDasharray="1 1"`/`strokeDashoffset={1-p}` (kein `getTotalLength`, kein Lib).
 - **Gemeinsamer Stil:** helle Karte (`bg-slate-50 … border`), SVG-Verläufe (`linearGradient`/`radialGradient`) + weicher Schatten (`feDropShadow`), Keramik/Edelstahl-Optik. Side/Top-Views teilen denselben viewBox (240×168) → gleich groß nebeneinander; Top-Inhalt via `translate/scale`-Wrapper zentriert (Animationslogik bleibt in 0..120-Koordinaten).
 - `brews`-Tabelle hat **kein RLS** (Absicht — Single-User-App ohne Auth)
+
+## Typecheck: `npm run typecheck`, NICHT `tsc --noEmit`
+Das Root-`tsconfig.json` ist eine reine Solution-Datei (`"files": []` + `references`).
+`npx tsc --noEmit` prüft dort **nichts** und meldet immer Erfolg — der Build
+(`tsc -b`) prüft dagegen `tsconfig.app.json` mit `strict: true`. Genau daran ist
+am 2026-09-01 ein Vercel-Build gescheitert, während lokal alles „grün" war.
+Vor jedem Push: `npm run build` (oder `npm run typecheck`) — nie nur `vite build`,
+denn das überspringt den Typcheck komplett.

@@ -1,34 +1,35 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#171412" />
+    <meta name="theme-color" content="#e6ddcf" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Espresso" />
     <link rel="manifest" href="/manifest.json" />
     <title>Espresso Tracker</title>
       <script>
-      // Theme VOR dem ersten Paint stempeln, sonst blitzt bei einer Light-
-      // Praeferenz kurz das Dark-Theme auf. Muss ohne Bundle laufen, deshalb
-      // inline und bewusst duplizierte Logik zu src/lib/ThemeContext.tsx.
+      // Theme VOR dem ersten Paint stempeln, sonst blitzt bei einer vom
+      // Default abweichenden Wahl kurz das falsche Theme auf. Muss ohne Bundle
+      // laufen, deshalb inline und bewusst duplizierte Logik zu
+      // src/lib/ThemeContext.tsx — die beiden Defaults muessen uebereinstimmen.
       (function () {
         try {
-          var pref = localStorage.getItem('espresso-theme') || 'system'
+          var pref = localStorage.getItem('espresso-theme') || 'light'
           var resolved = pref === 'system'
             ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
             : pref
-          if (resolved !== 'light' && resolved !== 'dark') resolved = 'dark'
+          if (resolved !== 'light' && resolved !== 'dark') resolved = 'light'
           document.documentElement.setAttribute('data-theme', resolved)
           // Statusleiste (iOS-PWA) mitziehen: bliebe sie fest dunkel, haette
           // die App auf einem hellen System einen schwarzen Balken oben.
           var meta = document.querySelector('meta[name="theme-color"]')
           if (meta) meta.setAttribute('content', resolved === 'light' ? '#e6ddcf' : '#171412')
         } catch (e) {
-          // Blockierte Site-Daten: das statische data-theme="dark" bleibt stehen.
+          // Blockierte Site-Daten: das statische data-theme="light" bleibt stehen.
         }
       })()
     </script>

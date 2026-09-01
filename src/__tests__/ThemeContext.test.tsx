@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, vi } from 'vitest'
-import { ThemeProvider, useTheme } from '../lib/ThemeContext'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import {
+  ThemeProvider, useTheme, DEFAULT_PREFERENCE, resolveTheme,
+} from '../lib/ThemeContext'
 import { ThemeToggle } from '../components/ThemeToggle'
 
 function Probe() {
@@ -38,19 +42,18 @@ beforeEach(() => {
   mockSystem(false)
 })
 
-test('defaults to system and follows the OS', () => {
-  mockSystem(true) // OS steht auf Hell
+test('defaults to light', () => {
   renderToggle()
-  // Ohne gespeicherte Wahl folgt die App dem System — nicht mehr fest Dark.
-  expect(screen.getByTestId('probe')).toHaveTextContent('system/light')
+  expect(screen.getByTestId('probe')).toHaveTextContent('light/light')
   expect(document.documentElement.getAttribute('data-theme')).toBe('light')
 })
 
-test('the default resolves to dark on a dark OS', () => {
-  mockSystem(false)
+test('the default ignores a dark OS — it is a choice, not a suggestion', () => {
+  // Ein fester Default legt den ersten Eindruck fest. Wer das nicht will,
+  // waehlt in den Einstellungen 'System'.
+  mockSystem(false) // OS steht auf Dunkel
   renderToggle()
-  expect(screen.getByTestId('probe')).toHaveTextContent('system/dark')
-  expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+  expect(document.documentElement.getAttribute('data-theme')).toBe('light')
 })
 
 test('choosing light stamps the document and persists', async () => {
@@ -101,5 +104,40 @@ test('a garbage stored value falls back to the default instead of stamping junk'
   localStorage.setItem('espresso-theme', 'chartreuse')
   mockSystem(false)
   renderToggle()
-  expect(screen.getByTestId('probe')).toHaveTextContent('system/dark')
+  expect(screen.getByTestId('probe')).toHaveTextContent('light/light')
+})
+
+test('a stored dark preference still wins over the light default', () => {
+  // Der Default ist nur der Anfangswert; die eigene Wahl schlaegt ihn.
+  localStorage.setItem('espresso-theme', 'dark')
+  renderToggle()
+  expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+})
+
+// ── Das Inline-Skript in index.html ─────────────────────────────────────────
+
+test('the pre-paint script in index.html uses the SAME default', () => {
+  // Die Logik ist bewusst dupliziert: sie muss vor dem ersten Paint laufen,
+  // also ohne Bundle. Der Preis ist, dass die beiden Defaults auseinander-
+  // laufen koennen — und zwar lautlos: die Seite wuerde im einen Theme
+  // aufblitzen und ins andere springen, ohne dass irgendwo ein Fehler
+  // entsteht. Deshalb wird hier die HTML-Datei selbst gelesen.
+  const html = readFileSync(resolve(__dirname, '../../index.html'), 'utf-8')
+
+  const fallback = html.match(/localStorage\.getItem\('espresso-theme'\)\s*\|\|\s*'(\w+)'/)
+  expect(fallback?.[1]).toBe(DEFAULT_PREFERENCE)
+
+  // Auch das statische Attribut am <html> ist ein Fallback — es bleibt stehen,
+  // wenn localStorage blockiert ist und das Skript in den catch laeuft.
+  const stamped = html.match(/<html[^>]*data-theme="(\w+)"/)
+  expect(stamped?.[1]).toBe(resolveTheme(DEFAULT_PREFERENCE))
+})
+
+test('the theme-color meta matches the default theme', () => {
+  // Sonst haette die iOS-PWA beim Start einen Balken in der falschen Farbe.
+  const html = readFileSync(resolve(__dirname, '../../index.html'), 'utf-8')
+  const meta = html.match(/<meta name="theme-color" content="(#[0-9a-f]{6})"/)!
+  const css = readFileSync(resolve(__dirname, '../index.css'), 'utf-8')
+  const light = css.match(/\[data-theme='light'\][^}]*?--coffee-bg:\s*(#[0-9a-f]{6})/s)!
+  expect(meta[1]).toBe(light[1])
 })
