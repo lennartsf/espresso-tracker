@@ -4,9 +4,8 @@ import { useWriteQueue } from '../hooks/useWriteQueue'
 import { useAuth } from '../lib/AuthContext'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
-  BookOpen, Library, Sparkles, LogOut, MoreHorizontal,
+  BookOpen, Library, Sparkles, LogOut, MoreHorizontal, SlidersHorizontal,
 } from 'lucide-react'
-import { ThemeToggle } from './ThemeToggle'
 import { ROUTES } from '../lib/routes'
 
 const navItems = [
@@ -20,6 +19,7 @@ const navItems = [
   { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
   { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
   { to: ROUTES.animate,   label: 'Animate',   Icon: Sparkles },
+  { to: ROUTES.settings,  label: 'Settings',  Icon: SlidersHorizontal },
 ]
 
 const primaryNav = navItems.slice(0, 4)
@@ -78,7 +78,6 @@ export function Layout() {
           </NavLink>
         ))}
         <div className="mt-auto grid gap-2">
-          <ThemeToggle />
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-muted transition-colors hover:bg-coffee-surface2 hover:text-coffee-cream"
@@ -127,9 +126,6 @@ export function Layout() {
                 <LogOut size={22} strokeWidth={1.75} />
                 Log out
               </button>
-            </div>
-            <div className="border-t border-coffee-line px-4 py-3">
-              <ThemeToggle />
             </div>
           </div>
         </div>

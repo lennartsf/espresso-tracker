@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Kachelsätze im Vergleich</title>
+<style>
+  body { margin:0; padding:24px; background:#1c1714; color:#f1e9df;
+         font-family: "Space Grotesk", system-ui, sans-serif; }
+  h1 { font-size:1.4rem; margin:0 0 6px; }
+  p.note { color:#a89784; font-size:.9rem; max-width:70ch; margin:0 0 20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; }
+  .card { border:1px solid rgba(246,239,228,.1); border-radius:14px; overflow:hidden;
+          background:#25201b; }
+  .card h2 { font-size:.95rem; margin:0; padding:10px 12px; }
+  .card .meta { font-size:.72rem; color:#a89784; padding:0 12px 10px; }
+  .card .key { color:#c9a35e; }
+  .map { display:grid; grid-template-columns:repeat(2,1fr); width:100%; aspect-ratio:1; }
+  .map img { width:100%; height:100%; display:block; background:#33291f; }
+  footer { color:#a89784; font-size:.8rem; margin-top:24px; }
+</style>
+</head>
+<body>
+<h1>Röster-Karte: Kachelsätze im Vergleich</h1>
+<p class="note">
+  Berlin, Zoom 12 — echte Kacheln, direkt von den Anbietern geladen. Die ersten
+  beiden sind das, was die App heute benutzt. Voyager und OSM sind die keylosen
+  Alternativen; alles Hübschere darunter braucht einen API-Key.
+</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  Kartendaten © OpenStreetMap-Mitwirkende · Kacheln © CARTO bzw. OpenStreetMap
+</footer>
+
+<script>
+const Z = 12, X0 = 2200, Y0 = 1342
+const PROVIDERS = [
+  { label: 'CartoDB Positron', meta: 'HEUTE in Light · keyless · sehr zurückgenommen, kaum POIs',
+    url: (z,x,y) => `https://a.basemaps.cartocdn.com/light_all/${z}/${x}/${y}.png` },
+  { label: 'CartoDB Dark Matter', meta: 'HEUTE in Dark · keyless · dunkles Gegenstück',
+    url: (z,x,y) => `https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}.png` },
+  { label: 'CartoDB Voyager', meta: 'keyless · mehr Farbe, Grünflächen, POI-Beschriftung — am nächsten am Google-Look',
+    url: (z,x,y) => `https://a.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}.png` },
+  { label: 'OpenStreetMap Standard', meta: 'keyless · sehr detailliert, aber laut und optisch fremd zur App',
+    url: (z,x,y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png` },
+]
+
+document.getElementById('grid').innerHTML = PROVIDERS.map(p => {
+  let imgs = ''
+  for (let dy = 0; dy < 2; dy++)
+    for (let dx = 0; dx < 2; dx++)
+      imgs += `<img loading="lazy" alt="" src="${p.url(Z, X0 + dx, Y0 + dy)}">`
+  return `<div class="card">
+    <h2>${p.label}</h2>
+    <div class="meta">${p.meta}</div>
+    <div class="map">${imgs}</div>
+  </div>`
+}).join('')
+</script>
+</body>
+</html>

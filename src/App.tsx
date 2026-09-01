@@ -24,6 +24,7 @@ import { GuideDetail } from './pages/GuideDetail'
 import { Glossary } from './pages/Glossary'
 import { Animate } from './pages/Animate'
 import { AnimateDetail } from './pages/AnimateDetail'
+import { SettingsPage } from './pages/SettingsPage'
 
 const queryClient = new QueryClient()
 
@@ -60,6 +61,7 @@ export default function App() {
             <Route path="glossary" element={<Glossary />} />
             <Route path="animate" element={<Animate />} />
             <Route path="animate/:id" element={<AnimateDetail />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

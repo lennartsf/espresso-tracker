@@ -226,15 +226,23 @@ export function NewShot() {
     ? suggestGrind({ shots: allShots, coffeeId, grinderId: grinderId || null, targetTime })
     : null
 
-  /** Temperatur wird als EINZIGE Zahl aus dem Rezept übernommen.
-   *  Dosis, Menge und Zeit erscheinen nur als Ziel-Ghost: ein eingetragener
-   *  Wert liest sich wie eine Messung, aber gewogen ist noch nichts. Die
-   *  Kesseltemperatur dagegen stellt man vor dem Bezug ein — dort ist die
-   *  Vorbelegung eine Einstellung, keine Behauptung über das Ergebnis. */
+  /** Was aus dem Rezept übernommen wird — und was nicht.
+   *
+   *  **Übernommen: Dosis und Temperatur.** Beides stellt man VOR dem Bezug
+   *  ein: die Dosis wiegt man ohnehin gegen einen Zielwert ab, die Temperatur
+   *  an der Maschine. Eine Vorbelegung ist hier eine Einstellung.
+   *
+   *  **Nicht übernommen: Menge (Yield) und Zeit.** Beides ist Ergebnis, nicht
+   *  Einstellung — vorgetragen läse es sich wie eine Messung, die noch gar
+   *  nicht stattgefunden hat.
+   *
+   *  Der Ziel-Ghost bleibt in ALLEN vier Feldern stehen, auch bei den
+   *  übernommenen: so sieht man beim Abweichen sofort, wie weit man weg ist. */
   function applyRecipeSettings(id: string) {
     setRecipeId(id)
     const r = recipeOptions.find(x => x.id === id)
     if (r?.temp_c != null) setTempC(String(r.temp_c))
+    if (r?.dose_g != null) setDoseG(String(r.dose_g))
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
@@ -447,7 +455,7 @@ export function NewShot() {
             </Select>
             {activeRecipe && (
               <p className="mt-1 text-xs text-coffee-muted">
-                Shown as a target next to the fields — nothing is filled in for you.
+                Dose and temperature are filled in; yield and time stay as targets.
               </p>
             )}
           </div>
@@ -549,6 +557,7 @@ export function NewShot() {
           <div>
             <FieldLabel>Temp (°C)</FieldLabel>
             <Input type="number" value={tempC} onChange={e => setTempC(e.target.value)} placeholder="93" />
+            <TargetGhost target={activeRecipe?.temp_c} actual={parseFloat(tempC)} unit="°C" tolerance={0.5} />
           </div>
           <div>
             <FieldLabel>Pressure (bar)</FieldLabel>

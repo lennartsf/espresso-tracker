@@ -53,9 +53,13 @@ Textarea; stattdessen läuft der Inhalt über das allgemeine `notes`-Feld des Ka
 > Tabelle `coffee_recipes`, Hook, Rezeptliste in der Kaffee-Detailseite,
 > Rezept-Picker + Ziel-Ghosts in NewShot. 264 Tests grün.
 >
-> **Konflikt A1 ↔ B wie vorgeschlagen gelöst:** das Rezept übernimmt als einzige
-> Zahl die **Temperatur**. Dosis, Menge und Zeit erscheinen nur als Ziel neben dem
-> Feld. Begründung: ein eingetragener Wert liest sich wie eine Messung, gewogen ist
+> **Konflikt A1 ↔ B gelöst, nachgeschärft am 2026-09-01:** das Rezept übernimmt
+> **Dosis und Temperatur** — beides stellt man *vor* dem Bezug ein. **Menge und
+> Zeit** bleiben Ziel-Ghost, weil sie Ergebnis sind: vorgetragen läsen sie sich wie
+> eine Messung, die noch nicht stattgefunden hat. Der Ghost steht in **allen vier**
+> Feldern, auch bei den übernommenen — so sieht man beim Abweichen sofort, wie weit
+> man weg ist. Der Mahlgrad-Prefill aus A1 (letzter Shot dieser Bohne) bleibt
+> unangetastet; das Rezept fasst ihn nicht an. Begründung: ein eingetragener Wert liest sich wie eine Messung, gewogen ist
 > aber noch nichts. Die Kesseltemperatur stellt man dagegen *vor* dem Bezug ein —
 > dort ist Vorbelegung eine Einstellung, keine Behauptung übers Ergebnis. Der
 > Mahlgrad-Prefill aus A1 bleibt damit unangetastet.
@@ -477,7 +481,15 @@ schlägt den nächsten Mahlgrad vor, um schnellstmöglich das Ziel-Rezept zu tre
 
 ---
 
-## Paket F — Bluetooth-Waage + Auto-Stop-Timer *(Task 6)* — 🟡 **TEILWEISE (2026-08-31)**
+## Paket F — Bluetooth-Waage + Auto-Stop-Timer *(Task 6)* — ⏸️ **ZURÜCKGESTELLT (User 2026-09-01)**
+> Die Logik ist gebaut und getestet (siehe unten) und bleibt liegen. Weiterbauen
+> lohnt erst, wenn (a) die Bookoo-UUIDs am Gerät verifiziert sind und (b) Paket G
+> läuft — auf dem iPhone ist Web Bluetooth nicht verfügbar, und das ist das
+> Hauptgerät.
+
+<details><summary>Stand der gebauten Teile</summary>
+
+**Bisheriger Stand: 🟡 TEILWEISE (2026-08-31)**
 > **Gebaut:** Adapter-Interface (`src/lib/scales/types.ts`), Bookoo-Adapter mit
 > testbarem Frame-Parser, Mock-Waage mit aufgezeichneter Espresso-Kurve, Registry,
 > und die Auto-Stopp-Erkennung. 322 Tests grün.
@@ -503,6 +515,8 @@ schlägt den nächsten Mahlgrad vor, um schnellstmöglich das Ziel-Rezept zu tre
 > **Noch offen:** die UI (Verbinden-Knopf, Live-Gewicht im `BrewTimer`,
 > Yield-Übernahme). Ohne verifizierte Hardware wäre das Bauen auf Sand — und auf
 > dem iPhone ist es ohne Paket G ohnehin nicht nutzbar.
+
+</details>
 **Aufwand: L** · **Isoliert** · **Harte Abhängigkeit von Paket G für iPhone**
 
 - **Web Bluetooth ist der Blocker:** Chrome/Edge auf Android + Desktop können es,
@@ -536,7 +550,20 @@ schlägt den nächsten Mahlgrad vor, um schnellstmöglich das Ziel-Rezept zu tre
 
 ---
 
-## Paket G — Native Apps: iPhone, Mac, Android *(Task 3)*
+## Paket G — Native Apps: iPhone, Mac, Android *(Task 3)* — ⏸️ **ZURÜCKGESTELLT (User 2026-09-01)**
+> **Entscheidung: bleibt vorerst Webversion.** Grund: die Apple-Developer-
+> Mitgliedschaft kostet **99 $/Jahr, laufend** — nicht einmalig. Für eine App, die
+> im Wesentlichen eine Person nutzt, steht das in keinem Verhältnis. Die
+> PWA-Installation („Zum Homebildschirm") liefert auf dem iPhone das meiste davon
+> umsonst.
+>
+> **Was das mitentscheidet:** Paket F (Bluetooth-Waage) ist auf dem iPhone damit
+> auf absehbare Zeit nicht nutzbar — Safari hat kein Web Bluetooth. Auf einem
+> Android-Gerät oder am Mac in Chrome ginge es.
+>
+> **Falls es doch kommt:** Android/Play kostet **25 $ einmalig** und wäre der
+> billige Testballon. Die Planung unten bleibt gültig.
+
 **Aufwand: XL** · **Isoliert, eigener Meilenstein** · Website bleibt bestehen
 
 Der bisherige Grundsatz „PWA statt native App" (`PROJECT_LOG.md`) wird damit bewusst
@@ -570,10 +597,22 @@ gekippt. Empfehlung: **kein Rewrite**, sondern die bestehende React-App verpacke
 > `divIcon`-Markup. Ohne Escape würde ein Anführungszeichen das Attribut sprengen.
 > `esc()` + Test dagegen.
 >
-> **Offen und von dir abhängig:** hübscheres Tileset (MapTiler / Stadia /
-> Protomaps) braucht einen API-Key. Marker-Clustering braucht
-> `react-leaflet-cluster` als neue Abhängigkeit — bei deiner Zahl an Röstereien
-> noch kein echtes Problem.
+> **Offen und von dir abhängig:** das Tileset.
+> **Vergleich zum Selbstansehen: `docs/mockups/tile-vergleich.html`** — im Browser
+> öffnen, lädt echte Kacheln (in der Entwicklungsumgebung sind die Tile-Server
+> nicht erreichbar, deshalb kein Screenshot).
+> - **CartoDB Positron / Dark Matter** — was die App heute nutzt. Bewusst
+>   zurückgenommen, kaum POIs: die Karte ist Hintergrund, die Pins sind der Inhalt.
+> - **CartoDB Voyager** — keyless, mehr Farbe, Grünflächen, POI-Beschriftung. Am
+>   nächsten am Google-Look, ohne Key und ohne Kreditkarte. Wäre der Wechsel mit
+>   dem besten Verhältnis.
+> - **OpenStreetMap Standard** — keyless, sehr detailliert, aber optisch fremd zur
+>   App (kräftiges Blau/Gelb).
+> - **MapTiler / Stadia / Protomaps** — nur mit API-Key. Dafür frei gestaltbare
+>   Stile, die exakt zur Palette passen.
+>
+> Marker-Clustering braucht `react-leaflet-cluster` als neue Abhängigkeit — bei
+> deiner Zahl an Röstereien noch kein echtes Problem.
 **Aufwand: S** · Vollständig isoliert · Guter Lückenfüller
 
 **Frage „Geht Google Maps kostenfrei?" — kurze Antwort: für deine Größenordnung ja,
