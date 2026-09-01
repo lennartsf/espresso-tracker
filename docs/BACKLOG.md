@@ -456,9 +456,39 @@ in Listen als 40-px-Thumbnail erscheint. Wenn 2D-plastisch nach dem ersten Bau n
 > zu Paket B: gerechnete Werte behaupten nichts über deine Mühle, bis du sie
 > übernimmst.
 >
-> **Noch nicht drin (Stufe 2/3 aus der ursprünglichen Skizze):** bayessches Update
-> mit Mühlen-Prior, und die Störgrößen Bohnenalter (`roast_dates` gibt es!),
-> Dosis-Schwankung und Puck-Prep.
+> ### E2 · Startwert aus dem Röstgrad ✅ **ERLEDIGT (2026-09-01)**
+> `src/utils/roastPrior.ts` — füllt genau die Lücke, in der E bisher „keine Zahl"
+> sagte: die Bohne, mit der noch kein Shot gezogen wurde.
+>
+> **Richtungskonvention (vom User korrigiert, meine erste Annahme war falsch
+> herum):** auf der Mühlenskala ist **kleiner = feiner**.
+> - **Hell geröstet braucht feiner** — dichter, weniger löslich, man braucht die
+>   größere Oberfläche zur Extraktion. Kleinere Zahl.
+> - **Dunkel geröstet kommt gröber aus** — poröser, löslicher, ohnehin intensiver;
+>   zu fein wird schnell bitter. Größere Zahl. Und meist kleinerer Yield (1:2 oder
+>   darunter).
+>
+> Erwartete Steigung `grind ~ roast` ist damit **positiv**.
+>
+> **Die Regel steht nicht als Konstante im Code.** Sie gibt nur die *Richtung*
+> vor; den *Betrag* — wie stark der Röstgrad bei dieser Mühle durchschlägt — lernt
+> der Prior aus den eigenen Bohnen. Eine gelernte Steigung mit falschem Vorzeichen
+> wird als Rauschen verworfen und fällt auf die Regel zurück.
+>
+> **Der eigentliche Gewinn ist die Ehrlichkeit über die Datenabdeckung.** Wer
+> überwiegend dunkel und mittel trinkt, hat keine Erfahrung damit, wie sich die
+> Mühle bei hellen Röstungen verhält. Der Prior meldet deshalb immer mit, welchen
+> Röstbereich die eigenen Shots abdecken, und warnt sichtbar (bernsteinfarben statt
+> golden), wenn die neue Bohne außerhalb liegt: *„your shots only cover roast
+> 5.5–8.5, so this is a guess outside what your grinder has shown."*
+>
+> Anker ist die Bohne mit dem **nächstliegenden** Röstgrad, nicht der Mittelwert —
+> das hält den Fehler klein, auch wenn die Steigung grob ist.
+>
+> **Noch nicht drin:** bayessches Update mit Mühlen-Prior, und die Störgrößen
+> Bohnenalter (`roast_dates` gibt es!), Dosis-Schwankung und Puck-Prep. Der
+> Yield-Zusammenhang (dunkel ⇒ eher 1:2 oder weniger) ist ebenfalls noch nicht
+> modelliert — er wäre der nächste sinnvolle Schritt, weil er dasselbe Muster hat.
 **Aufwand: L** · **Isoliert betrachten** · Setzt **Paket B** voraus (Rezept als Ziel)
 und profitiert stark von **A1** (Mahlgrad-Historie pro Bohne).
 

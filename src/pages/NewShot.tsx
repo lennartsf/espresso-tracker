@@ -14,6 +14,7 @@ import { TargetGhost } from '../components/TargetGhost'
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { roasterRecipeOf } from '../utils/recipeMatch'
 import { suggestGrind } from '../utils/dialIn'
+import { suggestStartingGrind } from '../utils/roastPrior'
 
 const STEP_DEFS = [
   { key: 'coffee', title: 'Coffee' },
@@ -224,6 +225,16 @@ export function NewShot() {
   const targetTime = activeRecipe?.time_s ?? null
   const dialIn = targetTime != null && coffeeId
     ? suggestGrind({ shots: allShots, coffeeId, grinderId: grinderId || null, targetTime })
+    : null
+
+  /** Für eine Bohne ohne eigenen Shot kann `suggestGrind` nichts sagen — ihm
+   *  fehlt der Offset. Dann übernimmt der Röst-Prior: er leitet den Startwert
+   *  aus dem Röstgrad und den bereits eingestellten Bohnen ab. */
+  const startPrior = dialIn?.confidence === 'none' && selectedCoffee && targetTime != null
+    ? suggestStartingGrind({
+        shots: allShots, coffees, grinderId: grinderId || null,
+        targetTime, newCoffee: selectedCoffee,
+      })
     : null
 
   /** Was aus dem Rezept übernommen wird — und was nicht.
@@ -528,6 +539,28 @@ export function NewShot() {
               <p className="mt-1 text-xs text-coffee-muted">
                 ↻ From your last shot of this coffee
               </p>
+            )}
+            {startPrior && startPrior.grind !== null && (
+              <div className={`mt-2 rounded-lg border px-3 py-2 ${
+                startPrior.extrapolating
+                  ? 'border-amber-500/40 bg-amber-500/10'
+                  : 'border-coffee-accent/30 bg-coffee-accent/10'
+              }`}>
+                <p className={`text-xs ${startPrior.extrapolating ? 'text-amber-200' : 'text-coffee-accent-soft'}`}>
+                  {startPrior.message}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    grindTouched.current = true
+                    setGrindFromLast(false)
+                    setGrindSetting(String(startPrior.grind))
+                  }}
+                  className="mt-1.5 text-xs font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+                >
+                  Start at {startPrior.grind}
+                </button>
+              </div>
             )}
             {dialIn && dialIn.grind !== null && (
               <div className="mt-2 rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2">

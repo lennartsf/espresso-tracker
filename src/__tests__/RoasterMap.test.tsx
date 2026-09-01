@@ -63,3 +63,17 @@ test('tiles follow the theme', () => {
   // Default ist dark (Paket C1a).
   expect(getAllByTestId('tiles')[0].getAttribute('data-url')).toContain('dark_all')
 })
+
+test('light uses Voyager, dark uses Dark Matter', () => {
+  // Voyager hat keine dunkle Variante — deshalb bewusst zwei verschiedene
+  // Stile statt eines kuenstlich abgedunkelten hellen.
+  localStorage.setItem('espresso-theme', 'light')
+  const { getAllByTestId, unmount } = renderMap([roaster()])
+  expect(getAllByTestId('tiles')[0].getAttribute('data-url')).toContain('voyager')
+  unmount()
+
+  localStorage.setItem('espresso-theme', 'dark')
+  const { getAllByTestId: dark } = renderMap([roaster()])
+  expect(dark('tiles')[0].getAttribute('data-url')).toContain('dark_all')
+  localStorage.clear()
+})

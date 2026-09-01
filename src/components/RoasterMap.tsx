@@ -8,8 +8,13 @@ import type { Roaster } from '../types'
 /** CartoDB-Kachelsätze. Der Pin bleibt in beiden Themes orange — er ist
  *  Funktionsfarbe (Standort), keine Dekoration. */
 const TILES = {
-  dark:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-  light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  // Dark: Dark Matter — eigens für dunkle Oberflächen gebaut.
+  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  // Light: Voyager statt Positron (2026-09-01). Mehr Farbe, Grünflächen und
+  // POI-Beschriftung — näher am gewohnten Karten-Look, weiterhin ohne API-Key.
+  // Voyager hat KEINE dunkle Variante, deshalb bleibt Dark bei Dark Matter:
+  // ein eigens dunkler Stil schlägt einen künstlich abgedunkelten hellen.
+  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
 } as const
 
 /** Hält beim Theme-Wechsel den ALTEN Kachelsatz sichtbar, bis der neue geladen
