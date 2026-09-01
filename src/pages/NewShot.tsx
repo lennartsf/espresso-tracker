@@ -13,6 +13,7 @@ import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses
 import { TargetGhost } from '../components/TargetGhost'
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { roasterRecipeOf } from '../utils/recipeMatch'
+import { suggestGrind } from '../utils/dialIn'
 
 const STEP_DEFS = [
   { key: 'coffee', title: 'Coffee' },
@@ -217,6 +218,13 @@ export function NewShot() {
 
   // Bohne gewechselt → altes Rezept gilt nicht mehr.
   useEffect(() => { setRecipeId('') }, [coffeeId])
+
+  /** Dial-in-Vorschlag: braucht ein Ziel (Rezeptzeit) und die Shot-Historie.
+   *  Ohne Ziel gibt es nichts zu treffen, dann bleibt der Block aus. */
+  const targetTime = activeRecipe?.time_s ?? null
+  const dialIn = targetTime != null && coffeeId
+    ? suggestGrind({ shots: allShots, coffeeId, grinderId: grinderId || null, targetTime })
+    : null
 
   /** Temperatur wird als EINZIGE Zahl aus dem Rezept übernommen.
    *  Dosis, Menge und Zeit erscheinen nur als Ziel-Ghost: ein eingetragener
@@ -512,6 +520,30 @@ export function NewShot() {
               <p className="mt-1 text-xs text-coffee-muted">
                 ↻ From your last shot of this coffee
               </p>
+            )}
+            {dialIn && dialIn.grind !== null && (
+              <div className="mt-2 rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2">
+                <p className="text-xs text-coffee-accent-soft">{dialIn.message}</p>
+                {dialIn.secondsPerStep !== null && dialIn.confidence !== 'low' && (
+                  <p className="mt-0.5 text-xs text-coffee-muted">
+                    Your grinder: ~{Math.abs(dialIn.secondsPerStep).toFixed(1)}s per step
+                    {' · '}{dialIn.grinderShots} shots learned
+                  </p>
+                )}
+                {dialIn.grind !== parseFloat(grindSetting) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      grindTouched.current = true
+                      setGrindFromLast(false)
+                      setGrindSetting(String(dialIn.grind))
+                    }}
+                    className="mt-1.5 text-xs font-semibold text-coffee-accent-soft underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
+                  >
+                    Use {dialIn.grind}
+                  </button>
+                )}
+              </div>
             )}
           </div>
           <div>

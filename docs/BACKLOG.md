@@ -432,7 +432,29 @@ in Listen als 40-px-Thumbnail erscheint. Wenn 2D-plastisch nach dem ersten Bau n
 
 ---
 
-## Paket E — Dial-in-Algorithmus *(Task 7)*
+## Paket E — Dial-in-Algorithmus *(Task 7)* — ✅ **ERLEDIGT (2026-08-31)**
+> `src/utils/dialIn.ts` + Vorschlagsblock unter dem Mahlgrad-Feld in NewShot.
+> Keine Migration nötig — rechnet auf den vorhandenen Shots. 294 Tests grün.
+>
+> **Die Aufteilung, die „neue Bohne, gleiche Mühle" löst:** die *Steigung*
+> (Sekunden pro Klick) kommt aus allen Shots **dieser Mühle**, über Bohnen hinweg —
+> sie ist die Mühlencharakteristik und stabil. Der *Offset* kommt aus dem letzten
+> Shot **dieser Bohne**. Eine neue Tüte muss damit die Mühle nicht neu lernen, nur
+> den Startpunkt verschieben.
+>
+> **Ehrlichkeit ist eingebaut:** ohne Shot dieser Bohne gibt es *keine Zahl*, nur
+> den Hinweis, mit dem Rezept zu starten. Eine verrauschte, positive Steigung wird
+> verworfen (sie würde in die falsche Richtung zeigen) und durch einen konservativen
+> Erfahrungswert ersetzt. Die Konfidenz steht am Ergebnis und steigt mit der Zahl
+> der Shots auf der Mühle.
+>
+> **Der Vorschlag füllt nichts aus** — er steht als „Use 13.4"-Knopf da. Konsistent
+> zu Paket B: gerechnete Werte behaupten nichts über deine Mühle, bis du sie
+> übernimmst.
+>
+> **Noch nicht drin (Stufe 2/3 aus der ursprünglichen Skizze):** bayessches Update
+> mit Mühlen-Prior, und die Störgrößen Bohnenalter (`roast_dates` gibt es!),
+> Dosis-Schwankung und Puck-Prep.
 **Aufwand: L** · **Isoliert betrachten** · Setzt **Paket B** voraus (Rezept als Ziel)
 und profitiert stark von **A1** (Mahlgrad-Historie pro Bohne).
 
