@@ -10,10 +10,23 @@
    wird IMMER gesetzt (ThemeProvider löst 'system' vorher in dark|light
    auf) — deshalb reicht hier ein Attribut-Selektor, kein Media-Query.
 
-   WICHTIG (Paket C1a): die Dark-Werte sind Zeichen für Zeichen die von
-   vor dem Theme-Umbau. Dark muss pixelgleich bleiben; jede sichtbare
-   Abweichung in Dark ist ein Bug, keine Geschmacksfrage. Abgesichert
-   durch src/__tests__/themeTokens.test.ts.
+   ÄNDERUNG 2026-09-01: die Dark-Flächen sind neu. Bis dahin galt „Dark
+   bleibt pixelgleich" — der Grund dafür (Light nachrüsten, ohne Dark zu
+   riskieren) ist mit Abschluss von C1b entfallen, und die alten Werte
+   hatten zwei gemessene Schwächen:
+   1. Die Flächen lagen zu dicht beieinander: bg→surface und
+      surface→surface-2 waren nur ~4.5 L* auseinander. Karten hoben sich
+      kaum vom Seitengrund ab, Felder kaum von den Karten.
+   2. Das warme Braun lag in derselben Farbfamilie wie eine Kaffeebohne.
+      Auf der Coffees-Seite erreichte eine dunkle Röstung gegen die Karte
+      1.03–1.72:1 — die Bohne war unsichtbar.
+   Jetzt: Schritte von ~7 L* und etwas weniger Sättigung. Die Bohne selbst
+   löst (2) über ihren eigenen hellen Teller (src/components/CoffeeBean.tsx);
+   die Palette allein KANN es nicht — für 3:1 gegen eine fast schwarze
+   Bohne müsste die Karte heller als #696969 sein.
+   Die Textfarben blieben, nur `--coffee-muted` wurde aufgehellt: auf der
+   neuen surface-2 wäre der alte Wert auf 4.52:1 gefallen, hart an der
+   Grenze. Alle Werte sind in src/__tests__/themeTokens.test.ts festgehalten.
 
    Rollen der beiden Akzente:
    - `--coffee-accent`     alles, was Text oder ein Icon einfärbt.
@@ -22,23 +35,23 @@
      Light still wieder weg. */
 :root,
 :root[data-theme='dark'] {
-  --coffee-bg: #1c1714;
-  --coffee-surface: #25201b;
+  --coffee-bg: #171412;
+  --coffee-surface: #26221e;
   /* Endpunkt des Karten-Verlaufs. In Dark == bg (der Verlauf lief schon
      immer auf den Seitengrund aus), in Light braucht er einen eigenen. */
-  --coffee-surface-btm: #1c1714;
-  --coffee-surface-2: #33291f;
+  --coffee-surface-btm: #171412;
+  --coffee-surface-2: #38312b;
   --coffee-accent: #c9a35e;
   --coffee-accent-soft: #d8bd86;
   --coffee-accent-deco: #c9a35e;
   --coffee-glow-top: #e9c987;
   /* Schrift auf Akzent-Flaechen. In Dark == --coffee-bg, also exakt das,
      was vorher als `text-coffee-bg` an den Buttons stand. */
-  --coffee-on-accent: #1c1714;
+  --coffee-on-accent: #171412;
   --coffee-cream: #f6efe4;
   --coffee-text: #f1e9df;
-  --coffee-muted: #a89784;
-  --coffee-line: rgba(246, 239, 228, 0.10);
+  --coffee-muted: #b0a08d;
+  --coffee-line: rgba(246, 239, 228, 0.14);
   /* Embossed-Signatur als Token, damit cardClasses eine Konstante bleibt. */
   --coffee-card-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 2px 8px rgba(233, 201, 135, 0.06);
   --coffee-glow-shadow: 0 4px 14px rgba(233, 201, 135, 0.35);
@@ -48,7 +61,7 @@
   /* Kante der Eingabefelder. War fest `border-white/15` — in Dark eine feine
      Lichtkante, in Light auf beigem Feld UNSICHTBAR. Der Dark-Wert ist exakt
      der alte, damit sich dort nichts verschiebt. */
-  --coffee-field-border: rgba(255, 255, 255, 0.15);
+  --coffee-field-border: rgba(255, 255, 255, 0.24);
   /* Dial-Mulde und die beiden Glows (C1b). */
   --coffee-dial-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 3px 8px rgba(233, 201, 135, 0.2);
   --coffee-ring-glow: drop-shadow(0 0 6px rgba(95, 168, 105, 0.5));
@@ -58,6 +71,16 @@
   --coffee-liquid-glow: 0 0 12px rgba(233, 201, 135, 0.5);
   /* Ambient-Schein hinter der Hero-Headline (Marketing). */
   --coffee-hero-glow: radial-gradient(circle, rgba(201, 163, 94, 0.22), transparent 70%);
+  /* Semantische Funktionsfarben (2026-09-01). Vorher standen an diesen Stellen
+     feste Tailwind-Werte — `text-red-400` fuer Fehler, `text-amber-200` fuer
+     Warnungen, `text-green-400` fuer Erfolg. In Dark tragen die; in Light
+     erreichen sie 1.20–2.72:1 und sind damit unlesbar. Aufgefallen ist das
+     erst, als der Theme-Default auf 'system' ging und Light zur Regel wurde.
+     Beide Werte sind gegen BEIDE Flaechen des jeweiligen Themes geprueft
+     (>= 4.6:1), siehe src/__tests__/themeTokens.test.ts. */
+  --coffee-warn: #d88b18;
+  --coffee-danger: #e6817a;
+  --coffee-ok: #34b268;
 }
 
 /* Light — kontrastgeprüft gegen WCAG AA (4.5:1) für kleinen Text.
@@ -103,6 +126,9 @@
   /* Auf hellem Grund traegt Gold kaum — deutlich zurueckgenommen und ins
      dunklere Akzentbraun gedreht, sonst wird daraus ein gelber Fleck. */
   --coffee-hero-glow: radial-gradient(circle, rgba(131, 85, 38, 0.13), transparent 70%);
+  --coffee-warn: #7c500e;
+  --coffee-danger: #a72920;
+  --coffee-ok: #1d633a;
 }
 
 /* Farbige Formularelemente/Scrollbars sollen dem Theme folgen. */

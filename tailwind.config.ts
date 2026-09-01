@@ -26,6 +26,9 @@ export default {
           line: 'var(--coffee-line)',
           // Kante der Eingabefelder — kraeftiger als `line`.
           field: 'var(--coffee-field-border)',
+          warn: 'var(--coffee-warn)',
+          danger: 'var(--coffee-danger)',
+          ok: 'var(--coffee-ok)',
         },
       },
       boxShadow: {

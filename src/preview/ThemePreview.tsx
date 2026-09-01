@@ -10,6 +10,9 @@ import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { LayoutEditor } from '../components/dashboard/LayoutEditor'
 import { CoffeeBean } from '../components/CoffeeBean'
+import { RatingInput } from '../components/RatingInput'
+import { GrindAdvice } from '../components/GrindAdvice'
+import { InfoButton } from '../components/ui'
 import { DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
 import { ratingHex, intensityBadge, type ThemeName } from '../utils/ratingColor'
 import { chartColors } from '../utils/chartTheme'
@@ -197,6 +200,41 @@ export function ThemePreview({ theme }: { theme: ThemeName }) {
                 </div>
               </div>
             </div>
+          </Section>
+
+          <Section title="Rating scales + info button (2026-09-01)">
+            <div className={`${cardClasses} grid gap-4 p-4`}>
+              <div>
+                <div className="mb-2 flex items-center gap-2">
+                  <InfoButton open={false} onClick={() => {}} />
+                  <span className="text-xs font-semibold uppercase text-coffee-muted">Flavor (quality) *</span>
+                  <InfoButton open onClick={() => {}} />
+                  <span className="text-[10px] text-coffee-muted">← closed / open</span>
+                </div>
+                <RatingInput value={9} onChange={() => {}} scale="quality" />
+              </div>
+              <div>
+                <span className="mb-2 block text-xs font-semibold uppercase text-coffee-muted">Same, low score</span>
+                <RatingInput value={2} onChange={() => {}} scale="quality" />
+              </div>
+              <div>
+                <span className="mb-2 block text-xs font-semibold uppercase text-coffee-muted">Bitterness (intensity)</span>
+                <RatingInput value={7} onChange={() => {}} scale="intensity" />
+              </div>
+            </div>
+          </Section>
+
+          <Section title="Grind advice block (full width)">
+            <GrindAdvice
+              message="Last shot ran 25s, target 28s → go finer to about 8.6."
+              detail="Your grinder: ~1.2s per grind step, learned from 34 shots."
+              actionLabel="Use 8.6"
+              onApply={() => {}}
+            />
+            <GrindAdvice
+              warning
+              message="Last shot ran 25s, target 28s → go finer to about 12.1 (rough guess — you have always ground at nearly the same setting, so there is nothing to learn from yet)."
+            />
           </Section>
 
           <Section title="Shot cards">

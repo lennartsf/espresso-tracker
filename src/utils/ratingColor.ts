@@ -21,7 +21,7 @@ export function ratingColor(v: number): string {
  *  Grafik-Elemente verlangt WCAG 3:1. Eine einfach abgedunkelte Variante löst das
  *  nicht — sie fällt dann auf DUNKLEM Grund bei Stufe 1 und 2 durch. Der Ausweg ist
  *  das Luminanz-Fenster, in dem beide Bedingungen zugleich gelten:
- *    3:1 gegen `--coffee-surface` dark  (#25201b) → L ≥ 0.145
+ *    3:1 gegen `--coffee-surface` dark  (#26221e) → L ≥ 0.145
  *    3:1 gegen `--coffee-surface` light (#fffdfa) → L ≤ 0.295
  *  Alle zehn Stufen liegen darin und erreichen auf beiden Gründen 3.05–5.21.
  *
@@ -38,6 +38,25 @@ export function ratingHex(v: number): string {
     6: '#838a20', 7: '#6a942a', 8: '#4e9d31', 9: '#30a437', 10: '#2ca759',
   }
   return map[v] ?? '#7a6450'
+}
+
+/** Lesbare Schrift auf einer `ratingHex`-Fläche.
+ *
+ *  Die Rampe liegt bewusst im Luminanz-Fenster 0.145–0.295 — dadurch trägt sie
+ *  auf beiden Kartenflächen, aber sie ist eben auch überall mittelhell. Eine
+ *  einzige Schriftfarbe reicht deshalb NICHT: Creme fällt ab Stufe 3 durch,
+ *  dunkle Tinte auf den Stufen 1–2. Der Umschlag liegt bei Stufe 3.
+ *
+ *  Die beiden Tinten sind absichtlich etwas extremer als `--coffee-cream` und
+ *  `--coffee-bg`: mit den Palettenwerten bliebe die Mitte der Rampe unter
+ *  4.5:1. Sie sind themeunabhängig — die Fläche darunter ist die Rating-Farbe,
+ *  nicht die Karte.
+ *
+ *  Der schlechteste Wert liegt bei 4.54:1 (Stufe 3) und damit knapp über der
+ *  Anforderung. `ratingColor.test.ts` prüft das für alle zehn Stufen — wer die
+ *  Rampe ändert, sieht sofort, wenn die Zusage fällt. */
+export function ratingInk(v: number): string {
+  return v <= 2 ? '#fffdfa' : '#0a0806'
 }
 
 /** Grundfarbe der Intensitäts-Skala je Theme.
@@ -71,7 +90,7 @@ export function intensityBadge(v: number, theme: ThemeName): { backgroundColor: 
   const t = Math.min(1, Math.max(0, (v - 1) / 9))
   const alpha = 0.16 + t * 0.76
   const ink = theme === 'dark'
-    ? { on: '#1c1714', off: '#f1e9df' }   // satte Creme-Fläche → dunkle Ziffer
+    ? { on: '#171412', off: '#f1e9df' }   // satte Creme-Fläche → dunkle Ziffer
     : { on: '#fffaf2', off: '#2a221b' }   // satte Braun-Fläche → helle Ziffer
   return {
     backgroundColor: `rgba(${INTENSITY_RGB[theme]}, ${alpha.toFixed(2)})`,

@@ -51,7 +51,13 @@ function RatingField({
           </div>
         </InfoBox>
       )}
-      <RatingInput value={value} onChange={onChange} />
+      <RatingInput
+        value={value}
+        onChange={onChange}
+        // 'rating' ist die einzige Frage nach gut/schlecht; Body, Saeure und
+        // Bitterness sind Auspraegung und duerfen nicht rot/gruen erscheinen.
+        scale={infoKey === 'rating' ? 'quality' : 'intensity'}
+      />
     </div>
   )
 }
@@ -315,7 +321,7 @@ export function NewBrew() {
           />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"

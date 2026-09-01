@@ -191,6 +191,12 @@ export interface CoffeeRecipe {
   yield_g: number | null
   temp_c: number | null
   time_s: number | null
+  /** Mühle, auf die sich `grind_setting` bezieht. Ohne sie ist die Zahl
+   *  bedeutungslos — Mahlgradskalen sind zwischen Mühlen nicht vergleichbar. */
+  grinder_id: string | null
+  grind_setting: number | null
+  /** Freie Notiz zum Rezept. Hieß bis 2026-09-01 „Grind hint" und trug den
+   *  Mahlgrad als Text; der steckt jetzt in `grinder_id` + `grind_setting`. */
   grind_hint: string | null
   is_default: boolean
   matches_roaster: boolean

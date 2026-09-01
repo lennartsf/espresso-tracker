@@ -6,6 +6,7 @@ import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useGrinders, useMachines, useBaskets } from '../hooks/useEquipment'
 import { RatingInput } from '../components/RatingInput'
 import { BrewRatioBar } from '../components/BrewRatioBar'
+import { SaveShotAsRecipe } from '../components/SaveShotAsRecipe'
 import { ratingBadgeClasses, intensityBadge } from '../utils/ratingColor'
 import { useTheme } from '../lib/ThemeContext'
 import { DRINK_TYPES, MILK_TYPES, drinkTypeLabel, milkTypeLabel } from '../utils/drinkTypes'
@@ -84,7 +85,7 @@ export function ShotDetail() {
           <button
             onClick={handleDelete}
             disabled={deleteShot.isPending}
-            className="text-coffee-muted hover:text-red-400 text-sm disabled:opacity-50"
+            className="text-coffee-muted hover:text-coffee-danger text-sm disabled:opacity-50"
           >
             {deleteShot.isPending ? 'Deleting...' : 'Delete'}
           </button>
@@ -215,6 +216,10 @@ export function ShotDetail() {
           </div>
         </div>
       )}
+      {/* Aus einem gelungenen Shot wird ein Rezept — der uebliche Weg, wie
+          Rezepte tatsaechlich entstehen. */}
+      <SaveShotAsRecipe shot={shot} />
+
       {/* Timestamp */}
       <p className="text-xs text-coffee-muted text-center mt-4">{formatDate(shot.pulled_at)}</p>
       {(shot.used_rdt || shot.used_wdt || shot.used_leveler) && (
@@ -539,19 +544,19 @@ function ShotEditForm({
         <div className="grid gap-3">
           <div>
             <FieldLabel required>Flavor</FieldLabel>
-            <RatingInput value={rating} onChange={setRating} />
+            <RatingInput value={rating} onChange={setRating} scale="quality" />
           </div>
           <div>
             <FieldLabel>Body</FieldLabel>
-            <RatingInput value={bodyScore} onChange={setBodyScore} />
+            <RatingInput value={bodyScore} onChange={setBodyScore} scale="intensity" />
           </div>
           <div>
             <FieldLabel>Acidity</FieldLabel>
-            <RatingInput value={acidityScore} onChange={setAcidityScore} />
+            <RatingInput value={acidityScore} onChange={setAcidityScore} scale="intensity" />
           </div>
           <div>
             <FieldLabel>Bitterness</FieldLabel>
-            <RatingInput value={bitternessScore} onChange={setBitternessScore} />
+            <RatingInput value={bitternessScore} onChange={setBitternessScore} scale="intensity" />
           </div>
         </div>
 
@@ -561,7 +566,7 @@ function ShotEditForm({
           <Textarea value={tastingNotes} onChange={e => setTastingNotes(e.target.value)} rows={2} className="resize-none" />
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         <button
           type="submit"

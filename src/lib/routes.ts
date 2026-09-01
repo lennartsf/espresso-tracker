@@ -24,6 +24,9 @@ export const ROUTES = {
   guide: '/app/guide',
   guideDetail: (id: string) => `/app/guide/${id}`,
   glossary: '/app/glossary',
+  // Animate steht seit 2026-09-01 NICHT mehr in der Navigation (Layout.tsx),
+  // die Routen bleiben aber: bestehende Lesezeichen und Links sollen weiter
+  // funktionieren, die Seiten sind nur nicht mehr prominent.
   animate: '/app/animate',
   animateDetail: (id: string) => `/app/animate/${id}`,
   settings: '/app/settings',

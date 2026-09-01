@@ -111,7 +111,7 @@ export function PhotoUpload({ bucket, value, onChange, name }: Props) {
         className="hidden"
       />
 
-      {error && <p className="text-xs text-red-400 mt-1 w-14">{error}</p>}
+      {error && <p className="text-xs text-coffee-danger mt-1 w-14">{error}</p>}
     </div>
   )
 }

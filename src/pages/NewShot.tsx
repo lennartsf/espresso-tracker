@@ -11,6 +11,7 @@ import { BrewTimer } from '../components/BrewTimer'
 import { BrewRatioBar } from '../components/BrewRatioBar'
 import { Input, Select, Textarea, FieldLabel, InfoButton, InfoBox, buttonClasses } from '../components/ui'
 import { TargetGhost } from '../components/TargetGhost'
+import { GrindAdvice } from '../components/GrindAdvice'
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { roasterRecipeOf } from '../utils/recipeMatch'
 import { suggestGrind } from '../utils/dialIn'
@@ -70,7 +71,13 @@ function RatingField({
         </InfoBox>
       )}
 
-      <RatingInput value={value} onChange={onChange} />
+      <RatingInput
+        value={value}
+        onChange={onChange}
+        // 'rating' ist die einzige Frage nach gut/schlecht; Body, Saeure und
+        // Bitterness sind Auspraegung und duerfen nicht rot/gruen erscheinen.
+        scale={infoKey === 'rating' ? 'quality' : 'intensity'}
+      />
     </div>
   )
 }
@@ -208,10 +215,15 @@ export function NewShot() {
   const { data: ownRecipes = [] } = useCoffeeRecipes(coffeeId || undefined)
   const roasterRecipe = roasterRecipeOf(selectedCoffee)
   const recipeOptions = [
-    ...(roasterRecipe ? [{ id: 'roaster', ...roasterRecipe }] : []),
+    // Das Röster-Rezept kennt keine Mühle — die Angabe auf der Tüte meint eine
+    // fremde. Deshalb hier ausdrücklich null und kein geratener Wert.
+    ...(roasterRecipe
+      ? [{ id: 'roaster', ...roasterRecipe, grinder_id: null as string | null, grind_setting: null as number | null }]
+      : []),
     ...ownRecipes.map(r => ({
       id: r.id, name: r.name, dose_g: r.dose_g, yield_g: r.yield_g,
       temp_c: r.temp_c, time_s: r.time_s,
+      grinder_id: r.grinder_id, grind_setting: r.grind_setting,
     })),
   ]
   const [recipeId, setRecipeId] = useState('')
@@ -224,7 +236,16 @@ export function NewShot() {
    *  Ohne Ziel gibt es nichts zu treffen, dann bleibt der Block aus. */
   const targetTime = activeRecipe?.time_s ?? null
   const dialIn = targetTime != null && coffeeId
-    ? suggestGrind({ shots: allShots, coffeeId, grinderId: grinderId || null, targetTime })
+    ? suggestGrind({
+        shots: allShots,
+        coffeeId,
+        grinderId: grinderId || null,
+        // Das Sieb gehoert dazu: ein anderer Korb verschiebt die Durchlaufzeit
+        // wie eine andere Bohne. Ohne ihn wuerde der Anker aus einem Shot
+        // stammen, der so gar nicht vergleichbar ist.
+        basketId: basketId || null,
+        targetTime,
+      })
     : null
 
   /** Für eine Bohne ohne eigenen Shot kann `suggestGrind` nichts sagen — ihm
@@ -254,6 +275,15 @@ export function NewShot() {
     const r = recipeOptions.find(x => x.id === id)
     if (r?.temp_c != null) setTempC(String(r.temp_c))
     if (r?.dose_g != null) setDoseG(String(r.dose_g))
+
+    // Mahlgrad nur, wenn das Rezept ihn auf DERSELBEN Mühle festgehalten hat.
+    // Mahlgradzahlen sind zwischen Mühlen nicht vergleichbar: „2.5" von der
+    // einen auf die andere zu übertragen, ergäbe stillschweigend Unsinn.
+    if (r?.grind_setting != null && r.grinder_id && r.grinder_id === grinderId) {
+      grindTouched.current = true
+      setGrindFromLast(false)
+      setGrindSetting(String(r.grind_setting))
+    }
   }
 
   // Mobile stepped flow. Milk step only exists for milk drinks → dynamic step list.
@@ -540,52 +570,6 @@ export function NewShot() {
                 ↻ From your last shot of this coffee
               </p>
             )}
-            {startPrior && startPrior.grind !== null && (
-              <div className={`mt-2 rounded-lg border px-3 py-2 ${
-                startPrior.extrapolating
-                  ? 'border-amber-500/40 bg-amber-500/10'
-                  : 'border-coffee-accent/30 bg-coffee-accent/10'
-              }`}>
-                <p className={`text-xs ${startPrior.extrapolating ? 'text-amber-200' : 'text-coffee-accent-soft'}`}>
-                  {startPrior.message}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    grindTouched.current = true
-                    setGrindFromLast(false)
-                    setGrindSetting(String(startPrior.grind))
-                  }}
-                  className="mt-1.5 text-xs font-semibold underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
-                >
-                  Start at {startPrior.grind}
-                </button>
-              </div>
-            )}
-            {dialIn && dialIn.grind !== null && (
-              <div className="mt-2 rounded-lg border border-coffee-accent/30 bg-coffee-accent/10 px-3 py-2">
-                <p className="text-xs text-coffee-accent-soft">{dialIn.message}</p>
-                {dialIn.secondsPerStep !== null && dialIn.confidence !== 'low' && (
-                  <p className="mt-0.5 text-xs text-coffee-muted">
-                    Your grinder: ~{Math.abs(dialIn.secondsPerStep).toFixed(1)}s per step
-                    {' · '}{dialIn.grinderShots} shots learned
-                  </p>
-                )}
-                {dialIn.grind !== parseFloat(grindSetting) && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      grindTouched.current = true
-                      setGrindFromLast(false)
-                      setGrindSetting(String(dialIn.grind))
-                    }}
-                    className="mt-1.5 text-xs font-semibold text-coffee-accent-soft underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-coffee-accent"
-                  >
-                    Use {dialIn.grind}
-                  </button>
-                )}
-              </div>
-            )}
           </div>
           <div>
             <FieldLabel>Temp (°C)</FieldLabel>
@@ -597,6 +581,44 @@ export function NewShot() {
             <Input type="number" step="0.1" value={pressureBar} onChange={e => setPressureBar(e.target.value)} placeholder="9" />
           </div>
         </div>
+
+        {/* Der Vorschlag laeuft ueber die ganze Zeile — von Grind setting bis
+            Pressure. In der Mahlgrad-Spalte hatte er ein Drittel der Breite und
+            brach auf fuenf Zeilen um. */}
+        {startPrior && startPrior.grind !== null && (
+          <GrindAdvice
+            warning={startPrior.extrapolating}
+            message={startPrior.message}
+            actionLabel={`Start at ${startPrior.grind}`}
+            onApply={() => {
+              grindTouched.current = true
+              setGrindFromLast(false)
+              setGrindSetting(String(startPrior.grind))
+            }}
+          />
+        )}
+
+        {dialIn && dialIn.grind !== null && (
+          <GrindAdvice
+            warning={dialIn.model.basis === 'fallback'}
+            message={dialIn.message}
+            detail={
+              dialIn.model.basis === 'learned'
+                ? `Your grinder: ~${Math.abs(dialIn.model.secondsPerStep!).toFixed(1)}s per grind step, learned from ${dialIn.model.points} shots.`
+                : undefined
+            }
+            actionLabel={dialIn.grind !== parseFloat(grindSetting) ? `Use ${dialIn.grind}` : undefined}
+            onApply={
+              dialIn.grind !== parseFloat(grindSetting)
+                ? () => {
+                    grindTouched.current = true
+                    setGrindFromLast(false)
+                    setGrindSetting(String(dialIn.grind))
+                  }
+                : undefined
+            }
+          />
+        )}
 
         {/* Dose */}
         <div>
@@ -747,7 +769,7 @@ export function NewShot() {
         </div>
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-coffee-danger text-sm">{error}</p>}
 
         {isMobile ? (
           <div className="flex gap-3">

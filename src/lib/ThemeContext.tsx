@@ -7,11 +7,18 @@ export type ResolvedTheme = 'light' | 'dark'
 
 const STORAGE_KEY = 'espresso-theme'
 
-/** Paket C1a: Default ist bewusst 'dark', NICHT 'system'.
- *  Solange der Light-Feinschliff (C1b) läuft, soll niemand ungefragt in einem
- *  halbfertigen Light-Theme landen — auch nicht, wenn sein Mac auf Hell steht.
- *  Beim Abschluss von C1b wird der Default auf 'system' gedreht. */
-export const DEFAULT_PREFERENCE: ThemePreference = 'dark'
+/** Default ist 'light' (2026-09-01) — für App UND Marketing-Website.
+ *
+ *  Der Weg dahin: erst bewusst 'dark' (solange der Light-Feinschliff lief),
+ *  dann kurz 'system'. 'system' klingt zwar am höflichsten, hat aber einen
+ *  Haken: die Seite sieht bei jedem Besucher anders aus, je nachdem, wie sein
+ *  Gerät eingestellt ist — für eine öffentliche Website heißt das, dass der
+ *  erste Eindruck nicht mehr festgelegt ist. Ein fester Default legt ihn fest.
+ *
+ *  Das ist ausdrücklich nur der ANFANGSWERT. Wer in den Einstellungen Dark oder
+ *  System wählt, überschreibt ihn; die Wahl liegt in localStorage und wird beim
+ *  nächsten Start wieder gelesen. */
+export const DEFAULT_PREFERENCE: ThemePreference = 'light'
 
 function readStored(): ThemePreference {
   try {
@@ -31,6 +38,18 @@ export function resolveTheme(pref: ThemePreference): ResolvedTheme {
   return pref === 'system' ? systemTheme() : pref
 }
 
+/** Hintergrundfarbe der Statusleiste je Theme — muss zu `--coffee-bg` passen.
+ *  Literale Werte, weil `<meta>` kein CSS aufloest. */
+const THEME_COLOR: Record<ResolvedTheme, string> = { dark: '#171412', light: '#e6ddcf' }
+
+/** Stempelt das aufgeloeste Theme an `<html>` und zieht die Statusleiste mit.
+ *  Beides gehoert zusammen: ohne den zweiten Teil hat die iOS-PWA im Light-
+ *  Theme einen schwarzen Balken ueber der hellen Seite. */
+function applyTheme(resolved: ResolvedTheme) {
+  document.documentElement.setAttribute('data-theme', resolved)
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[resolved])
+}
+
 interface ThemeValue {
   preference: ThemePreference
   theme: ResolvedTheme
@@ -48,7 +67,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const resolved = resolveTheme(preference)
     setTheme(resolved)
-    document.documentElement.setAttribute('data-theme', resolved)
+    applyTheme(resolved)
   }, [preference])
 
   // Nur bei 'system' auf OS-Wechsel hören.
@@ -59,7 +78,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const onChange = () => {
       const resolved = systemTheme()
       setTheme(resolved)
-      document.documentElement.setAttribute('data-theme', resolved)
+      applyTheme(resolved)
     }
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)

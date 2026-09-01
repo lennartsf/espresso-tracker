@@ -36,7 +36,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
         <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
           <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
           <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" />
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-coffee-danger">{error}</p>}
           <button
             type="submit"
             disabled={loading || !email || !password}

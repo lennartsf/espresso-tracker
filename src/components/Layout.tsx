@@ -4,7 +4,7 @@ import { useWriteQueue } from '../hooks/useWriteQueue'
 import { useAuth } from '../lib/AuthContext'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
-  BookOpen, Library, Sparkles, LogOut, MoreHorizontal, SlidersHorizontal,
+  BookOpen, Library, LogOut, MoreHorizontal, SlidersHorizontal,
 } from 'lucide-react'
 import { ROUTES } from '../lib/routes'
 
@@ -18,7 +18,6 @@ const navItems = [
   { to: ROUTES.equipment, label: 'Equipment', Icon: Settings },
   { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
   { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
-  { to: ROUTES.animate,   label: 'Animate',   Icon: Sparkles },
   { to: ROUTES.settings,  label: 'Settings',  Icon: SlidersHorizontal },
 ]
 
