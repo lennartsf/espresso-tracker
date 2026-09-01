@@ -477,7 +477,32 @@ schlägt den nächsten Mahlgrad vor, um schnellstmöglich das Ziel-Rezept zu tre
 
 ---
 
-## Paket F — Bluetooth-Waage + Auto-Stop-Timer *(Task 6)*
+## Paket F — Bluetooth-Waage + Auto-Stop-Timer *(Task 6)* — 🟡 **TEILWEISE (2026-08-31)**
+> **Gebaut:** Adapter-Interface (`src/lib/scales/types.ts`), Bookoo-Adapter mit
+> testbarem Frame-Parser, Mock-Waage mit aufgezeichneter Espresso-Kurve, Registry,
+> und die Auto-Stopp-Erkennung. 322 Tests grün.
+>
+> **Die naive Regel „stoppe bei Stillstand" scheitert an zwei realen Stellen**,
+> beide sind in der Erkennung berücksichtigt und durch Tests festgehalten:
+> 1. *Vor* dem ersten Tropfen ändert sich auch nichts — wer nur auf Stillstand
+>    prüft, stoppt sofort nach dem Start. Deshalb muss erst ein Mindestgewicht
+>    (5 g) geflossen sein.
+> 2. Die Waage rauscht um Zehntelgramm. Die Flussrate wird deshalb über ein
+>    600-ms-Fenster gebildet, nicht aus zwei aufeinanderfolgenden Werten.
+>
+> Die Erkennung ist eine **reine Funktion über dem Gewichtsverlauf** — dadurch
+> mit aufgezeichneten Kurven testbar, ohne Hardware und ohne Timer.
+>
+> **⚠ Noch nicht am Gerät verifiziert:** Service-UUIDs, Characteristic-UUIDs und
+> Byte-Layout stammen aus der Protokollbeschreibung. Vor der ersten echten Nutzung
+> mit Chrome auf Android gegenprüfen (`chrome://bluetooth-internals`). Der
+> Frame-Parser selbst ist getestet, inklusive Ablehnung falscher Header und
+> unplausibler Gewichte — ein fehlinterpretiertes Frame wäre ein Gewichtssprung
+> und würde den Auto-Stopp auslösen.
+>
+> **Noch offen:** die UI (Verbinden-Knopf, Live-Gewicht im `BrewTimer`,
+> Yield-Übernahme). Ohne verifizierte Hardware wäre das Bauen auf Sand — und auf
+> dem iPhone ist es ohne Paket G ohnehin nicht nutzbar.
 **Aufwand: L** · **Isoliert** · **Harte Abhängigkeit von Paket G für iPhone**
 
 - **Web Bluetooth ist der Blocker:** Chrome/Edge auf Android + Desktop können es,
