@@ -8,6 +8,8 @@ import { DialGauge } from '../components/dashboard/DialGauge'
 import { LiquidBar } from '../components/dashboard/LiquidBar'
 import { EmbossedTile } from '../components/dashboard/EmbossedTile'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { LayoutEditor } from '../components/dashboard/LayoutEditor'
+import { DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
 import { ratingHex, intensityBadge, type ThemeName } from '../utils/ratingColor'
 import { chartColors } from '../utils/chartTheme'
 import type { ShotWithCoffee } from '../hooks/useShots'
@@ -156,6 +158,14 @@ export function ThemePreview({ theme }: { theme: ThemeName }) {
                 ))}
               </div>
             </div>
+          </Section>
+
+          <Section title="Dashboard arrange (C3)">
+            <LayoutEditor
+              layout={DEFAULT_LAYOUT.map((e, i) => (i === 1 ? { ...e, visible: false } : e))}
+              onChange={() => {}}
+              onDone={() => {}}
+            />
           </Section>
 
           <Section title="Shot cards">

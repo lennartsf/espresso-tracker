@@ -29,14 +29,13 @@ mit genau dieser Bohne** vorbefüllen (nicht des global letzten Shots).
   aber nur wenn Feld noch unberührt.)
 - Keine Migration.
 
-### A2 · „Grind Note" bei Coffees durch Notizen ersetzen  *(Task 9)* — ✅ **ERLEDIGT** (Migration offen)
+### A2 · „Grind Note" bei Coffees durch Notizen ersetzen  *(Task 9)* — ✅ **ERLEDIGT**
 Das Feld `rec_grind_note` im Block *Roaster Recipe* verschwindet als eigenes
 Textarea; stattdessen läuft der Inhalt über das allgemeine `notes`-Feld des Kaffees.
 - Betroffen: `RoasterRecipeFields.tsx` (Feld raus, `recipePayload` anpassen),
   `CoffeeManager.tsx` (Detail-Anzeige), `NewShot.tsx:398-399` (Anzeige „Roaster grind:").
-- **Migration:** `docs/migrations/2026-08-27-grind-note-to-notes.sql` — zwei Schritte
-  (mergen, prüfen, dann droppen). **Vom User noch auszuführen.** Der Code läuft schon
-  ohne die Spalte, die Reihenfolge ist also unkritisch.
+- **Migration:** `docs/migrations/2026-08-27-grind-note-to-notes.sql` —
+  ✅ **ausgeführt 2026-08-27.** Spalte `rec_grind_note` ist weg.
 - **Beim Bauen gefunden:** `coffees.notes` existierte in DB und Typ, war aber in *keinem*
   Formular editierbar und wurde nirgends angezeigt — „austauschen" hieß hier also erst
   einmal, das Zielfeld überhaupt zu bauen (New + Edit + Detail-Karte).
@@ -300,7 +299,23 @@ brauchen auf Weiß eine eigene Prüfung), `intensityFill`/`intensityBadge` (Crem
 auf Dunkel → muss in Light zu dunklem Alpha invertieren), Leaflet-Tiles
 (`dark_all` ↔ helles Set), die vier Animations-SVGs.
 
-### C3 · Anpassbares Dashboard  — **M**
+### C3 · Anpassbares Dashboard  — ✅ **ERLEDIGT (2026-08-28)** *(Migration offen)*
+> Widget-Registry (`src/utils/dashboardWidgets.ts`), Hook mit Sync
+> (`useDashboardLayout`), Bearbeitungsliste (`components/dashboard/LayoutEditor.tsx`),
+> Zahnrad im Dashboard-Header. 247 Tests grün.
+>
+> **Migration `docs/migrations/2026-08-28-dashboard-layout.sql` noch auszuführen.**
+> Bis dahin zeigt das Dashboard die Standardreihenfolge und das Speichern schlägt
+> fehl (die optimistische Änderung wird zurückgerollt) — nichts geht kaputt.
+>
+> **Der Sync erzwingt `reconcileLayout`:** ein anderes Gerät kann ein Layout einer
+> älteren oder neueren App-Version geschrieben haben. Unbekannte IDs fliegen raus,
+> fehlende Widgets kommen sichtbar ans Ende, doppelte behalten ihr erstes Vorkommen,
+> kaputte Eingaben fallen auf den Default. Ohne das bräche das Dashboard nach jedem
+> Release auf dem zweitgenutzten Gerät. 15 Tests decken genau diese Fälle ab.
+>
+> **Widget-IDs sind ein Datenvertrag** — sie stehen in der DB auf allen Geräten.
+> Umbenennen lässt das Widget überall verschwinden; neue bekommen neue IDs.
 MacroFactor-Feature: Nutzer stellt sich die Home-Kacheln selbst zusammen.
 - Widget-Registry (Ø-Flavor-Dial, Shots/Tag, Ratio, Wochen-Shots, Top-Rezept,
   letzte Brews …), Reihenfolge + Sichtbarkeit pro User.

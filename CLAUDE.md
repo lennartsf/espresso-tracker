@@ -118,10 +118,9 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 | created_at | timestamptz |
 
 > ✅ `rec_*`-Spalten live (Migration `docs/migrations/2026-06-15-coffee-roaster-recipe.sql` ausgeführt).
-> ⚠️ `rec_grind_note` **entfällt** (Paket A2, 2026-08-27): Inhalt wandert nach `coffees.notes`,
-> Spalte wird gedroppt. Migration `docs/migrations/2026-08-27-grind-note-to-notes.sql` —
-> **noch nicht ausgeführt?** Der App-Code liest/schreibt die Spalte bereits nicht mehr,
-> die Migration kann also jederzeit nachgezogen werden.
+> ✅ `rec_grind_note` **entfernt** (Paket A2, Migration
+> `docs/migrations/2026-08-27-grind-note-to-notes.sql` ausgeführt 2026-08-27):
+> Inhalt ist nach `coffees.notes` gewandert, Spalte gedroppt.
 
 ### `roast_dates`
 | Spalte | Typ |
@@ -221,6 +220,18 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 | machine_id | uuid FK → machines ON DELETE SET NULL |
 | basket_id | uuid FK → baskets ON DELETE SET NULL |
 | brew_device_id | uuid FK → brew_devices ON DELETE SET NULL |
+
+### `dashboard_layout`
+| Spalte | Typ |
+|--------|-----|
+| user_id | uuid PK → auth.users ON DELETE CASCADE |
+| layout | jsonb (`[{id, visible}]`, Reihenfolge = Anzeigereihenfolge) |
+| updated_at | timestamptz |
+
+> ⚠️ Migration `docs/migrations/2026-08-28-dashboard-layout.sql` — **noch auszuführen.**
+> Registry + IDs in `src/utils/dashboardWidgets.ts`. **IDs nie umbenennen** — sie stehen
+> in der DB auf allen Geräten. `reconcileLayout` fängt fremde/fehlende IDs ab, damit ein
+> Layout von einem anderen Gerät das Dashboard nicht zerlegt.
 
 ### `brews`
 | Spalte | Typ |

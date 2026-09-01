@@ -159,3 +159,18 @@ export interface Brew {
 }
 
 export type NewBrew = Omit<Brew, 'id' | 'created_at'>
+
+/** Eine Zeile je User; `layout` ist die serialisierte Widget-Reihenfolge.
+ *  Siehe `src/utils/dashboardWidgets.ts` fuer die Bedeutung der IDs. */
+export interface DashboardLayout {
+  user_id: string
+  layout: DashboardLayoutEntry[]
+  updated_at: string
+}
+
+/** Ein Eintrag = ein Widget plus Sichtbarkeit. Die Reihenfolge im Array IST
+ *  die Reihenfolge auf dem Dashboard. */
+export interface DashboardLayoutEntry {
+  id: string
+  visible: boolean
+}
