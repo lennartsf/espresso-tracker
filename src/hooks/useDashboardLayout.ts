@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 import { getCurrentUserId } from '../lib/auth'
 import { reconcileLayout, DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
+import { reconcileNav, DEFAULT_NAV } from '../utils/navItems'
 import type { DashboardLayoutEntry } from '../types'
 
 /**
@@ -64,5 +65,65 @@ export function useSaveDashboardLayout() {
       if (ctx?.previous) qc.setQueryData(['dashboard-layout', uid], ctx.previous)
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ['dashboard-layout', uid] }),
+  })
+}
+
+
+// ── Navigation ──────────────────────────────────────────────────────────────
+
+/**
+ * Reihenfolge und Sichtbarkeit der Navigation, ebenfalls über Geräte synchron.
+ *
+ * Liegt in derselben Zeile wie das Dashboard-Layout (Spalte `nav_layout`) —
+ * beides ist „wie dieser User seine Oberfläche eingerichtet hat", beides ist
+ * per `user_id` geschlüsselt, beides teilt dieselbe RLS-Policy.
+ */
+export function useNavLayout() {
+  const uid = getCurrentUserId()
+
+  return useQuery({
+    queryKey: ['nav-layout', uid],
+    enabled: !!uid,
+    queryFn: async (): Promise<DashboardLayoutEntry[]> => {
+      const { data, error } = await supabase
+        .from('dashboard_layout')
+        .select('nav_layout')
+        .eq('user_id', uid)
+        .maybeSingle()
+      if (error) throw error
+      return reconcileNav(data?.nav_layout ?? DEFAULT_NAV)
+    },
+    // Die Navigation rahmt JEDE Seite. Waehrend sie laedt, zeigt `Layout` den
+    // Standard — ohne diesen Platzhalter wuerde die Leiste bei jedem
+    // Seitenwechsel kurz leer aufblitzen.
+    placeholderData: DEFAULT_NAV,
+  })
+}
+
+export function useSaveNavLayout() {
+  const qc = useQueryClient()
+  const uid = getCurrentUserId()
+
+  return useMutation({
+    mutationFn: async (nav_layout: DashboardLayoutEntry[]) => {
+      const { error } = await supabase
+        .from('dashboard_layout')
+        .upsert(
+          { user_id: uid, nav_layout, updated_at: new Date().toISOString() },
+          { onConflict: 'user_id' },
+        )
+      if (error) throw error
+      return nav_layout
+    },
+    onMutate: async (nav) => {
+      await qc.cancelQueries({ queryKey: ['nav-layout', uid] })
+      const previous = qc.getQueryData<DashboardLayoutEntry[]>(['nav-layout', uid])
+      qc.setQueryData(['nav-layout', uid], nav)
+      return { previous }
+    },
+    onError: (_err, _nav, ctx) => {
+      if (ctx?.previous) qc.setQueryData(['nav-layout', uid], ctx.previous)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ['nav-layout', uid] }),
   })
 }

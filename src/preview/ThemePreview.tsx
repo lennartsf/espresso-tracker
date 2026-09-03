@@ -13,6 +13,7 @@ import { CoffeeBean } from '../components/CoffeeBean'
 import { RatingInput } from '../components/RatingInput'
 import { GrindAdvice } from '../components/GrindAdvice'
 import { InfoButton } from '../components/ui'
+import { NavEditor } from '../components/NavEditor'
 import { DEFAULT_LAYOUT } from '../utils/dashboardWidgets'
 import { ratingHex, intensityBadge, type ThemeName } from '../utils/ratingColor'
 import { chartColors } from '../utils/chartTheme'
@@ -234,6 +235,20 @@ export function ThemePreview({ theme }: { theme: ThemeName }) {
             <GrindAdvice
               warning
               message="Last shot ran 25s, target 28s → go finer to about 12.1 (rough guess — you have always ground at nearly the same setting, so there is nothing to learn from yet)."
+            />
+          </Section>
+
+          <Section title="Bottom bar order (Settings)">
+            <NavEditor
+              layout={[
+                { id: 'shots', visible: true },
+                { id: 'brews', visible: true },
+                { id: 'home', visible: true },
+                { id: 'analysis', visible: true },
+                { id: 'coffees', visible: true },
+                { id: 'glossary', visible: false },
+              ]}
+              onChange={() => {}}
             />
           </Section>
 

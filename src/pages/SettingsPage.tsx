@@ -1,5 +1,7 @@
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { cardClasses, PageHeader } from '../components/ui'
+import { NavEditor } from '../components/NavEditor'
+import { useNavLayout, useSaveNavLayout } from '../hooks/useDashboardLayout'
 import { useTheme, type ThemePreference } from '../lib/ThemeContext'
 
 const OPTIONS: { value: ThemePreference; label: string; hint: string; Icon: typeof Sun }[] = [
@@ -12,6 +14,9 @@ const OPTIONS: { value: ThemePreference; label: string; hint: string; Icon: type
  *  Leute Einstellungen unter „Settings" suchen und nicht in der Seitenleiste. */
 export function SettingsPage() {
   const { preference, theme, setPreference } = useTheme()
+
+  const { data: navLayout = [] } = useNavLayout()
+  const saveNav = useSaveNavLayout()
 
   return (
     <div>
@@ -60,6 +65,18 @@ export function SettingsPage() {
 
         <p className="mt-3 text-xs text-coffee-muted">
           The choice is stored on this device — each device can differ.
+        </p>
+      </div>
+
+      {/* Anders als das Theme wird die Navigation SERVERSEITIG gespeichert:
+          Mac und iPhone sollen dieselbe Leiste zeigen. */}
+      <div className="mt-4">
+        <NavEditor layout={navLayout} onChange={l => saveNav.mutate(l)} />
+        <p className="mt-2 text-xs text-coffee-muted">
+          Synced across your devices.
+          {saveNav.isError && (
+            <span className="text-coffee-danger"> Could not save — are you offline?</span>
+          )}
         </p>
       </div>
     </div>

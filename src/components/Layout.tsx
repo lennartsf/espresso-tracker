@@ -5,24 +5,35 @@ import { useAuth } from '../lib/AuthContext'
 import {
   Home, ListChecks, CupSoda, BarChart3, Coffee, MapPin, Settings,
   BookOpen, Library, LogOut, MoreHorizontal, SlidersHorizontal,
+  type LucideIcon,
 } from 'lucide-react'
 import { ROUTES } from '../lib/routes'
+import { useNavLayout } from '../hooks/useDashboardLayout'
+import { NAV_ITEMS, primaryNav as primaryOf, overflowNav, type NavId } from '../utils/navItems'
 
-const navItems = [
-  { to: ROUTES.app,       label: 'Home',      Icon: Home },
-  { to: ROUTES.shots,     label: 'Shots',     Icon: ListChecks },
-  { to: ROUTES.brews,     label: 'Brews',     Icon: CupSoda },
-  { to: ROUTES.analysis,  label: 'Analysis',  Icon: BarChart3 },
-  { to: ROUTES.coffees,   label: 'Coffees',   Icon: Coffee },
-  { to: ROUTES.roasters,  label: 'Roasters',  Icon: MapPin },
-  { to: ROUTES.equipment, label: 'Equipment', Icon: Settings },
-  { to: ROUTES.guide,     label: 'Guide',     Icon: BookOpen },
-  { to: ROUTES.glossary,  label: 'Glossary',  Icon: Library },
-  { to: ROUTES.settings,  label: 'Settings',  Icon: SlidersHorizontal },
-]
+/** Icon je Navigations-ID. Bewusst NICHT in `utils/navItems.ts`: dort stehen
+ *  die IDs, die in der Datenbank landen — eine Datei mit Datenvertrag soll
+ *  keine React-Komponenten importieren. */
+const NAV_ICONS: Record<NavId, LucideIcon> = {
+  home: Home,
+  shots: ListChecks,
+  brews: CupSoda,
+  analysis: BarChart3,
+  coffees: Coffee,
+  roasters: MapPin,
+  equipment: Settings,
+  guide: BookOpen,
+  glossary: Library,
+  settings: SlidersHorizontal,
+}
 
-const primaryNav = navItems.slice(0, 4)
-const moreNav    = navItems.slice(4)
+type ResolvedNav = { id: NavId; label: string; to: string; Icon: LucideIcon }
+
+/** Ein Eintrag, so wie ihn die Navigation zum Rendern braucht. */
+function resolve(entry: { id: string }) {
+  const item = NAV_ITEMS.find(i => i.id === entry.id)
+  return item ? { ...item, Icon: NAV_ICONS[item.id] } : null
+}
 
 export function Layout() {
   const [moreOpen, setMoreOpen] = useState(false)
@@ -35,6 +46,14 @@ export function Layout() {
     await signOut()
     navigate(ROUTES.login)
   }
+
+  const { data: navLayout = [] } = useNavLayout()
+  // `resolve` kann null liefern, wenn eine gespeicherte ID nicht mehr existiert.
+  // `reconcileNav` raeumt das zwar auf, aber der Filter hier macht die
+  // Navigation unabhaengig davon robust — sie rahmt jede Seite.
+  const bottomNav = primaryOf(navLayout).map(resolve).filter(Boolean) as ResolvedNav[]
+  const moreNav = overflowNav(navLayout).map(resolve).filter(Boolean) as ResolvedNav[]
+  const sidebarNav = navLayout.map(resolve).filter(Boolean) as ResolvedNav[]
 
   const isMoreActive = moreNav.some(item =>
     item.to === ROUTES.app
@@ -59,7 +78,7 @@ export function Layout() {
       {/* Sidebar — desktop only */}
       <nav className="hidden md:flex flex-col fixed top-0 left-0 bottom-0 w-52 bg-coffee-surface border-r border-coffee-line py-8 px-3 z-10">
         <p className="font-display text-base font-semibold text-coffee-cream px-3 mb-6">Espresso</p>
-        {navItems.map(({ to, label, Icon }) => (
+        {sidebarNav.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}
@@ -88,7 +107,12 @@ export function Layout() {
       </nav>
 
       {/* Main content */}
-      <main className="min-w-0 flex-1 overflow-x-hidden md:ml-52 pb-20 md:pb-10 px-4 md:px-10 pt-[max(1.5rem,env(safe-area-inset-top))] md:pt-6 w-full">
+            {/* Der untere Abstand MUSS die Safe Area mitrechnen. Die Leiste ist rund
+          57 px hoch UND traegt zusaetzlich `pb-[env(safe-area-inset-bottom)]` —
+          am iPhone mit Home-Indicator also ~91 px. Ein festes `pb-20` (80 px)
+          reichte nicht: das Seitenende verschwand unter der Leiste, auf jeder
+          Seite ein Stueck. Beide Werte muessen zusammen geaendert werden. */}
+      <main className="min-w-0 flex-1 overflow-x-hidden md:ml-52 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-10 px-4 md:px-10 pt-[max(1.5rem,env(safe-area-inset-top))] md:pt-6 w-full">
         <div className="min-w-0 max-w-lg md:max-w-4xl mx-auto">
           <Outlet />
         </div>
@@ -132,7 +156,7 @@ export function Layout() {
 
       {/* Bottom nav — mobile only */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-coffee-surface border-t border-coffee-line flex z-30 pb-[env(safe-area-inset-bottom)]">
-        {primaryNav.map(({ to, label, Icon }) => (
+        {bottomNav.map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}

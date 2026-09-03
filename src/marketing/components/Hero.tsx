@@ -5,6 +5,19 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ROUTES } from '../../lib/routes'
 import heroImg from '../../assets/hero-extraction.jpg'
+import { HoverVideo } from './HoverVideo'
+
+/** Videoquellen des Hero-„Live-Bilds".
+ *
+ *  Bewusst Pfade aus `public/` und kein Bundle-Import: so tauscht man das Video
+ *  aus, indem man die Datei ersetzt — ohne Build und ohne Code-Aenderung.
+ *  webm zuerst, weil deutlich kleiner; der Browser nimmt die erste Quelle, die
+ *  er kann, und faellt sonst auf mp4 zurueck. Fehlen beide, bleibt das
+ *  Standbild stehen. */
+const HERO_VIDEO = [
+  { src: '/hero.webm', type: 'video/webm' },
+  { src: '/hero.mp4', type: 'video/mp4' },
+]
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -75,8 +88,12 @@ export function Hero() {
       {/* Hero-Foto: Bottomless-Extraktion */}
       <div className="hero-art">
         <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-coffee-line bg-coffee-surface shadow-2xl shadow-black/40">
-          <img
-            src={heroImg}
+          {/* Standbild, das beim Hovern laeuft. Eigene Dateien liegen unter
+              `public/hero.*` — fehlen sie, bleibt es beim Standbild, ohne dass
+              hier etwas angepasst werden muss (siehe HoverVideo). */}
+          <HoverVideo
+            poster={heroImg}
+            sources={HERO_VIDEO}
             alt="Bottomless-Portafilter — Espresso-Extraktion in Gold gegen dunklen Hintergrund"
             className="hero-img absolute left-0 h-[124%] w-full object-cover"
             style={{ top: '-12%' }}
