@@ -5,6 +5,7 @@ import { useCoffeesByRoaster } from '../hooks/useCoffees'
 import { RoasterMap } from '../components/RoasterMap'
 import { PhotoUpload } from '../components/PhotoUpload'
 import { cardClasses, Badge, Input, FieldLabel, buttonClasses, PageHeader } from '../components/ui'
+import { formatRoast, hasRoast } from '../utils/beanColor'
 import type { Roaster, Coffee } from '../types'
 
 type View = 'list' | 'detail' | 'new'
@@ -184,8 +185,10 @@ function RoasterCoffeeCard({ coffee }: { coffee: Coffee }) {
         <p className="font-medium text-coffee-cream text-sm">{coffee.name}</p>
         {details && <p className="text-xs text-coffee-muted mt-0.5">{details}</p>}
       </div>
-      {coffee.roast_level !== null && (
-        <Badge className="whitespace-nowrap">Roast Level {coffee.roast_level}</Badge>
+      {hasRoast(coffee.roast_level_fine, coffee.roast_level) && (
+        <Badge className="whitespace-nowrap">
+          Roast Level {formatRoast(coffee.roast_level_fine, coffee.roast_level)}
+        </Badge>
       )}
     </div>
   )

@@ -97,3 +97,36 @@ export function coarseRoastLevel(fine: number | null): number | null {
   if (fine == null || !Number.isFinite(fine)) return null
   return Math.min(10, Math.max(1, Math.round(fine)))
 }
+
+/**
+ * Der Röstgrad, wie er angezeigt wird — mit einer Nachkommastelle.
+ *
+ * **Warum eigens eine Funktion.** Gespeichert wird der feine Wert
+ * (`roast_level_fine`, numeric(4,2)); `roast_level` ist nur die daraus
+ * gerundete Zweitschrift für grobe Filter. Mehrere Stellen der UI zeigten
+ * trotzdem `roast_level` — also „Roast 7", wo 7.3 in der Datenbank steht.
+ * Das liest sich, als würde die App nur gerundet speichern, obwohl der genaue
+ * Wert längst da ist. Wer den Röstgrad anzeigt, nimmt diese Funktion.
+ *
+ * `null`, wenn gar kein Röstgrad erfasst ist — der Aufrufer entscheidet dann,
+ * ob er etwas anderes zeigt oder nichts.
+ */
+export function formatRoast(
+  fine: number | null | undefined,
+  coarse: number | null | undefined,
+): string | null {
+  const v = fine ?? coarse
+  if (v == null || !Number.isFinite(v)) return null
+  return v.toFixed(1)
+}
+
+/** Hat dieser Kaffee überhaupt einen Röstgrad?
+ *
+ *  Bewusst gegen BEIDE Spalten geprüft: ein Kaffee mit feinem, aber ohne groben
+ *  Wert ist erfasst. Eine Prüfung nur auf `roast_level` hätte ihn versteckt. */
+export function hasRoast(
+  fine: number | null | undefined,
+  coarse: number | null | undefined,
+): boolean {
+  return (fine ?? coarse) != null
+}

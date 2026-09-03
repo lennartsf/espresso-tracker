@@ -10,7 +10,7 @@ import { RoasterRecipeFields, initialRecipe, recipePayload } from '../components
 import { CoffeeRecipeList } from '../components/CoffeeRecipeList'
 import { CoffeeBean } from '../components/CoffeeBean'
 import { RoastSlider } from '../components/RoastSlider'
-import { coarseRoastLevel } from '../utils/beanColor'
+import { coarseRoastLevel, formatRoast, hasRoast } from '../utils/beanColor'
 import { cardClasses, Badge, Input, Select, Textarea, FieldLabel, buttonClasses, EmptyState, PageHeader } from '../components/ui'
 import type { Coffee, Roaster } from '../types'
 
@@ -93,8 +93,12 @@ function CoffeeList({ onSelect, onNew }: { onSelect: (c: Coffee) => void; onNew:
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              {c.roast_level && (
-                <Badge className="whitespace-nowrap">Roast {c.roast_level}</Badge>
+              {/* Der feine Wert, nicht der gerundete: in der DB steht 7.3, und
+                  „Roast 7" liess die Speicherung gerundet aussehen. */}
+              {hasRoast(c.roast_level_fine, c.roast_level) && (
+                <Badge className="whitespace-nowrap">
+                  Roast {formatRoast(c.roast_level_fine, c.roast_level)}
+                </Badge>
               )}
               <span className="text-coffee-muted/60 text-lg">›</span>
             </div>
@@ -195,7 +199,7 @@ function CoffeeDetailView({
         </div>
       )}
 
-      {coffee.roast_level !== null && (
+      {hasRoast(coffee.roast_level_fine, coffee.roast_level) && (
         <div className={`${cardClasses} mb-3 flex items-center gap-4 p-3`}>
           <CoffeeBean
             roastLevel={coffee.roast_level_fine ?? coffee.roast_level}
@@ -206,7 +210,7 @@ function CoffeeDetailView({
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase text-coffee-muted">Roast Level</p>
             <p className="font-display text-2xl font-bold text-coffee-cream">
-              {(coffee.roast_level_fine ?? coffee.roast_level).toFixed(1)}
+              {formatRoast(coffee.roast_level_fine, coffee.roast_level)}
               <span className="text-sm font-normal text-coffee-muted"> / 10</span>
             </p>
           </div>
