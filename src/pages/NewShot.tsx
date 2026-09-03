@@ -14,8 +14,7 @@ import { TargetGhost } from '../components/TargetGhost'
 import { GrindAdvice } from '../components/GrindAdvice'
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { roasterRecipeOf } from '../utils/recipeMatch'
-import { suggestGrind } from '../utils/dialIn'
-import { suggestStartingGrind } from '../utils/roastPrior'
+import { planGrind } from '../utils/grindPlan'
 
 const STEP_DEFS = [
   { key: 'coffee', title: 'Coffee' },
@@ -232,31 +231,21 @@ export function NewShot() {
   // Bohne gewechselt → altes Rezept gilt nicht mehr.
   useEffect(() => { setRecipeId('') }, [coffeeId])
 
-  /** Dial-in-Vorschlag: braucht ein Ziel (Rezeptzeit) und die Shot-Historie.
-   *  Ohne Ziel gibt es nichts zu treffen, dann bleibt der Block aus. */
+  /** Mahlgrad-Vorschlag. Welche der beiden Quellen gilt — Dial-in aus eigenen
+   *  Shots oder der Röst-Prior für eine neue Bohne — entscheidet `planGrind`,
+   *  damit hier und im Analyse-Tab dieselbe Regel greift. */
   const targetTime = activeRecipe?.time_s ?? null
-  const dialIn = targetTime != null && coffeeId
-    ? suggestGrind({
-        shots: allShots,
-        coffeeId,
-        grinderId: grinderId || null,
-        // Das Sieb gehoert dazu: ein anderer Korb verschiebt die Durchlaufzeit
-        // wie eine andere Bohne. Ohne ihn wuerde der Anker aus einem Shot
-        // stammen, der so gar nicht vergleichbar ist.
-        basketId: basketId || null,
-        targetTime,
-      })
-    : null
-
-  /** Für eine Bohne ohne eigenen Shot kann `suggestGrind` nichts sagen — ihm
-   *  fehlt der Offset. Dann übernimmt der Röst-Prior: er leitet den Startwert
-   *  aus dem Röstgrad und den bereits eingestellten Bohnen ab. */
-  const startPrior = dialIn?.confidence === 'none' && selectedCoffee && targetTime != null
-    ? suggestStartingGrind({
-        shots: allShots, coffees, grinderId: grinderId || null,
-        targetTime, newCoffee: selectedCoffee,
-      })
-    : null
+  const { dialIn, startPrior } = planGrind({
+    shots: allShots,
+    coffees,
+    coffeeId,
+    grinderId: grinderId || null,
+    // Das Sieb gehoert dazu: ein anderer Korb verschiebt die Durchlaufzeit
+    // wie eine andere Bohne. Ohne ihn kaeme der Anker aus einem Shot, der so
+    // gar nicht vergleichbar ist.
+    basketId: basketId || null,
+    targetTime,
+  })
 
   /** Was aus dem Rezept übernommen wird — und was nicht.
    *

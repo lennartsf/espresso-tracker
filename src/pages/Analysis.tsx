@@ -6,7 +6,7 @@ import {
 import { useCoffees, useRoastDates } from '../hooks/useCoffees'
 import { useShots } from '../hooks/useShots'
 import { useBrews } from '../hooks/useBrews'
-import { useGrinders } from '../hooks/useEquipment'
+import { useGrinders, useBaskets } from '../hooks/useEquipment'
 import { Select, PageHeader, cardClasses } from '../components/ui'
 import { DialGauge } from '../components/dashboard/DialGauge'
 import { RecipeCard } from '../components/RecipeCard'
@@ -116,18 +116,31 @@ function EspressoAnalysis() {
   const [coffeeId, setCoffeeId]     = useState('')
   const [roastDateId, setRoastDateId] = useState('')
   const [grinderId, setGrinderId]   = useState('')
+  const [basketId, setBasketId]     = useState('')
   const [metric, setMetric]         = useState<EspressoMetric>('rating')
 
   const { data: coffees = [] }    = useCoffees()
   const { data: roastDates = [] } = useRoastDates(coffeeId)
   const { data: grinders = [] }   = useGrinders()
+  const { data: baskets = [] }    = useBaskets()
   const { data: allShots = [] }   = useShots(coffeeId || undefined, roastDateId || undefined, 'espresso')
 
-  const shots: ShotWithCoffee[] = grinderId
-    ? allShots.filter(s => s.grinder_id === grinderId)
-    : allShots
+  // Das Sieb gehört zu den Filtern wie die Mühle: ein Korb mit anderem
+  // Durchfluss braucht bei derselben Bohne einen anderen Mahlgrad. Zwei Körbe
+  // in einer Punktwolke legen zwei gegeneinander verschobene Kurven
+  // übereinander — der Zusammenhang, den man ablesen will, verschwimmt.
+  const shots: ShotWithCoffee[] = allShots.filter(s =>
+    (!grinderId || s.grinder_id === grinderId) &&
+    (!basketId || s.basket_id === basketId),
+  )
 
   const metricLabel = ESPRESSO_METRICS.find(m => m.key === metric)!.label
+
+  /** Welche Geräte in den ANGEZEIGTEN Shots tatsächlich gemischt sind. */
+  const mixed = [
+    !grinderId && new Set(shots.map(s => s.grinder_id).filter(Boolean)).size > 1 && 'grinders',
+    !basketId && new Set(shots.map(s => s.basket_id).filter(Boolean)).size > 1 && 'baskets',
+  ].filter(Boolean) as string[]
 
   const scatterData = shots
     .filter(s => s.grind_setting != null && s[metric] !== null)
@@ -159,17 +172,36 @@ function EspressoAnalysis() {
           </div>
         )}
 
-        {grinders.length > 1 && (
-          <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
-            <option value="">All Grinders</option>
-            {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-          </Select>
+        {(grinders.length > 1 || baskets.length > 1) && (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {grinders.length > 1 && (
+              <Select value={grinderId} onChange={e => setGrinderId(e.target.value)}>
+                <option value="">All Grinders</option>
+                {grinders.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+              </Select>
+            )}
+            {baskets.length > 1 && (
+              <Select value={basketId} onChange={e => setBasketId(e.target.value)}>
+                <option value="">All Baskets</option>
+                {baskets.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}{b.size_g ? ` · ${b.size_g} g` : ''}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </div>
         )}
       </div>
 
-      {!grinderId && grinders.length > 1 && (
+      {/* Nur warnen, wenn die Auswahl WIRKLICH mischt — also mehr als ein Gerät
+          in den angezeigten Shots vorkommt. Eine Warnung, die immer steht,
+          liest nach kurzer Zeit niemand mehr. */}
+      {mixed.length > 0 && (
         <p className="text-xs text-coffee-accent-soft bg-coffee-accent/10 border border-coffee-accent/30 rounded-lg px-3 py-2 mb-4">
-          Tip: Filter by one grinder — grind numbers are only comparable within the same grinder.
+          Tip: these {shots.length} shots mix {mixed.join(' and ')}. Grind numbers are only
+          comparable within one setup — filter above, or the curve you are reading is two
+          curves on top of each other.
         </p>
       )}
 

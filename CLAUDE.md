@@ -251,12 +251,18 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 |--------|-----|
 | user_id | uuid PK → auth.users ON DELETE CASCADE |
 | layout | jsonb (`[{id, visible}]`, Reihenfolge = Anzeigereihenfolge) |
+| nav_layout | jsonb (dasselbe Format, für die Navigation) | ⚠ Migration 2026-09-03 |
 | updated_at | timestamptz |
 
-> ⚠️ Migration `docs/migrations/2026-08-28-dashboard-layout.sql` — **noch auszuführen.**
-> Registry + IDs in `src/utils/dashboardWidgets.ts`. **IDs nie umbenennen** — sie stehen
-> in der DB auf allen Geräten. `reconcileLayout` fängt fremde/fehlende IDs ab, damit ein
-> Layout von einem anderen Gerät das Dashboard nicht zerlegt.
+> ✅ Migration `docs/migrations/2026-08-28-dashboard-layout.sql` ausgeführt.
+> ⚠️ Migration `docs/migrations/2026-09-03-nav-layout.sql` (`nav_layout`) — **noch auszuführen.**
+> Registry + IDs in `src/utils/dashboardWidgets.ts` (Dashboard) und `src/utils/navItems.ts`
+> (Navigation). **IDs nie umbenennen** — sie stehen in der DB auf allen Geräten.
+> `reconcileLayout`/`reconcileNav` fangen fremde, fehlende und doppelte IDs ab.
+> `reconcileNav` fällt zusätzlich auf den Standard zurück, wenn ALLES ausgeblendet ist —
+> sonst gäbe es keinen Knopf mehr, über den man es zurücknehmen könnte. Die Icons liegen
+> bewusst NICHT in `navItems.ts`: eine Datei mit Datenvertrag soll keine React-Komponenten
+> importieren.
 
 ### `coffee_recipes`
 | Spalte | Typ |
@@ -399,6 +405,12 @@ gezählt. Sonst misst man die Bohne und nennt es Sieb.
 Optik der Eingabefelder) und `components/DialInPlanner.tsx` (Analyse-Tab
 „Dial-in": Zielzeit setzen → Mahlgrad, Siebeffekt, aufklappbare Herleitung).
 
+**Welcher Vorschlag gilt, entscheidet `utils/grindPlan.ts` — an EINER Stelle.**
+Dial-in aus eigenen Shots, sonst der Röst-Prior. Die Regel „Prior nur bei
+`confidence: 'none'`" stand vorher nur in NewShot; der Analyse-Tab kannte sie
+nicht und zeigte bei einer neuen Bohne „No shot with this coffee yet", während
+NewShot für dieselbe Bohne einen Startwert nannte.
+
 **Beide Einstiege füttern den Algorithmus aus `hooks/useDialInShots.ts` — und
 nur daraus.** Vorher holte NewShot alle Shots und der Analyse-Tab nur
 `drink_type in ('espresso','caffe_crema')`; bei gleicher Bohne, gleichem Rezept
@@ -475,3 +487,24 @@ Das Root-`tsconfig.json` ist eine reine Solution-Datei (`"files": []` + `referen
 am 2026-09-01 ein Vercel-Build gescheitert, während lokal alles „grün" war.
 Vor jedem Push: `npm run build` (oder `npm run typecheck`) — nie nur `vite build`,
 denn das überspringt den Typcheck komplett.
+
+
+## Untere Leiste und Safe Area (2026-09-03)
+Der untere Rand von `<main>` und die Höhe der mobilen Leiste hängen zusammen, und
+**beide müssen dasselbe `env(safe-area-inset-bottom)` tragen.** Gemessen (390×844,
+Inset 34 px, gegen das gebaute CSS): Leiste 57 px ohne Inset, 91 px am iPhone —
+reserviert waren aber fest 80 px, also lagen 11 px Inhalt unter der Leiste, auf jeder
+Seite. Jetzt `pb-[calc(5rem+env(safe-area-inset-bottom))]`: 114 px, 23 px Luft, und der
+Abstand bleibt auf jedem Gerät gleich, weil beide Seiten mit der Safe Area wachsen.
+`layoutSafeArea.test.ts` hält die Beziehung fest (Eigenschaft, nicht Pixelwert).
+
+## Hero-„Live-Bild" auf der Website (2026-09-03)
+`marketing/components/HoverVideo.tsx`: Standbild, das beim Überfahren zu laufen beginnt.
+Die Videodateien liegen unter **`public/hero.webm`** und **`public/hero.mp4`** — bewusst
+`public/` und kein Bundle-Import, damit ein Austausch nur das Ersetzen der Datei
+verlangt. **Fehlen sie, bleibt es beim Standbild**, und der Play-Hinweis erscheint gar
+nicht erst. `muted` + `playsInline` sind Pflicht (sonst blockieren Safari/Chrome das
+Abspielen und iOS reißt es ins Vollbild). Auf Touch-Geräten gibt es kein Hover — dort
+startet ein Tippen, sonst wäre das Feature für die Hälfte der Besucher unerreichbar.
+`prefers-reduced-motion` unterbindet das Abspielen ganz.
+Das Standbild selbst ist weiterhin `src/assets/hero-extraction.jpg`.

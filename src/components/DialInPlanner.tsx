@@ -6,9 +6,8 @@ import { useGrinders, useBaskets, useEquipmentDefaults } from '../hooks/useEquip
 import { useCoffeeRecipes } from '../hooks/useCoffeeRecipes'
 import { Input, Select, FieldLabel, cardClasses } from './ui'
 import { roasterRecipeOf } from '../utils/recipeMatch'
-import {
-  learnGrinder, learnPerBasket, suggestGrind, compareBaskets,
-} from '../utils/dialIn'
+import { learnGrinder, learnPerBasket, compareBaskets } from '../utils/dialIn'
+import { planGrind } from '../utils/grindPlan'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -141,12 +140,18 @@ export function DialInPlanner() {
     targetTimeInput.trim() && Number.isFinite(parsedTarget) && parsedTarget > 0
       ? parsedTarget
       : null
-  const result = coffeeId && targetTime != null
-    ? suggestGrind({
-        shots: dialShots, coffeeId, grinderId: grinderId || null,
-        basketId: basketId || null, targetTime,
-      })
-    : null
+  /** Dieselbe Regel wie in NewShot: gibt es keinen eigenen Shot dieser Bohne,
+   *  uebernimmt der Roest-Prior. Vorher stand hier nur der Dial-in, und eine
+   *  neue Bohne bekam „No shot with this coffee yet" statt eines Startwerts —
+   *  waehrend NewShot fuer dieselbe Bohne eine Zahl zeigte. */
+  const { dialIn: result, startPrior } = planGrind({
+    shots: dialShots,
+    coffees,
+    coffeeId,
+    grinderId: grinderId || null,
+    basketId: basketId || null,
+    targetTime,
+  })
 
   const basketName = (id: string) => baskets.find(b => b.id === id)?.name ?? 'Unknown basket'
 
@@ -261,17 +266,37 @@ export function DialInPlanner() {
             <p className="text-xs font-semibold uppercase tracking-wide text-coffee-muted">
               Set the grinder to
             </p>
+            {/* Ohne eigenen Shot dieser Bohne uebernimmt der Roest-Prior. Er
+                ist grob, aber eine Zahl mit Begruendung schlaegt „nicht genug
+                Daten" — man muss ja irgendwo anfangen. */}
             {result.grind !== null ? (
               <p className="font-display text-5xl font-bold text-coffee-cream">{result.grind}</p>
+            ) : startPrior?.grind != null ? (
+              <p className="font-display text-5xl font-bold text-coffee-cream">{startPrior.grind}</p>
             ) : (
               <p className="mt-1 font-display text-2xl font-bold text-coffee-muted">Not enough data</p>
             )}
-            <p className="mt-2 text-sm leading-snug text-coffee-text">{result.message}</p>
+            <p className="mt-2 text-sm leading-snug text-coffee-text">
+              {startPrior?.grind != null ? startPrior.message : result.message}
+            </p>
 
             <div className="mt-3 flex flex-wrap gap-2">
+              {startPrior?.grind != null ? (
+                <>
+                  <span className="rounded-full bg-coffee-surface2 px-2.5 py-1 text-xs text-coffee-muted">
+                    Starting point from roast level
+                  </span>
+                  {startPrior.extrapolating && (
+                    <span className="rounded-full px-2.5 py-1 text-xs text-coffee-warn ring-1 ring-coffee-warn/50">
+                      Outside the roast range you have data for
+                    </span>
+                  )}
+                </>
+              ) : (
               <span className="rounded-full bg-coffee-surface2 px-2.5 py-1 text-xs text-coffee-muted">
                 Confidence: {result.confidence}
               </span>
+              )}
               <span className="rounded-full bg-coffee-surface2 px-2.5 py-1 text-xs text-coffee-muted">
                 {result.coffeeShots} shot{result.coffeeShots === 1 ? '' : 's'} on this coffee
               </span>

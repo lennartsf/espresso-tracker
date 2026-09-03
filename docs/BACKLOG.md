@@ -787,3 +787,36 @@ fällt auf „alle Siebe gepoolt" nur zurück, wenn das Sieb allein zu wenig her
 verschiedene Werte sind der Beleg, dass die Körbe unterschiedlichen Durchfluss
 haben. `compareBaskets` bereinigt den Mahlgrad ebenfalls mit der Steigung des
 jeweiligen Siebs statt mit einer gemeinsamen.
+
+
+---
+
+## Durchgang 2026-09-03
+
+| # | Wunsch | Status |
+|---|--------|--------|
+| 1 | Basket im Analyse-Tab filtern (Dial-in **und** Diagramm) | ✅ erledigt |
+| 2 | Startwert-Vorschlag auch im Dial-in-Tab, nicht nur bei „Neuer Shot" | ✅ erledigt |
+| 3 | iPhone: Seite schließt unten nicht ab | ✅ erledigt |
+| 4 | Hero-Bild als „Live-Bild" (Video bei Hover) | ⚙️ Mechanik fertig — **Dateien fehlen** |
+| 5 | Untere Leiste sortier- und anpassbar | ✅ erledigt — **Migration offen** |
+
+### Offen aus diesem Durchgang
+1. **Migration ausführen:** `docs/migrations/2026-09-03-nav-layout.sql` — fügt
+   `nav_layout` zu `dashboard_layout` hinzu. Bis dahin lässt sich die Leiste nicht
+   speichern (die App zeigt die Standard-Reihenfolge und meldet beim Speichern einen
+   Fehler). Kein Datenverlust: die Spalte ist neu und nullable.
+2. **Hero-Video liefern.** Zwei Dateien nach `public/` legen:
+   `hero.mp4` (H.264, breite Kompatibilität) und optional `hero.webm` (VP9, deutlich
+   kleiner — wird bevorzugt genommen). Empfehlung: 4:5 hochkant passend zum Standbild,
+   6–10 s, Endlosschleife, **ohne Ton** (der Ton wird ohnehin nie abgespielt), unter
+   ~3 MB. Solange die Dateien fehlen, bleibt das bisherige Standbild stehen und die App
+   verspricht nichts — der Play-Hinweis erscheint erst, wenn das Video wirklich
+   abspielbar ist. Ein anderes **Standbild** ersetzt man in
+   `src/assets/hero-extraction.jpg`.
+
+### Zum Basket-Filter
+Im Dial-in gab es ihn bereits; neu ist er im **Diagramm** (Espresso-Tab). Dort werden
+Shots jetzt nach Mühle *und* Sieb gefiltert, und der Hinweis erscheint nur noch, wenn
+die angezeigten Shots wirklich mehrere Geräte mischen — eine Warnung, die immer steht,
+liest nach kurzer Zeit niemand mehr.
