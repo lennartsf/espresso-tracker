@@ -130,8 +130,8 @@ eine unlesbare Mischung. Inline-Skript in `index.html` stempelt vor dem ersten P
 | notes | text |
 | arabica_pct | int2 |
 | robusta_pct | int2 |
-| roast_level | int2 (1–10, gerundet aus roast_level_fine) |
-| roast_level_fine | numeric(4,2) | ⚠ Migration 2026-08-30 |
+| roast_level | int2 (1–10, **abgeleitet** — gerundet aus roast_level_fine) |
+| roast_level_fine | numeric(4,2) — **die Wahrheit**, wird ungerundet geschrieben |
 | origin_country | text |
 | origin_region | text |
 | altitude_m | int4 |
@@ -508,3 +508,17 @@ Abspielen und iOS reißt es ins Vollbild). Auf Touch-Geräten gibt es kein Hover
 startet ein Tippen, sonst wäre das Feature für die Hälfte der Besucher unerreichbar.
 `prefers-reduced-motion` unterbindet das Abspielen ganz.
 Das Standbild selbst ist weiterhin `src/assets/hero-extraction.jpg`.
+
+
+## Röstgrad: die Dezimalzahl ist die Wahrheit (2026-09-03)
+Gespeichert wird `roast_level_fine` (numeric(4,2)) — der Regler arbeitet in
+Zehntelschritten und der Wert geht **ungerundet** in die Datenbank, sowohl beim
+Anlegen als auch beim Bearbeiten. `roast_level` (int2) ist nur die daraus gerundete
+Zweitschrift für grobe Filter; `coarseRoastLevel` erzeugt sie beim Speichern.
+
+Mehrere Stellen der UI zeigten trotzdem `roast_level` — also „Roast 7", wo 7.3 in der
+Datenbank steht. Das liest sich, als speichere die App nur gerundet. **Wer den Röstgrad
+anzeigt, nimmt `formatRoast(fine, coarse)`**, und wer prüft, ob überhaupt einer erfasst
+ist, nimmt `hasRoast(fine, coarse)` — eine Prüfung nur auf `roast_level` versteckt einen
+Kaffee, der ausschließlich einen feinen Wert hat. `roastStorage.test.tsx` hält fest, dass
+zwischen Regler und Speicherung nichts rundet.

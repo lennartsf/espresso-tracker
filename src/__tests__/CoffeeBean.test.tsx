@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { CoffeeBean } from '../components/CoffeeBean'
-import { beanShades } from '../utils/beanColor'
+import { beanShades, formatRoast, hasRoast, coarseRoastLevel } from '../utils/beanColor'
 
 test('a blend renders two beans, a single variety one', () => {
   const { container, unmount } = render(<CoffeeBean roastLevel={6} arabicaPct={70} robustaPct={30} />)
@@ -70,4 +70,41 @@ test('the plate has an edge so it does not melt into a light card', () => {
   // In Light ist die Karte #fffdfa und der Teller #efe8dc — ohne Kante waere
   // die Grenze kaum zu sehen.
   expect(contrast('#cabda6', '#fffdfa')).toBeGreaterThanOrEqual(1.5)
+})
+
+// ── Anzeige des Röstgrads ───────────────────────────────────────────────────
+
+test('the fine value wins over the rounded one', () => {
+  // Der Kern: gespeichert wird 7.3, gerundet danebengelegt 7. Wer 7 anzeigt,
+  // laesst die Speicherung gerundet aussehen, obwohl der genaue Wert da ist.
+  expect(formatRoast(7.3, 7)).toBe('7.3')
+  expect(formatRoast(8.5, 9)).toBe('8.5')
+})
+
+test('a coffee with only the rounded value still shows something', () => {
+  // Alte Kaffees von vor der feinen Skala haben nur roast_level.
+  expect(formatRoast(null, 6)).toBe('6.0')
+})
+
+test('no roast level means no text, not a zero', () => {
+  expect(formatRoast(null, null)).toBeNull()
+  expect(formatRoast(undefined, undefined)).toBeNull()
+  // Ein kaputter DB-Wert darf nicht als „NaN" in der UI landen.
+  expect(formatRoast(Number.NaN, null)).toBeNull()
+})
+
+test('hasRoast checks BOTH columns', () => {
+  // Nur auf roast_level zu pruefen versteckte einen Kaffee, der ausschliesslich
+  // einen feinen Wert hat.
+  expect(hasRoast(7.3, null)).toBe(true)
+  expect(hasRoast(null, 7)).toBe(true)
+  expect(hasRoast(null, null)).toBe(false)
+})
+
+test('the coarse value is derived, never the stored truth', () => {
+  // coarseRoastLevel ist nur fuer die Zweitschrift `roast_level` da. Der feine
+  // Wert geht ungerundet in die DB — deshalb darf er hier nicht durchlaufen.
+  expect(coarseRoastLevel(7.3)).toBe(7)
+  expect(coarseRoastLevel(7.5)).toBe(8)
+  expect(formatRoast(7.5, coarseRoastLevel(7.5))).toBe('7.5')
 })
